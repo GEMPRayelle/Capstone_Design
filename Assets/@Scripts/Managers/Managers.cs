@@ -1,8 +1,13 @@
 using UnityEngine;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 //Manager들 총괄클래스
-public class Managers : MonoBehaviour
+public class Managers : Singleton<Managers>
 {
-    public static bool Initialized { get; set; } = false; //초기화 여부
+    #region Core
+    #endregion
+
+    #region Contents
+    #endregion
 
 }
