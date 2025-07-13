@@ -1,12 +1,11 @@
 using UnityEditorInternal;
 using UnityEngine;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 //싱글톤의 T는 MonoBehaviour를 상속받은 클래스만 넣을 수 있음
 public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     public static bool Initialized { get; set; } = false; //초기화 여부
-    private static T _instance;
+    private static T _instance; //싱글톤 인스턴스 
 
     public static T Instance { get { Init(); return _instance; } }
 
