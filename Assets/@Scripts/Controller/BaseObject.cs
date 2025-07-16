@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using static Define;
 
@@ -6,22 +7,30 @@ public class BaseObject : InitBase
 {
     //모든 오브젝트들이 가질 기본적인 컴포넌트
     public EObjectType ObjectType { get; protected set; } = EObjectType.None;
-    public Rigidbody Rigidbody { get; protected set; }
+    public Rigidbody2D RigidBody { get; protected set; }
+    public CircleCollider2D Collider { get; private set; }
 
     //다른 오브젝트들도 고유 DataID가 있을 경우를 고려
     public int DataTemplateID { get; set; }
 
     //TODO (수정 필요) -> 오브젝트의 중앙 위치가 아닌 발 위치로 초기 설정되어있음
-    public Vector3 CenterPosition { get { return transform.position + Vector3.up; } }
+    public Vector3 CenterPosition { get { return transform.position + Vector3.up * ColliderRadius; } }
+    public float ColliderRadius { get { return Collider != null ? Collider.radius : 0.0f; } }
 
     public override bool Init()
     {
         if (base.Init() == false)
             return false;
 
-        Rigidbody = GetComponent<Rigidbody>();
+        RigidBody = GetComponent<Rigidbody2D>();
+        Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
 
         return true;
+    }
+
+    protected virtual void OnDisable()
+    {
+        //TODO
     }
 
     #region Helper Func

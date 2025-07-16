@@ -38,4 +38,28 @@ public static class Define
         Creature,//생명체
         Env,//주변과 상호작용할 오브젝트
     }
+
+    public enum ECreatureState
+    {
+        None,
+        Idle,
+        Move,
+        Attack,
+        Skill,
+        OnDamaged,
+        Dead
+    }
+
+    public enum EJoystickState
+    {
+        PointerDown,
+        PointerUp,
+        Drag
+    }
+
+    public enum EPlayerMoveState
+    {
+        None,
+        ForceMove,
+    }
 }

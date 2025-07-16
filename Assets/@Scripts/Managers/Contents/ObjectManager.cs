@@ -5,6 +5,8 @@ using static Define;
 //오브젝트들의 스폰과 디스폰을 관리할 클래스
 public class ObjectManager
 {
+    public Player Players { get; private set; }
+
     //각각의 오브젝트들을 모을 Root 오브젝트를 생성
     public Transform GetRootTransform(string name)
     {

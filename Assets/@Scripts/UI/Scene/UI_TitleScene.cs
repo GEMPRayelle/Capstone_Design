@@ -58,6 +58,8 @@ public class UI_TitleScene : UI_Scene
 
                 //로딩이 끝나서 넘어갈 수 있게 되면 정상적으로 이미지랑 텍스트를 정상화처리
                 GetObject((int)GameObjects.StartImage).gameObject.SetActive(true);
+                GetText((int)Texts.DisplayText).fontSize = 90;
+                GetText((int)Texts.DisplayText).rectTransform.sizeDelta = new Vector2(575,50);
                 GetText((int)Texts.DisplayText).text = $"Touch To Start";
 
                 //로딩이 끝나면 아래처럼 데이터를 사용가능함
