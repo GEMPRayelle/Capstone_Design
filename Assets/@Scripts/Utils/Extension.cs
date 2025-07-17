@@ -26,6 +26,16 @@ public static class Extension
     }
 
     /// <summary>
+    /// Transform의 확장 함수 (이동)
+    /// </summary>
+    public static void TranslateEx(this Transform transform, Vector3 dir)
+    {
+        BaseObject bo = transform.gameObject.GetComponent<BaseObject>();
+        if (bo != null)
+            bo.TranslateEx(dir);
+    }
+
+    /// <summary>
     /// GameObject가 무적인 상태인지 반환하는 함수
     /// </summary>
     public static bool IsValid(this GameObject go)

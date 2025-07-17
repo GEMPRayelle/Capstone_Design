@@ -40,6 +40,15 @@ public static class Define
         Monster,
     }
 
+    public enum ECreatureType 
+    {
+        None,
+        Player,
+        Monster,
+        Npc
+    }
+
+
     public enum ECreatureState
     {
         None,

@@ -1,3 +1,4 @@
+using TMPro.EditorUtilities;
 using Unity.VisualScripting;
 using UnityEngine;
 using static Define;
@@ -7,8 +8,9 @@ public class BaseObject : InitBase
 {
     //모든 오브젝트들이 가질 기본적인 컴포넌트
     public EObjectType ObjectType { get; protected set; } = EObjectType.None;
-    public Rigidbody2D RigidBody { get; protected set; }
     public CircleCollider2D Collider { get; private set; }
+    public Animation Anim { get; private set; }
+    public Rigidbody2D RigidBody { get; protected set; }
 
     //다른 오브젝트들도 고유 DataID가 있을 경우를 고려
     public int DataTemplateID { get; set; }
@@ -24,6 +26,7 @@ public class BaseObject : InitBase
 
         RigidBody = GetComponent<Rigidbody2D>();
         Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
+        Anim = GetComponent<Animation>();
 
         return true;
     }
@@ -32,6 +35,20 @@ public class BaseObject : InitBase
     {
         //TODO
     }
+
+    public void TranslateEx(Vector3 dir)
+    {
+        transform.Translate(dir);
+        
+        //TODO 방향전환 코드
+    }
+
+    #region Animation
+    protected virtual void UpdateAnimation()
+    {
+
+    }
+    #endregion
 
     #region Helper Func
     /// <summary>
