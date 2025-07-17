@@ -37,6 +37,7 @@ public static class Define
         None,
         Creature,//생명체
         Env,//주변과 상호작용할 오브젝트
+        Monster,
     }
 
     public enum ECreatureState
