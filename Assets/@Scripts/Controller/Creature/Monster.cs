@@ -59,7 +59,7 @@ public class Monster : Creature
         speed = 2.5f;
         rigid = GetComponent<Rigidbody2D>();
 
-        GameObject player = GameObject.Find("Player");
+        GameObject player = GameObject.Find("Hero");
 
         if (player != null)
             target = player.GetComponent<Rigidbody2D>();
