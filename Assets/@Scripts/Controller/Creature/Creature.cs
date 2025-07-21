@@ -14,10 +14,12 @@ public class Creature : BaseObject
         get { return _creatureState; }
         set
         {
+            //Creature의 State가 바뀔때마다 UpdateAnimation을 자동으로 호출하여 애니메이션이 재생되도록함
             if (_creatureState != value)
             {
                 _creatureState = value;
-                //UpdateAnimation();
+                //TODO -> UpdateAnimation 구현
+                UpdateAnimation();
             }
         }
     }

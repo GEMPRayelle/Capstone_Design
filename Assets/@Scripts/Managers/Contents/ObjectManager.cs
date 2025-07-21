@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static Define;
 
@@ -6,6 +7,13 @@ using static Define;
 public class ObjectManager
 {
     public Player Players { get; private set; }
+
+    public HashSet<Player> players { get; } = new HashSet<Player>();
+    public HashSet<Monster> monsters { get; } = new HashSet<Monster>();
+
+    #region Roots
+    public Transform PlayerRoot { get { return GetRootTransform("@Players"); } }
+    public Transform MonsterRoot { get { return GetRootTransform("@Monsters"); } }
 
     //각각의 오브젝트들을 모을 Root 오브젝트를 생성
     public Transform GetRootTransform(string name)
@@ -19,8 +27,9 @@ public class ObjectManager
         //그 오브젝트의 transform 리턴
         return root.transform;
     }
+    #endregion
 
-    public T Spawn<T>(Vector3 position, int templateID) where T : BaseObject
+    public T Spawn<T>(Vector3 position) where T : BaseObject
     {
         string prefabName = typeof(T).Name;//컴포넌트의 오브젝트 이름을 가져옴
 
@@ -36,12 +45,30 @@ public class ObjectManager
         if (obj.ObjectType == EObjectType.Creature)
         {
             //TODO
-            //Creature 객체를 생성후 Creature컴포넌트를 가져와서
-
-            //Switch문을 통해 CreatureType을 다시 검사
-            //Player, Monster타입인지에 따라 Root생성을 따로 함
+            Creature creature = go.GetComponent<Creature>();
+            switch (creature.CreatureType) 
+            {
+                case ECreatureType.Player:
+                    obj.transform.parent = PlayerRoot;
+                    Player player = creature as Player;
+                    players.Add(player);
+                    break;
+                case ECreatureType.Monster:
+                    obj.transform.parent = MonsterRoot;
+                    Monster monster = creature as Monster;
+                    monsters.Add(monster);
+                    break;
+            }
 
             //Creature에 기본값을 세팅
+        }
+        else if (obj.ObjectType == EObjectType.Projectile)
+        {
+            //TODO
+        }
+        else if(obj.ObjectType == EObjectType.Env)
+        {
+            //TODO
         }
 
         //오브젝트를 스폰하고 그 T타입에 obj를 리턴
@@ -54,8 +81,26 @@ public class ObjectManager
 
         if (obj.ObjectType == EObjectType.Creature)
         {
+            Creature creature = obj.GetComponent<Creature>();
+            switch (creature.CreatureType)
+            {
+                case ECreatureType.Player:
+                    Player player = creature as Player;
+                    players.Remove(player);
+                    break;
+                case ECreatureType.Monster:
+                    Monster monster = creature as Monster;
+                    monsters.Remove(monster);
+                    break;
+            }
+        }
+        else if (obj.ObjectType == EObjectType.Projectile)
+        {
             //TODO
-            //Spawn함수와 동일하게 타입 검사후 제거하는 작업
+        }
+        else if (obj.ObjectType == EObjectType.Env)
+        {
+            //TODO
         }
 
         Managers.Resource.Destroy(obj.gameObject);

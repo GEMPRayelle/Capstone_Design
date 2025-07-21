@@ -38,6 +38,7 @@ public static class Define
         Creature,//생명체
         Env,//주변과 상호작용할 오브젝트
         Monster,
+        Projectile //발사체
     }
 
     public enum ECreatureType 
@@ -71,5 +72,12 @@ public static class Define
     {
         None,
         ForceMove,
+    }
+
+    public static class SortingLayers
+    {
+        public const int UI_JOYSTICK = 500;
+        public const int CREATURE = 300;
+        public const int MONSTER = 300;
     }
 }
