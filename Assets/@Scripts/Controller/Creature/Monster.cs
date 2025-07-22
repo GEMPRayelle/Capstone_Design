@@ -6,8 +6,6 @@ public class Monster : Creature
     public Rigidbody2D target;
     public Rigidbody2D rigid;
 
-    public float speed;
-
     public override ECreatureState CreatureState
     {
         get { return base.CreatureState; }
@@ -38,7 +36,8 @@ public class Monster : Creature
         if (base.Init() == false)
            return false;
 
-        ObjectType = EObjectType.Monster;
+        CreatureType = ECreatureType.Monster;
+    
 
         StartCoroutine(CoUpdateAI());
 
@@ -56,13 +55,22 @@ public class Monster : Creature
         // 임시 테스트 코드
         CreatureState = ECreatureState.Attack;
 
-        speed = 2.5f;
+        Speed = 2.5f;
         rigid = GetComponent<Rigidbody2D>();
 
         GameObject player = GameObject.Find("Hero");
 
         if (player != null)
             target = player.GetComponent<Rigidbody2D>();
+    }
+    public void Update()
+    {
+        // 플레이어 따라가기(Test용)
+        Vector2 dirVec = target.position - rigid.position;
+        Vector2 nextVec = dirVec.normalized * Speed * Time.deltaTime;
+
+        rigid.MovePosition(rigid.position + nextVec);
+        rigid.linearVelocity = Vector2.zero;
     }
 
     protected override void UpdateIdle()
@@ -81,13 +89,5 @@ public class Monster : Creature
 
     }
 
-    public void Update()
-    {
-        // 플레이어 따라가기(Test용)
-        Vector2 dirVec = target.position - rigid.position;
-        Vector2 nextVec = dirVec.normalized * speed * Time.deltaTime;
-
-        rigid.MovePosition(rigid.position + nextVec);
-        rigid.linearVelocity = Vector2.zero;
-    }
+    
 }

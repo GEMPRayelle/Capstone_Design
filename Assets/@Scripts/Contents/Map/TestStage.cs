@@ -3,20 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using static Define;
-public class TestStage : MonoBehaviour
+public class TestStage : BaseObject
 {
       
     [SerializeField]
     private List<BaseObject> _spawnObjects = new List<BaseObject>();
 
     public Rigidbody2D target;
-
+    Vector2 _moveDir = Vector2.zero;
     // 임시 코드
     private float SpawnTime = 1.0f;
     private float _spawnPadding;
-    [SerializeField]
-    public GameObject Monster; // 인스펙터를 통해 넣어줘야함
+    private float Speed = 5.0f;
+
+    public override bool Init()
+    {
+        if (base.Init() == false)
+            return false;
+
+        Managers.Game.OnMoveDirChanged -= HandleOnMoveDirChanged;
+        Managers.Game.OnMoveDirChanged += HandleOnMoveDirChanged;
+
+        return true;
+    }
     private void Start()
     {
         GameObject player = GameObject.Find("Hero");
@@ -53,12 +64,22 @@ public class TestStage : MonoBehaviour
                     break;
 
             }
-            Monster monster = Object.Instantiate(Monster, target.position + SpawnPostionPadding, Quaternion.identity, this.transform).GetComponent<Monster>();
+            Monster monster = Managers.Object.Spawn<Monster>(target.position + SpawnPostionPadding);
             
             if (monster != null)
                 _spawnObjects.Add(monster);
 
             yield return new WaitForSeconds(SpawnTime);
         }
+    }
+
+    private void HandleOnMoveDirChanged(Vector2 dir)
+    {
+        _moveDir = dir;
+    }
+
+    public void Update()
+    {
+        transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
     }
 }
