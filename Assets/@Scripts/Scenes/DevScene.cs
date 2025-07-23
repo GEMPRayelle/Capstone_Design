@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DevScene : BaseScene
@@ -15,17 +16,30 @@ public class DevScene : BaseScene
         map.transform.position = Vector3.zero;
         map.name = "@BaseMap";
 
-        //ObjectManager를 통한 플레이어 스폰
-        //TODO -> 플레이어 프리팹을 직접 만들지를 않고 스폰 하면 에러가 나기에 임시 주석 처리
-        //Player player = Managers.Object.Spawn<Player>(Vector3.zero);
-        //player.CreatureState = Define.ECreatureState.Idle;
+        #region Player
+        {
+            //ObjectManager를 통한 플레이어 스폰
+            Player player = Managers.Object.Spawn<Player>(Vector3.zero);
+            player.CreatureState = Define.ECreatureState.Idle;
 
-        //조이스틱 UI 생성
-        Managers.UI.ShowBaseUI<UI_Joystick>();
+            //카메라 주시 대상 설정
+            CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
+            camera.Target = player;
+        }
+        #endregion
 
-        //임시 카메라 설정
-        Camera camera = Camera.main;
-        camera.orthographicSize = 15;
+        #region Monster
+        {
+
+        }
+        #endregion
+
+        #region UI
+        {
+            //조이스틱 UI 생성
+            Managers.UI.ShowBaseUI<UI_Joystick>();
+        }
+        #endregion
 
         return true;
     }
