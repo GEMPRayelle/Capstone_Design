@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -64,6 +65,8 @@ public class Creature : BaseObject
         }
     }
 
+  
+
     #region Battle
     public override void OnDamaged()
     {
@@ -76,32 +79,36 @@ public class Creature : BaseObject
 
     protected IEnumerator CoUpdateAI()
     {
-        switch (CreatureState)
+        while (true)
         {
-            case ECreatureState.Idle:
-                UpdateIdle();
-                break;
-            case ECreatureState.Move:
-                UpdateMove();
-                break;
-            case ECreatureState.Attack:
-                UpdateAttack();
-                break;
-            case ECreatureState.Skill:
-                UpdateSkill();
-                break;
-            case ECreatureState.OnDamaged:
-                UpdateOnDamaged();
-                break;
-            case ECreatureState.Dead:
-                UpdateDead();
-                break;
-        }
+            switch (CreatureState)
+            {
+                case ECreatureState.Idle:
+                    UpdateIdle();
+                    break;
+                case ECreatureState.Move:
+                    UpdateMove();
+                    break;
+                case ECreatureState.Attack:
+                    UpdateAttack();
+                    break;
+                case ECreatureState.Skill:
+                    UpdateSkill();
+                    break;
+                case ECreatureState.OnDamaged:
+                    UpdateOnDamaged();
+                    break;
+                case ECreatureState.Dead:
+                    UpdateDead();
+                    break;
+            }
 
-        if(UpdateAITick > 0)
-            yield return new WaitForSeconds(UpdateAITick);
-        else
-            yield return null;
+            if (UpdateAITick > 0)
+                yield return new WaitForSeconds(UpdateAITick);
+            else
+                yield return null;
+        }
+        
     }
 
     protected virtual void UpdateIdle() { }

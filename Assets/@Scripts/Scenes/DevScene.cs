@@ -30,6 +30,9 @@ public class DevScene : BaseScene
 
         #region Monster
         {
+            Monster monster = Managers.Object.Spawn<Monster>(Vector3.zero); // 처음 실행할 때 monster spawner 기능 MonsterRoot에 만들기
+            Managers.Object.MonsterRoot.gameObject.GetOrAddComponent<MonsterSpawner>();
+            Managers.Object.Despawn<Monster>(monster);
 
         }
         #endregion

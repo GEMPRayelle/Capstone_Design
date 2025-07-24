@@ -1,3 +1,4 @@
+using Spine.Unity;
 using UnityEngine;
 using static Define;
 
@@ -17,13 +18,16 @@ public class Monster : Creature
                 switch (value)
                 {
                     case ECreatureState.Idle:
-                        UpdateAITick = 0.0f;
+                        UpdateAITick = 0.5f;
                         break;
                     case ECreatureState.Attack:
-                        UpdateAITick = 0.1f;
+                        UpdateAITick = 0.02f;
+                        break;
+                    case ECreatureState.Move:
+                        UpdateAITick = 0.02f;
                         break;
                     case ECreatureState.Dead:
-                        UpdateAITick = 0.0f;
+                        UpdateAITick = 1.0f;
                         break;
 
                 }
@@ -37,7 +41,17 @@ public class Monster : Creature
            return false;
 
         CreatureType = ECreatureType.Monster;
-    
+        CreatureState = ECreatureState.Idle;
+
+        Speed = 2.5f;
+        rigid = GetComponent<Rigidbody2D>();
+        SkeletonAnimation skeletonAnim = GetComponent<SkeletonAnimation>();
+        skeletonAnim.GetComponent<MeshRenderer>().sortingOrder = SortingLayers.MONSTER;
+
+        GameObject player = GameObject.Find("@Players");
+
+        if (player != null)
+            target = player.transform.GetChild(0).GetComponent<Rigidbody2D>();
 
         StartCoroutine(CoUpdateAI());
 
@@ -47,23 +61,19 @@ public class Monster : Creature
     public override void SetInfo(int templateID)
     {
         base.SetInfo(templateID);
-        CreatureState = ECreatureState.Idle;
     }
 
-    public void Start()
-    {
-        // 임시 테스트 코드
-        CreatureState = ECreatureState.Attack;
-
-        Speed = 2.5f;
-        rigid = GetComponent<Rigidbody2D>();
-
-        GameObject player = GameObject.Find("Hero");
-
-        if (player != null)
-            target = player.GetComponent<Rigidbody2D>();
-    }
     public void Update()
+    {
+        
+    }
+
+    protected override void UpdateIdle()
+    {
+        CreatureState = ECreatureState.Move;
+    }
+
+    protected override void UpdateMove()
     {
         // 플레이어 따라가기(Test용)
         Vector2 dirVec = target.position - rigid.position;
@@ -71,23 +81,21 @@ public class Monster : Creature
 
         rigid.MovePosition(rigid.position + nextVec);
         rigid.linearVelocity = Vector2.zero;
-    }
 
-    protected override void UpdateIdle()
-    {
-        
-    }
-
-    protected override void UpdateAttack()
-    {
-        
+        if (dirVec.x < 0.1)
+            LookLeft = true;
+        else if (dirVec.x > 0.1)
+            LookLeft = false;
+        else
+            ;
 
     }
-
     protected override void UpdateDead()
     {
 
     }
 
-    
+   
+
+
 }

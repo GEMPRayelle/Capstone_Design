@@ -1,3 +1,4 @@
+using Spine.Unity;
 using UnityEngine;
 using static Define;
 
@@ -23,7 +24,9 @@ public class Player : Creature
         Collider.isTrigger = true;
         RigidBody.simulated = false;
 
-        StartCoroutine(CoUpdateAI());
+
+        SkeletonAnimation skeletonAnim = GetComponent<SkeletonAnimation>();
+        skeletonAnim.GetComponent<MeshRenderer>().sortingOrder = SortingLayers.PLAYER;
 
         return true;
     }
@@ -61,7 +64,7 @@ public class Player : Creature
     private void HandleOnMoveDirChanged(Vector2 dir)
     {
         _moveDir = dir;
-        Debug.Log(dir);
+        // Debug.Log(dir);
 
         //if(dir != Vector2.zero)
         //{

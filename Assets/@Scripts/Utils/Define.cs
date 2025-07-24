@@ -78,6 +78,7 @@ public static class Define
     {
         public const int UI_JOYSTICK = 500;
         public const int CREATURE = 300;
+        public const int PLAYER = 350;
         public const int MONSTER = 300;
     }
 
