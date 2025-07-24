@@ -5,7 +5,7 @@ using static Define;
 public class Player : Creature
 {
     Vector2 _moveDir = Vector2.zero;
-
+    public EPlayerState PlayerState; //Master, Servant 상태를 관리
     public override bool Init()
     {
         if (base.Init() == false)
@@ -23,7 +23,7 @@ public class Player : Creature
 
         Collider.isTrigger = true;
         RigidBody.simulated = false;
-
+        PlayerState = EPlayerState.None;
 
         SkeletonAnimation skeletonAnim = GetComponent<SkeletonAnimation>();
         skeletonAnim.GetComponent<MeshRenderer>().sortingOrder = SortingLayers.PLAYER;

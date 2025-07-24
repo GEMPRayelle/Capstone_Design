@@ -19,12 +19,13 @@ public class DevScene : BaseScene
         #region Player
         {
             //ObjectManager를 통한 플레이어 스폰
-            Player player = Managers.Object.Spawn<Player>(Vector3.zero);
-            player.CreatureState = Define.ECreatureState.Idle;
+            Player master = Managers.Object.Spawn<Player>(Vector3.zero);
+            master.CreatureState = Define.ECreatureState.Idle;
+            master.PlayerState = Define.EPlayerState.Master;
 
             //카메라 주시 대상 설정
             CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
-            camera.Target = player;
+            camera.Target = master;
         }
         #endregion
 
