@@ -6,7 +6,7 @@ public class Monster : Creature
 {
     public Rigidbody2D target;
     public Rigidbody2D rigid;
-
+    
     public override ECreatureState CreatureState
     {
         get { return base.CreatureState; }
@@ -47,7 +47,9 @@ public class Monster : Creature
         rigid = GetComponent<Rigidbody2D>();
         SkeletonAnimation skeletonAnim = GetComponent<SkeletonAnimation>();
         skeletonAnim.GetComponent<MeshRenderer>().sortingOrder = SortingLayers.MONSTER;
-
+        Collider.radius = 0.25f;
+        Collider.offset = transform.InverseTransformPoint(transform.position + (Vector3.right * 0.5f + Vector3.up) * ColliderRadius);
+        
         GameObject player = GameObject.Find("@Players");
 
         if (player != null)

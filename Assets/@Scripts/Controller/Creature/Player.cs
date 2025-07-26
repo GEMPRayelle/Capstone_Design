@@ -1,4 +1,5 @@
 using Spine.Unity;
+using System;
 using UnityEngine;
 using static Define;
 
@@ -6,6 +7,7 @@ public class Player : Creature
 {
     Vector2 _moveDir = Vector2.zero;
     public EPlayerState PlayerState; //Master, Servant 상태를 관리
+    private EPlayerState activePlayerState;
     public override bool Init()
     {
         if (base.Init() == false)
@@ -21,6 +23,10 @@ public class Player : Creature
         Managers.Game.OnMoveDirChanged -= HandleOnMoveDirChanged;
         Managers.Game.OnMoveDirChanged += HandleOnMoveDirChanged;
 
+        Managers.Game.OnPlayerStateChanged -= HandleOnPlayerStateChanged;
+        Managers.Game.OnPlayerStateChanged += HandleOnPlayerStateChanged;
+
+
         Collider.isTrigger = true;
         RigidBody.simulated = false;
         PlayerState = EPlayerState.None;
@@ -30,6 +36,8 @@ public class Player : Creature
 
         return true;
     }
+
+    
 
     public override void SetInfo(int templateID)
     {
@@ -41,6 +49,9 @@ public class Player : Creature
 
     private void Update()
     {
+        if (activePlayerState != PlayerState)
+            return;
+
         transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
     }
 
@@ -72,4 +83,20 @@ public class Player : Creature
         //    Pivot.eulerAngles = new Vector3(0,0,angle);
         //}
     }
+
+    private void HandleOnPlayerStateChanged(EPlayerState playerstate)
+    {
+        switch (playerstate)
+        {
+            case EPlayerState.None:
+                break;
+            case EPlayerState.Master:
+                activePlayerState = EPlayerState.Master;
+                break;
+            case EPlayerState.Servant:
+                activePlayerState = EPlayerState.Servant;
+                break;
+        }
+    }
+
 }

@@ -19,13 +19,22 @@ public class DevScene : BaseScene
         #region Player
         {
             //ObjectManager를 통한 플레이어 스폰
-            Player master = Managers.Object.Spawn<Player>(Vector3.zero);
+            Player servant = Managers.Object.Spawn<Player>(Vector3.right);
+            servant.CreatureState = Define.ECreatureState.Idle;
+            servant.PlayerState = Define.EPlayerState.Servant;
+
+            Player master = Managers.Object.Spawn<Player>(Vector3.left);
             master.CreatureState = Define.ECreatureState.Idle;
             master.PlayerState = Define.EPlayerState.Master;
 
-            //카메라 주시 대상 설정
+
+            Managers.Game.PlayerState = Define.EPlayerState.Servant;
+
+            //카메라 설정
             CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
-            camera.Target = master;
+            camera.Servant = servant;
+            camera.Master = master;
+            camera.Target = servant;
         }
         #endregion
 
@@ -42,6 +51,8 @@ public class DevScene : BaseScene
         {
             //조이스틱 UI 생성
             Managers.UI.ShowBaseUI<UI_Joystick>();
+            // Tag 버튼 UI 생성
+            Managers.UI.ShowBaseUI<UI_TagBtn>();
         }
         #endregion
 

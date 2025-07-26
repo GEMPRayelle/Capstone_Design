@@ -81,8 +81,10 @@ public static class Define
         ForceMove,
     }
 
+
     public static class SortingLayers
     {
+        public const int UI_TAGBTN = 600;
         public const int UI_JOYSTICK = 500;
         public const int CREATURE = 300;
         public const int PLAYER = 350;

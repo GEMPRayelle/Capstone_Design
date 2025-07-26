@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: UI
   m_GUID: c9e69764903ecc640a8e1a14816c8ea1
   m_SerializeEntries:
+  - m_GUID: 1934af55aacb0dd4db280c467379c4e1
+    m_Address: UI_TagBtn
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c3452afb55ec05b46a24c346945cf4d1
     m_Address: UI_Joystick
     m_ReadOnly: 0
