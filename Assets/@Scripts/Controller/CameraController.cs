@@ -28,8 +28,8 @@ public class CameraController : InitBase
     }
 
     [Header("Camera Settings")]
-    public float transitionDuration = 1f; // 타겟 변경 시 전환 시간
-    public Ease transitionEase = Ease.OutQuad; // 속도 변화 패턴 정의, 찾아보고 필요한걸로 변경
+    public float transitionDuration = 0.7f; // 타겟 변경 시 전환 시간
+    public Ease transitionEase = Ease.OutCirc; // 속도 변화 패턴 정의, 찾아보고 필요한걸로 변경
 
     private Tween _transitionTween; // 현재 진행 중인 전환 트윈
     private bool _isTransitioning = false; // 전환 중인지 여부
