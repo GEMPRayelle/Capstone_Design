@@ -57,7 +57,8 @@ public class MonsterSpawner : BaseObject
                     break;
 
             }
-            Monster monster = Managers.Object.Spawn<Monster>(target.position + SpawnPostionPadding, 0);
+            //Fix -> Spawn함수의 두번째 매개변수로 templateId를 넘겨야하기 때문에 임시 수정
+            Monster monster = Managers.Object.Spawn<Monster>(target.position + SpawnPostionPadding, MONSTER_GOBLIN_ARCHER_ID);
             
             if (monster != null)
                 _spawnObjects.Add(monster);
