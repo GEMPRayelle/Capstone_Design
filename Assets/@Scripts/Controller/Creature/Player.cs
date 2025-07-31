@@ -37,7 +37,7 @@ public class Player : Creature
         return true;
     }
 
-    
+
 
     public override void SetInfo(int templateID)
     {

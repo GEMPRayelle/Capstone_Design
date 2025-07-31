@@ -29,7 +29,7 @@ public class ObjectManager
     }
     #endregion
 
-    public T Spawn<T>(Vector3 position) where T : BaseObject
+    public T Spawn<T>(Vector3 position, int templateId) where T : BaseObject
     {
         string prefabName = typeof(T).Name;//컴포넌트의 오브젝트 이름을 가져옴
 
@@ -52,11 +52,13 @@ public class ObjectManager
                     obj.transform.parent = PlayerRoot;
                     Player player = creature as Player;
                     players.Add(player);
+                    player.SetInfo(templateId);
                     break;
                 case ECreatureType.Monster:
                     obj.transform.parent = MonsterRoot;
                     Monster monster = creature as Monster;
                     monsters.Add(monster);
+                    monster.SetInfo(templateId);
                     break;
             }
 

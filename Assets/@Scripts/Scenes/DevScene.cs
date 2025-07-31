@@ -19,11 +19,11 @@ public class DevScene : BaseScene
         #region Player
         {
             //ObjectManager를 통한 플레이어 스폰
-            Player servant = Managers.Object.Spawn<Player>(Vector3.right);
+            Player servant = Managers.Object.Spawn<Player>(Vector3.right, 0);
             servant.CreatureState = Define.ECreatureState.Idle;
             servant.PlayerState = Define.EPlayerState.Servant;
 
-            Player master = Managers.Object.Spawn<Player>(Vector3.left);
+            Player master = Managers.Object.Spawn<Player>(Vector3.left, 0);
             master.CreatureState = Define.ECreatureState.Idle;
             master.PlayerState = Define.EPlayerState.Master;
 
@@ -40,7 +40,7 @@ public class DevScene : BaseScene
 
         #region Monster
         {
-            Monster monster = Managers.Object.Spawn<Monster>(Vector3.zero); // 처음 실행할 때 monster spawner 기능 MonsterRoot에 만들기
+            Monster monster = Managers.Object.Spawn<Monster>(Vector3.zero, 0); // 처음 실행할 때 monster spawner 기능 MonsterRoot에 만들기
             Managers.Object.MonsterRoot.gameObject.GetOrAddComponent<MonsterSpawner>();
             Managers.Object.Despawn<Monster>(monster);
 

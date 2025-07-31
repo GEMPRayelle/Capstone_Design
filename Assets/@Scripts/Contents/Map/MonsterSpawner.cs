@@ -57,7 +57,7 @@ public class MonsterSpawner : BaseObject
                     break;
 
             }
-            Monster monster = Managers.Object.Spawn<Monster>(target.position + SpawnPostionPadding);
+            Monster monster = Managers.Object.Spawn<Monster>(target.position + SpawnPostionPadding, 0);
             
             if (monster != null)
                 _spawnObjects.Add(monster);

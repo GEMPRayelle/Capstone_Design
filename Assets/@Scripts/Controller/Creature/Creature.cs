@@ -36,9 +36,10 @@ public class Creature : BaseObject
         return true;
     }
 
+    //001_SkeletonData -> Knight
     public virtual void SetInfo(int templateID)
     {
-
+        SetSpineAnimation("001_SkeletonData", SortingLayers.CREATURE);
     }
 
     protected override void UpdateAnimation()

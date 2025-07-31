@@ -1,6 +1,8 @@
+using Spine;
 using Spine.Unity;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static Define;
 
 //Scene의 배치될 모든 오브젝트들의 조상 클래스
@@ -9,7 +11,7 @@ public class BaseObject : InitBase
     //모든 오브젝트들이 가질 기본적인 컴포넌트
     public EObjectType ObjectType { get; protected set; } = EObjectType.None;
     public CircleCollider2D Collider { get; private set; }
-    public Animation Anim { get; private set; }
+    //public Animation Anim { get; private set; }
     public SkeletonAnimation SkeletonAnim { get; private set; }
     public Rigidbody2D RigidBody { get; protected set; }
 
@@ -40,7 +42,7 @@ public class BaseObject : InitBase
 
         RigidBody = GetComponent<Rigidbody2D>();
         Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
-        Anim = GetComponent<Animation>();
+        //Anim = GetComponent<Animation>();
         SkeletonAnim = GetComponent<SkeletonAnimation>();
 
         return true;
@@ -88,6 +90,27 @@ public class BaseObject : InitBase
     #endregion
 
     #region Spine
+    protected virtual void SetSpineAnimation(string dataLabel, int sortingOrder)
+    {
+        if (SkeletonAnim == null)
+            return;
+
+        SkeletonAnim.skeletonDataAsset = Managers.Resource.Load<SkeletonDataAsset>(dataLabel);
+        SkeletonAnim.Initialize(true);
+
+        // Register AnimEvent
+        if (SkeletonAnim.AnimationState != null)
+        {
+            SkeletonAnim.AnimationState.Event -= OnAnimEventHandler;
+            SkeletonAnim.AnimationState.Event += OnAnimEventHandler;
+        }
+
+        // Spine SkeletonAnimation은 SpriteRenderer 를 사용하지 않고 MeshRenderer을 사용함
+        // 그렇기떄문에 2D Sort Axis가 안먹히게 되는데 SortingGroup을 SpriteRenderer,MeshRenderer을 같이 계산함.
+        SortingGroup sg = Util.GetOrAddComponent<SortingGroup>(gameObject);
+        sg.sortingOrder = sortingOrder;
+    }
+
     public void PlayAnimation(int trackIndex, string AnimName, bool loop)
     {
         if (SkeletonAnim == null)
@@ -110,6 +133,11 @@ public class BaseObject : InitBase
             return;
 
         SkeletonAnim.Skeleton.ScaleX = flag ? -1 : 1;
+    }
+
+    public virtual void OnAnimEventHandler(TrackEntry trackEntry, Spine.Event e)
+    {
+        Debug.Log("OnAnimEventHandler");
     }
     #endregion
 }
