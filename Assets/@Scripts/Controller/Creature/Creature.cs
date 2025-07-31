@@ -11,6 +11,9 @@ public class Creature : BaseObject
     public float Speed { get; protected set; } = 1.0f;
     public ECreatureType CreatureType { get; protected set; } = ECreatureType.None;
     protected ECreatureState _creatureState = ECreatureState.None;
+    protected EPlayerState activePlayerState { get; private set; } = EPlayerState.None;
+
+
 
     public Data.CreatureData CreatureData { get; protected set; }
 
@@ -36,6 +39,9 @@ public class Creature : BaseObject
 
         ObjectType = EObjectType.Creature;
         CreatureState = ECreatureState.Idle;
+
+        Managers.Game.OnPlayerStateChanged -= HandleOnPlayerStateChanged;
+        Managers.Game.OnPlayerStateChanged += HandleOnPlayerStateChanged;
 
         return true;
     }
@@ -90,7 +96,34 @@ public class Creature : BaseObject
         }
     }
 
-  
+    private void HandleOnPlayerStateChanged(EPlayerState playerstate)
+    {
+        switch (playerstate)
+        {
+            case EPlayerState.None:
+                break;
+            case EPlayerState.Master:
+                activePlayerState = EPlayerState.Master;
+                ChangedMaster();
+                break;
+            case EPlayerState.Servant:
+                activePlayerState = EPlayerState.Servant;
+                ChangedServent();
+                break;
+        }
+    }
+
+    protected virtual void ChangedMaster() // 마스터로 변경됬을 때 공통 로직 구현
+    {
+
+    }
+
+    protected virtual void ChangedServent() // 서번트로 변경 됬을 때 공통 로직 구현
+    {
+
+    }
+    
+
 
     #region Battle
     public override void OnDamaged()

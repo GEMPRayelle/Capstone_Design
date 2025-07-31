@@ -37,7 +37,6 @@ public class UI_TagBtn : UI_Base
     public void OnClick(PointerEventData eventData)
     {
         Managers.Game.InverserPlayerState();
-        Debug.Log("Tag Click!");
     }
 
     #endregion

@@ -7,7 +7,6 @@ public class Player : Creature
 {
     Vector2 _moveDir = Vector2.zero;
     public EPlayerState PlayerState; //Master, Servant 상태를 관리
-    private EPlayerState activePlayerState;
     public override bool Init()
     {
         if (base.Init() == false)
@@ -22,10 +21,6 @@ public class Player : Creature
 
         Managers.Game.OnMoveDirChanged -= HandleOnMoveDirChanged;
         Managers.Game.OnMoveDirChanged += HandleOnMoveDirChanged;
-
-        Managers.Game.OnPlayerStateChanged -= HandleOnPlayerStateChanged;
-        Managers.Game.OnPlayerStateChanged += HandleOnPlayerStateChanged;
-
 
         Collider.isTrigger = true;
         RigidBody.simulated = false;
@@ -84,19 +79,38 @@ public class Player : Creature
         //}
     }
 
-    private void HandleOnPlayerStateChanged(EPlayerState playerstate)
+    protected override void ChangedMaster() // 서번트->마스터 변경 시 로직
     {
-        switch (playerstate)
+        base.ChangedMaster(); // Creature가 해야되는 공통 로직 호출
+        if (PlayerState == EPlayerState.Servant)
         {
-            case EPlayerState.None:
-                break;
-            case EPlayerState.Master:
-                activePlayerState = EPlayerState.Master;
-                break;
-            case EPlayerState.Servant:
-                activePlayerState = EPlayerState.Servant;
-                break;
+            Managers.Game.OnJoystickStateChanged -= HandleOnJoystickStateChanged;
+            CreatureState = ECreatureState.Idle;
+        }
+
+        else
+        {
+            Managers.Game.OnJoystickStateChanged -= HandleOnJoystickStateChanged;
+            Managers.Game.OnJoystickStateChanged += HandleOnJoystickStateChanged;
+        }
+
+    }
+
+    protected override void ChangedServent() // 마스터->서번트 변경 시 로직
+    {
+        base.ChangedServent(); // Creature가 해야되는 공통 로직 호출
+        if (PlayerState == EPlayerState.Master)
+        {
+            Managers.Game.OnJoystickStateChanged -= HandleOnJoystickStateChanged;
+            CreatureState = ECreatureState.Idle;
+        }
+
+        else
+        {
+            Managers.Game.OnJoystickStateChanged -= HandleOnJoystickStateChanged;
+            Managers.Game.OnJoystickStateChanged += HandleOnJoystickStateChanged;
         }
     }
+    
 
 }

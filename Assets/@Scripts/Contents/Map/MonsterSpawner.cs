@@ -15,6 +15,9 @@ public class MonsterSpawner : BaseObject
     // 임시 코드
     private float SpawnTime = 1.0f;
     private float _spawnPadding;
+    private EPlayerState activePlayerState = EPlayerState.None;
+
+    private Coroutine _spawnCoroutine;
 
     public override bool Init()
     {
@@ -26,8 +29,12 @@ public class MonsterSpawner : BaseObject
         if (player != null)
             target = player.transform.GetChild(0).GetComponent<Rigidbody2D>();
 
+
+        Managers.Game.OnPlayerStateChanged -= HandleOnPlayerStateChanged;
+        Managers.Game.OnPlayerStateChanged += HandleOnPlayerStateChanged;
+
         _spawnPadding = Camera.main.orthographicSize;
-        StartCoroutine(SpawnObjects());
+        _spawnCoroutine = StartCoroutine(SpawnObjects());
 
         return true;
     }
@@ -67,5 +74,39 @@ public class MonsterSpawner : BaseObject
         }
     }
 
+    private void HandleOnPlayerStateChanged(EPlayerState playerstate)
+    {
+        StopSpawn();
+
+        switch (playerstate)
+        {
+            case EPlayerState.None:
+                break;
+            case EPlayerState.Master:
+                activePlayerState = EPlayerState.Master;
+                break;
+            case EPlayerState.Servant:
+                activePlayerState = EPlayerState.Servant;
+                StartSpawn();
+                break;
+        }
+    }
+
+    private void StopSpawn()
+    {
+        if (_spawnCoroutine != null)
+        {
+            StopCoroutine(_spawnCoroutine);
+            _spawnCoroutine = null;
+        }
+    }
+
+    private void StartSpawn()
+    {
+        if (_spawnCoroutine == null)
+        {
+            _spawnCoroutine = StartCoroutine(SpawnObjects());
+        }
+    }
 
 }

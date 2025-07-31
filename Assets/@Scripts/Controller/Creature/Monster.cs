@@ -49,7 +49,6 @@ public class Monster : Creature
         skeletonAnim.GetComponent<MeshRenderer>().sortingOrder = SortingLayers.MONSTER;
         Collider.radius = 0.25f;
         Collider.offset = transform.InverseTransformPoint(transform.position + (Vector3.right * 0.5f + Vector3.up) * ColliderRadius);
-        
         GameObject player = GameObject.Find("@Players");
 
         if (player != null)
@@ -64,7 +63,9 @@ public class Monster : Creature
     {
         base.SetInfo(templateID);
 
-        CreatureState = ECreatureState.Idle;
+        CreatureState = ECreatureState.Move;
+
+
     }
 
     public void Update()
@@ -74,7 +75,7 @@ public class Monster : Creature
 
     protected override void UpdateIdle()
     {
-        CreatureState = ECreatureState.Move;
+     
     }
 
     protected override void UpdateMove()
@@ -97,6 +98,18 @@ public class Monster : Creature
     protected override void UpdateDead()
     {
 
+    }
+
+    protected override void ChangedMaster() // 서번트->마스터 변경 시 로직
+    {
+        base.ChangedMaster(); // Creature가 해야되는 공통 로직 호출
+        CreatureState = ECreatureState.Idle;
+    }
+
+    protected override void ChangedServent() // 마스터->서번트 변경 시 로직
+    {
+        base.ChangedServent(); // Creature가 해야되는 공통 로직 호출
+        CreatureState = ECreatureState.Move;
     }
 
    
