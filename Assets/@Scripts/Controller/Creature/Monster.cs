@@ -88,8 +88,8 @@ public class Monster : Creature
             LookLeft = true;
         else if (dirVec.x > 0.1)
             LookLeft = false;
-        else
-            ;
+        //else
+        //    ;
 
     }
     protected override void UpdateDead()
