@@ -40,6 +40,19 @@ namespace Data
     {
 
     }
+
+    [Serializable]
+    public class MonsterDataLoader : ILoader<int, MonsterData>
+    {
+        public List<MonsterData> monsters = new List<MonsterData>();
+        public Dictionary<int, MonsterData> MakeDict()
+        {
+            Dictionary<int, MonsterData> dict = new Dictionary<int, MonsterData>();
+            foreach (MonsterData monster in monsters)
+                dict.Add(monster.DataId, monster);
+            return dict;
+        }
+    }
     #endregion
 
     #region HeroData
@@ -60,6 +73,7 @@ namespace Data
                 dict.Add(hero.DataId, hero);
             return dict;
         }
-        #endregion
     }
+    #endregion
+
 }

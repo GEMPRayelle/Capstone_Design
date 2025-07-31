@@ -1,6 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
-
+using static Define;
 public class DevScene : BaseScene
 {
     public override bool Init()
@@ -18,12 +18,17 @@ public class DevScene : BaseScene
 
         #region Player
         {
+            int heroTemplateID = HERO_KNIGHT_ID;
+            //int heroTemplateID = HERO_WIZARD_ID;
+            //int heroTemplateID = HERO_LION_ID;
+            //int heroTemplateID = HERO_VAMPIRE_ID;
+
             //ObjectManager를 통한 플레이어 스폰
-            Player servant = Managers.Object.Spawn<Player>(Vector3.right, 0);
+            Player servant = Managers.Object.Spawn<Player>(Vector3.right, HERO_LION_ID);
             servant.CreatureState = Define.ECreatureState.Idle;
             servant.PlayerState = Define.EPlayerState.Servant;
 
-            Player master = Managers.Object.Spawn<Player>(Vector3.left, 0);
+            Player master = Managers.Object.Spawn<Player>(Vector3.left, heroTemplateID);
             master.CreatureState = Define.ECreatureState.Idle;
             master.PlayerState = Define.EPlayerState.Master;
 
@@ -40,10 +45,10 @@ public class DevScene : BaseScene
 
         #region Monster
         {
-            Monster monster = Managers.Object.Spawn<Monster>(Vector3.zero, 0); // 처음 실행할 때 monster spawner 기능 MonsterRoot에 만들기
+            Monster monster = Managers.Object.Spawn<Monster>(Vector3.zero, MONSTER_GOBLIN_ARCHER_ID); 
+            // 처음 실행할 때 monster spawner 기능 MonsterRoot에 만들기
             Managers.Object.MonsterRoot.gameObject.GetOrAddComponent<MonsterSpawner>();
             Managers.Object.Despawn<Monster>(monster);
-
         }
         #endregion
 

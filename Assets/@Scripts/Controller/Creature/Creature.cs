@@ -1,3 +1,4 @@
+using Data;
 using System;
 using System.Collections;
 using Unity.VisualScripting;
@@ -10,6 +11,9 @@ public class Creature : BaseObject
     public float Speed { get; protected set; } = 1.0f;
     public ECreatureType CreatureType { get; protected set; } = ECreatureType.None;
     protected ECreatureState _creatureState = ECreatureState.None;
+
+    public Data.CreatureData CreatureData { get; protected set; }
+
     public virtual ECreatureState CreatureState
     {
         get { return _creatureState; }
@@ -39,7 +43,27 @@ public class Creature : BaseObject
     //001_SkeletonData -> Knight
     public virtual void SetInfo(int templateID)
     {
-        SetSpineAnimation("001_SkeletonData", SortingLayers.CREATURE);
+        DataTemplateID = templateID;
+
+        //데이터를 긁어오지 못했을경우 예외처리없이 크래시처리
+        if (CreatureType == ECreatureType.Player)
+            CreatureData = Managers.Data.HeroDic[templateID];
+        else
+            CreatureData = Managers.Data.MonsterDic[templateID];
+        
+        //Name
+        gameObject.name = $"{CreatureData.DataId}_{CreatureData.DescriptionTextID}";
+
+        //Collider
+        Collider.offset = new Vector2(CreatureData.ColliderOffsetX, CreatureData.ColliderOffstY);
+        Collider.radius = CreatureData.ColliderRadius;
+
+        //Spine
+        SetSpineAnimation(CreatureData.SkeletonDataID, SortingLayers.CREATURE);
+
+        //State
+        CreatureState = ECreatureState.Idle;
+
     }
 
     protected override void UpdateAnimation()

@@ -63,6 +63,8 @@ public class Monster : Creature
     public override void SetInfo(int templateID)
     {
         base.SetInfo(templateID);
+
+        CreatureState = ECreatureState.Idle;
     }
 
     public void Update()

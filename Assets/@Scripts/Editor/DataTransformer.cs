@@ -17,6 +17,7 @@ public class DataTransformer : EditorWindow
     public static void ParseExcelDataToJson()
     {
         ParseExcelDataToJson<HeroDataLoader, HeroData>("Hero");
+        ParseExcelDataToJson<MonsterDataLoader, MonsterData>("Monster");
 
         Debug.Log("DataTransformer Completed");
     }
