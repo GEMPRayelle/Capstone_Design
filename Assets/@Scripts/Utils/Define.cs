@@ -103,6 +103,7 @@ public static class Define
         public const string IDLE = "idle";
         public const string ATTACK_A = "attack_a";
         public const string ATTACK_B = "attack_b";
+        public const string SKILL_A = "skill_a";
         public const string MOVE = "move";
         public const string DEAD = "dead";
     }
