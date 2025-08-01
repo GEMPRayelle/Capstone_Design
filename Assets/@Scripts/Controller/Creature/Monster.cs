@@ -12,6 +12,7 @@ public class Monster : Creature
         get { return base.CreatureState; }
         set
         {
+
             if (_creatureState != value)
             {
                 base.CreatureState = value;

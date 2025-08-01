@@ -7,6 +7,8 @@ public class Player : Creature
 {
     Vector2 _moveDir = Vector2.zero;
     public EPlayerState PlayerState; //Master, Servant 상태를 관리
+    private LayerMask MonsterLayer = 1 << 7; // 탐지 할 monster layer
+    private float DeteactionRadius = 5.0f; // 탐지 범위
     public override bool Init()
     {
         if (base.Init() == false)
@@ -29,10 +31,10 @@ public class Player : Creature
         SkeletonAnimation skeletonAnim = GetComponent<SkeletonAnimation>();
         skeletonAnim.GetComponent<MeshRenderer>().sortingOrder = SortingLayers.PLAYER;
 
+        StartCoroutine(CoUpdateAI());
+
         return true;
     }
-
-
 
     public override void SetInfo(int templateID)
     {
@@ -42,16 +44,123 @@ public class Player : Creature
         CreatureState = ECreatureState.Idle;
     }
 
+    public override ECreatureState CreatureState
+    {
+        get { return base.CreatureState; }
+        set
+        {
+            if (_creatureState != value)
+            {
+                base.CreatureState = value;
+                switch (value)
+                {
+                    case ECreatureState.Idle:
+                        UpdateAITick = 1.0f;
+                        break;
+                    case ECreatureState.Attack:
+                        UpdateAITick = 1.0f;
+                        break;
+                    case ECreatureState.Move:
+                        UpdateAITick = 0.2f;
+                        break;
+                    case ECreatureState.Dead:
+                        UpdateAITick = 1.0f;
+                        break;
+
+                }
+            }
+        }
+
+    }
+
+    protected override void UpdateIdle()
+    {
+        CheckEnemy(); // Idle -> attack 체크
+    }
+
+    protected override void UpdateMove()
+    {
+        CheckEnemy(); // move -> attack 체크
+    }
+
+    protected override void UpdateAttack()
+    {
+        CheckEnemy(); // attack상태에서 적이 근처에 계속 있다면 유지
+    }
+
+    private void CheckEnemy() // 근처에 적이 있다면 Attack으로 바꿔주는 함수
+    {
+        if (PlayerState == EPlayerState.Master) // 마스터는 적 체크 필요 x
+            return;
+
+        if (activePlayerState == EPlayerState.Master) // 태그 눌러서 현재 활성화된게 마스터면
+            return;                                   // 서번트여도 체크 필요 X
+
+        if (DetectMonster() == true) // 실제 근처 적 체크 함수
+        {
+            // 적 발견 시 공격 상태로 전환
+            CreatureState = ECreatureState.Attack;
+            PerformAttack();
+            
+        }
+        else // 근처에 적이 없다면
+        {
+            disappearMonster(); 
+        }
+    }
+
+    // 근처에 몬스터 있다면 true 아니면 false 리턴
+    private bool DetectMonster()
+    {
+        Collider2D monster = Physics2D.OverlapCircle(transform.position, DeteactionRadius, MonsterLayer);
+
+        if (monster != null)
+            return true;
+
+        return false;
+
+    }
+
+    // 근처 몬스터 없을 때 실행되는 함수
+    private void disappearMonster()
+    {
+        // 이동 입력에 따라 state를 idle이나 move로 변경
+        if (_moveDir == Vector2.zero)
+        {
+            CreatureState = ECreatureState.Idle;
+        }
+        else
+        {
+            CreatureState = ECreatureState.Move;
+        }
+    }
+
+    // 공격 로직?
+    private void PerformAttack()
+    {
+        Debug.Log("플레이어가 적을 공격 중...");
+    }
+
+    
+
     private void Update()
     {
-        if (activePlayerState != PlayerState)
+        if (activePlayerState != PlayerState) // 현재 active된 PlayerState와 다르면 무시
+        {
             return;
+        }
 
         transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
     }
 
     private void HandleOnJoystickStateChanged(EJoystickState joystickState)
     {
+        if (CreatureState == ECreatureState.Attack) // 공격중일 땐 move로 변경 x
+            return;
+
+        if (activePlayerState != PlayerState) // 현재 활성화된 PlayerState랑 다르다면 무시
+            return;
+
         switch (joystickState)
         {
             case EJoystickState.PointerDown:
@@ -69,6 +178,9 @@ public class Player : Creature
 
     private void HandleOnMoveDirChanged(Vector2 dir)
     {
+        if (activePlayerState != PlayerState) // 현재 활성화된 PlayerState랑 다르다면 무시
+            return;
+
         _moveDir = dir;
         // Debug.Log(dir);
 
@@ -84,14 +196,12 @@ public class Player : Creature
         base.ChangedMaster(); // Creature가 해야되는 공통 로직 호출
         if (PlayerState == EPlayerState.Servant)
         {
-            Managers.Game.OnJoystickStateChanged -= HandleOnJoystickStateChanged;
             CreatureState = ECreatureState.Idle;
         }
 
         else
         {
-            Managers.Game.OnJoystickStateChanged -= HandleOnJoystickStateChanged;
-            Managers.Game.OnJoystickStateChanged += HandleOnJoystickStateChanged;
+
         }
 
     }
@@ -101,16 +211,13 @@ public class Player : Creature
         base.ChangedServent(); // Creature가 해야되는 공통 로직 호출
         if (PlayerState == EPlayerState.Master)
         {
-            Managers.Game.OnJoystickStateChanged -= HandleOnJoystickStateChanged;
             CreatureState = ECreatureState.Idle;
         }
 
         else
         {
-            Managers.Game.OnJoystickStateChanged -= HandleOnJoystickStateChanged;
-            Managers.Game.OnJoystickStateChanged += HandleOnJoystickStateChanged;
+
         }
     }
-    
 
 }

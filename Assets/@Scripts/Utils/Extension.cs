@@ -72,4 +72,20 @@ public static class Extension
             (list[k], list[n]) = (list[n], list[k]); //swap
         }
     }
+
+    public static void MakeMask(this ref LayerMask mask, List<Define.ELayer> list)
+    {
+        foreach (Define.ELayer layer in list)
+            mask |= (1 << (int)layer);
+    }
+
+    public static void AddLayer(this ref LayerMask mask, Define.ELayer layer)
+    {
+        mask |= (1 << (int)layer);
+    }
+
+    public static void RemoveLayer(this ref LayerMask mask, Define.ELayer layer)
+    {
+        mask &= ~(1 << (int)layer);
+    }
 }

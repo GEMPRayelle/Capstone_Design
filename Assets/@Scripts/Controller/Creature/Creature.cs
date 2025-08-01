@@ -11,7 +11,7 @@ public class Creature : BaseObject
     public float Speed { get; protected set; } = 1.0f;
     public ECreatureType CreatureType { get; protected set; } = ECreatureType.None;
     protected ECreatureState _creatureState = ECreatureState.None;
-    protected EPlayerState activePlayerState { get; private set; } = EPlayerState.None;
+    protected EPlayerState activePlayerState { get; private set; } = EPlayerState.None; // 현재 활성화된 플레이어 스테이트(마스터, 서번트)에 대한 정보. 가져오기만 하면 됨
 
 
 
@@ -96,7 +96,8 @@ public class Creature : BaseObject
         }
     }
 
-    private void HandleOnPlayerStateChanged(EPlayerState playerstate)
+    // PlayerState 변환 시 작동하는 함수
+    private void HandleOnPlayerStateChanged(EPlayerState playerstate) 
     {
         switch (playerstate)
         {
@@ -122,7 +123,8 @@ public class Creature : BaseObject
     {
 
     }
-    
+
+
 
 
     #region Battle

@@ -81,6 +81,13 @@ public static class Define
         ForceMove,
     }
 
+    public enum ELayer
+    {
+        UI = 5,
+        Player = 6,
+        Monster = 7,
+    }
+
 
     public static class SortingLayers
     {
