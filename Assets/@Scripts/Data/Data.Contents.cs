@@ -76,4 +76,75 @@ namespace Data
     }
     #endregion
 
+    #region SkillData
+    [Serializable]
+    public class SkillData
+    {
+        public int DataId;
+        public string Name;
+        public string ClassName;
+        public string ComponentName;
+        public string Description;
+        public int ProjectileId;
+        public string PrefabLabel;
+        public string IconLabel;
+        public string AnimName;
+        public float CoolTime;
+        public float DamageMultiplier;
+        public float Duration;
+        public float NumProjectiles;
+        public string CastingSound;
+        public float AngleBetweenProj;
+        public float SkillRange;
+        public float RotateSpeed;
+        public float ScaleMultiplier;
+        public float AngleRange;
+    }
+
+    [Serializable]
+    public class SkillDataLoader : ILoader<int, SkillData>
+    {
+        public List<SkillData> skills = new List<SkillData>();
+
+        public Dictionary<int, SkillData> MakeDict()
+        {
+            Dictionary<int, SkillData> dict = new Dictionary<int, SkillData>();
+            foreach (SkillData skill in skills)
+                dict.Add(skill.DataId, skill);
+            return dict;
+        }
+    }
+    #endregion
+
+    #region ProjectileData
+    [Serializable]
+    public class ProjectileData
+    {
+        public int DataId;
+        public string Name;
+        public string ComponentName;
+        public string ProjectileSpriteName;
+        public string PrefabLabel;
+        public float Duration;
+        public float NumBounce;
+        public float NumPenerations;
+        public float HitSound;
+        public float ProjRange;
+        public float ProjSpeed;
+    }
+
+    [Serializable]
+    public class ProjectileDataLoader : ILoader<int, ProjectileData>
+    {
+        public List<ProjectileData> projectiles = new List<ProjectileData>();
+
+        public Dictionary<int, ProjectileData> MakeDict()
+        {
+            Dictionary<int, ProjectileData> dict = new Dictionary<int, ProjectileData>();
+            foreach (ProjectileData projectile in projectiles)
+                dict.Add(projectile.DataId, projectile);
+            return dict;
+        }
+    }
+    #endregion
 }
