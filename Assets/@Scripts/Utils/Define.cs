@@ -83,9 +83,35 @@ public static class Define
 
     public enum ELayer
     {
+        Default = 0,
+        TransparentFX = 1,
+        IgnoreRaycast = 2,
+        Dummy1 = 3,
+        Water = 4,
         UI = 5,
         Player = 6,
         Monster = 7,
+        Env = 8,
+        Obstacle = 9,
+        Projectile = 10,
+    }
+
+    public enum ESkillSlot
+    {
+        Default,
+        Env,
+        A,
+        B
+    }
+
+    public enum EEffectSize
+    {
+        CircleSmall,
+        CircleNormal,
+        CircleBig,
+        ConeSmall,
+        ConeNormal,
+        ConeBig,
     }
 
 
@@ -95,17 +121,24 @@ public static class Define
         public const int UI_JOYSTICK = 500;
         public const int CREATURE = 300;
         public const int PLAYER = 350;
+        public const int PROJECTILE = 310;
         public const int MONSTER = 300;
     }
 
     public static class AnimName
     {
         public const string IDLE = "idle";
-        public const string ATTACK_A = "attack_a";
-        public const string ATTACK_B = "attack_b";
-        public const string SKILL_A = "skill_a";
         public const string MOVE = "move";
         public const string DEAD = "dead";
+        public const string ATTACK_A = "attack";
+        public const string ATTACK_B = "attack";
+        public const string SKILL_A = "skill";
+        public const string SKILL_B = "skill";
+        public const string DAMAGED = "hit";
+        public const string EVENT_ATTACK_A = "event_attack";
+        public const string EVENT_ATTACK_B = "event_attack";
+        public const string EVENT_SKILL_A = "event_attack";
+        public const string EVENT_SKILL_B = "event_attack";
     }
 
 
