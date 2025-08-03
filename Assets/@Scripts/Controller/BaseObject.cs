@@ -3,6 +3,7 @@ using Spine.Unity;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 using static Define;
 
 //Scene의 배치될 모든 오브젝트들의 조상 클래스
@@ -82,11 +83,21 @@ public class BaseObject : InitBase
         
         return position;
     }
+
+    //타겟 위치에 따라 방향 전환을 시키도록하는 함수
+    public void LookAtTarget(BaseObject target)
+    {
+        Vector2 dir = target.transform.position - transform.position;
+        if (dir.x < 0)
+            LookLeft = true;
+        else
+            LookLeft = false;
+    }
     #endregion
 
     #region Virtual Func
-    public virtual void OnDamaged() { }
-    public virtual void OnDead() { }
+    public virtual void OnDamaged(BaseObject attacker, SkillBase skill) { }
+    public virtual void OnDead(BaseObject attacker, SkillBase skill) { }
     #endregion
 
     #region Spine
@@ -111,12 +122,19 @@ public class BaseObject : InitBase
         sg.sortingOrder = sortingOrder;
     }
 
-    public void PlayAnimation(int trackIndex, string AnimName, bool loop)
+    public TrackEntry PlayAnimation(int trackIndex, string animName, bool loop)
     {
         if (SkeletonAnim == null)
-            return;
+            return null;
 
-        SkeletonAnim.AnimationState.SetAnimation(trackIndex, AnimName, loop);
+        TrackEntry entry = SkeletonAnim.AnimationState.SetAnimation(trackIndex, animName, loop);
+
+        if (animName == AnimName.DEAD)
+            entry.MixDuration = 0;
+        else
+            entry.MixDuration = 0.2f;
+
+        return entry;
     }
 
     public void AddAnimation(int trackIndex, string AnimName, bool loop, float delay)

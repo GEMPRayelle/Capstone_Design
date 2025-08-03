@@ -65,8 +65,6 @@ public class Monster : Creature
         base.SetInfo(templateID);
 
         CreatureState = ECreatureState.Move;
-
-
     }
 
     public void Update()
@@ -74,9 +72,10 @@ public class Monster : Creature
         
     }
 
+    #region AI
     protected override void UpdateIdle()
     {
-     
+        
     }
 
     protected override void UpdateMove()
@@ -96,6 +95,19 @@ public class Monster : Creature
         //    ;
 
     }
+
+    protected override void UpdateSkill()
+    {
+        base.UpdateSkill();
+
+        if (Target.IsValid() == false)
+        {
+            Target = null;
+            CreatureState = ECreatureState.Move;
+            return;
+        }
+    }
+
     protected override void UpdateDead()
     {
 
@@ -112,8 +124,6 @@ public class Monster : Creature
         base.ChangedServent(); // Creature가 해야되는 공통 로직 호출
         CreatureState = ECreatureState.Move;
     }
-
-   
-
+    #endregion
 
 }

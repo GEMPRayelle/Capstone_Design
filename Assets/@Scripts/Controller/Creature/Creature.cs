@@ -1,4 +1,5 @@
 using Data;
+using Spine;
 using System;
 using System.Collections;
 using Unity.VisualScripting;
@@ -8,15 +9,15 @@ using static Define;
 
 public class Creature : BaseObject
 {
+    public BaseObject Target { get; protected set; } //찾아가려는 타겟
+    public SkillComponent Skills { get; protected set; } //현재 가지고있는 스킬
     public float Speed { get; protected set; } = 1.0f;
     public ECreatureType CreatureType { get; protected set; } = ECreatureType.None;
-    protected ECreatureState _creatureState = ECreatureState.None;
+    public Data.CreatureData CreatureData { get; private set; }
+
     protected EPlayerState activePlayerState { get; private set; } = EPlayerState.None; // 현재 활성화된 플레이어 스테이트(마스터, 서번트)에 대한 정보. 가져오기만 하면 됨
 
-
-
-    public Data.CreatureData CreatureData { get; protected set; }
-
+    protected ECreatureState _creatureState = ECreatureState.None;
     public virtual ECreatureState CreatureState
     {
         get { return _creatureState; }
@@ -61,11 +62,15 @@ public class Creature : BaseObject
         gameObject.name = $"{CreatureData.DataId}_{CreatureData.DescriptionTextID}";
 
         //Collider
-        Collider.offset = new Vector2(CreatureData.ColliderOffsetX, CreatureData.ColliderOffstY);
+        Collider.offset = new Vector2(CreatureData.ColliderOffsetX, CreatureData.ColliderOffsetY);
         Collider.radius = CreatureData.ColliderRadius;
 
         //Spine
         SetSpineAnimation(CreatureData.SkeletonDataID, SortingLayers.CREATURE);
+
+        //Skills
+        Skills = gameObject.GetOrAddComponent<SkillComponent>();
+        Skills.SetInfo(this, CreatureData);
 
         //State
         CreatureState = ECreatureState.Idle;
@@ -125,13 +130,33 @@ public class Creature : BaseObject
 
     }
 
-
-
-
     #region Battle
-    public override void OnDamaged()
+    public override void OnDamaged(BaseObject attacker, SkillBase skill)
     {
-        base.OnDamaged();
+        base.OnDamaged(attacker, skill);
+
+        if (attacker.IsValid() == false)
+            return;
+
+        Creature creature = attacker as Creature;
+        if (creature == null) 
+            return;
+
+        //TODO 데미지 처리 및 HP작업
+
+        //float finalDamage = creature.Atk; //TODO
+        //Hp = 
+
+        //if (Hp <= 0)
+        //{
+        //    OnDead(attacker, skill);
+        //    CreatureState = ECreatureState.Dead;
+        //}
+    }
+
+    public override void OnDead(BaseObject attacker, SkillBase skill)
+    {
+        base.OnDead(attacker, skill);
     }
     #endregion
 
@@ -174,8 +199,46 @@ public class Creature : BaseObject
 
     protected virtual void UpdateIdle() { }
     protected virtual void UpdateMove() { }
-    protected virtual void UpdateAttack() { }
-    protected virtual void UpdateSkill() { }
+    protected virtual void UpdateAttack() 
+    {
+        //TODO
+        //SkillBase에서 작업한 NormalAttack을
+        //UpdateAttack에서 호출할 수 있도록 수정
+    }
+
+    protected virtual void UpdateSkill() 
+    {
+        if (_coWait != null)
+            return;
+
+        //TODO -> 타입검사에 자기 자신을 못때리도록 수정해야함
+        if (Target.IsValid() == false || Target.ObjectType == EObjectType.None)
+        {
+            CreatureState = ECreatureState.Idle;
+            return;
+        }
+
+        //예외처리
+        //float distToTargetSqr = DistToTargetSqr;
+        //float attackDistanceSqr = AttackDistance * AttackDistance;
+        //if (distToTargetSqr > attackDistanceSqr)
+        //{
+        //    CreatureState = ECreatureState.Idle;
+        //    return;
+        //}
+
+        //현재 사용할 수 있는 스킬을 사용
+        Skills.CurrentSkill.DoSkill();
+
+        //스킬을 쓰는 상대를 보도록함
+        LookAtTarget(Target);
+
+        //딜레이
+        var trackEntry = SkeletonAnim.state.GetCurrent(0);
+        float delay = trackEntry.Animation.Duration;
+
+        StartWait(delay);
+    }
     protected virtual void UpdateOnDamaged() { }
     protected virtual void UpdateDead() { }
     #endregion
