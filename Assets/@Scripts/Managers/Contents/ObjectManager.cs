@@ -10,10 +10,12 @@ public class ObjectManager
 
     public HashSet<Player> players { get; } = new HashSet<Player>();
     public HashSet<Monster> monsters { get; } = new HashSet<Monster>();
+    public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
 
     #region Roots
     public Transform PlayerRoot { get { return GetRootTransform("@Players"); } }
     public Transform MonsterRoot { get { return GetRootTransform("@Monsters"); } }
+    public Transform ProjectileRoot { get { return GetRootTransform("@Projectiles"); } }
 
     //각각의 오브젝트들을 모을 Root 오브젝트를 생성
     public Transform GetRootTransform(string name)
@@ -66,7 +68,11 @@ public class ObjectManager
         }
         else if (obj.ObjectType == EObjectType.Projectile)
         {
-            //TODO
+            obj.transform.parent = ProjectileRoot;
+            Projectile projectile = go.GetComponent<Projectile>();
+            Projectiles.Add(projectile);
+
+            projectile.SetInfo(templateId);
         }
         else if(obj.ObjectType == EObjectType.Env)
         {
