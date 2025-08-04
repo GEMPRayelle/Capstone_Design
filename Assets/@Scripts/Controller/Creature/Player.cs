@@ -80,6 +80,17 @@ public class Player : Creature
     {
         base.UpdateIdle();
         CheckEnemy(); // Idle -> Attack 체크
+
+        //TODO 몬스터 탐색 및 공격하는 코드 구현
+        //범위 기반으로 몬스터를 찾아서
+        //Creature creature = CheckEnemy(PLAYER_SEARCH_DISTANCE, Managers.Object.monsters) as creature;
+        //if (creature != null)
+        //{
+        //    Target = creature;
+        //    CreatureState = ECreatureState.Move;
+        //    //TODO 상태지정
+        //    return;
+        //}
     }
 
     protected override void UpdateMove()
@@ -155,7 +166,7 @@ public class Player : Creature
         }
 
         transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
-        Debug.Log(CreatureState);
+        //Debug.Log(CreatureState);
     }
 
     private void HandleOnJoystickStateChanged(EJoystickState joystickState)

@@ -40,7 +40,7 @@ MonoBehaviour:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 98746b0d00a325c4ca55d94a17e00adc
-    m_Address: wizard_shot
+    m_Address: wizard_shot.sprite
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad

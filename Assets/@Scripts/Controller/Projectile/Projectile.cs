@@ -27,6 +27,7 @@ public class Projectile : BaseObject
 
     public void SetInfo(int templateId)
     {
+        ProjectileData = Managers.Data.ProjectileDic[templateId];
         _spriteRenderer.sprite = Managers.Resource.Load<Sprite>(ProjectileData.ProjectileSpriteName);
 
         //Debugging

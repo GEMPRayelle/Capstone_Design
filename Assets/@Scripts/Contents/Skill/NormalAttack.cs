@@ -32,9 +32,10 @@ public class NormalAttack : SkillBase
 
     protected override void OnAttackEvent()
     {
+        //TODO -> 아래 코드 정상활처리
         //만약 상대가 죽었으면 스킵
-        if (Owner.Target.IsValid() == false)
-            return;
+        //if (Owner.Target.IsValid() == false)
+        //    return;
 
         //각 캐릭별 Data를 찾아서 Projectile의 데이터가 없다면
         if (SkillData.ProjectileId == 0)

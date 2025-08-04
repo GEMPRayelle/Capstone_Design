@@ -143,6 +143,8 @@ public static class Define
 
 
     //Hard Coding
+    public const float PLAYER_SEARCH_DISTANCE = 5.0f;
+
     public const int HERO_WIZARD_ID = 201000;
     public const int HERO_KNIGHT_ID = 201001;
     public const int HERO_LION_ID = 201003;

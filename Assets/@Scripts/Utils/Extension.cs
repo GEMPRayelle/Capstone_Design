@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using UnityEditor;
 
 public static class Extension
 {
@@ -51,8 +52,9 @@ public static class Extension
         if (bo == null || bo.isActiveAndEnabled == false)
             return false;
 
-        //TODO : Creature 객체를 생성하고 BaseObject를 다운캐스팅 한 다음
-        //creatureState가 dead상태가 아닌지 리턴하는 코드 추가
+        Creature creature = bo as Creature;
+        if (creature != null) //Creature가 살아있다면
+            return creature.CreatureState != Define.ECreatureState.Dead;
 
         return true;
     }

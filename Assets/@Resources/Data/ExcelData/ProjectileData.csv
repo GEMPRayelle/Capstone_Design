@@ -1,4 +1,4 @@
-﻿DataId,Name,ClassName,ComponentName,ProjectileSkeletonId,PrefabLabel,Duration,HitSound,ProjRange,ProjSpeed
+﻿DataId,Name,ClassName,ComponentName,ProjectileSpriteName,PrefabLabel,Duration,HitSound,ProjRange,ProjSpeed
 70001,위자드 총알,Projectile,StraightMotion,wizard_shot.sprite,ProjectilePrefab,,,,10
 70002,고블린 화살,Projectile,ParabolaMotion,goblin_shot.sprite,ProjectilePrefab,,,,5
 70003,맹독확산1,PoisonSpreadProj,ParabolaMotion,wizard_shot.sprite,ProjectilePrefab,,,,5
