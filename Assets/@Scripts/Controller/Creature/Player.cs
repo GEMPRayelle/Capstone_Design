@@ -112,8 +112,8 @@ public class Player : Creature
         {
             // 적 발견 시 공격 상태로 전환
             CreatureState = ECreatureState.Attack;
-            PerformAttack();
-            
+            Debug.Log("플레이어가 적을 공격 중...");
+
         }
         else // 근처에 적이 없다면
         {
@@ -146,14 +146,6 @@ public class Player : Creature
             CreatureState = ECreatureState.Move;
         }
     }
-
-    // 공격 로직?
-    private void PerformAttack()
-    {
-        Debug.Log("플레이어가 적을 공격 중...");
-    }
-
-    
 
     private void Update()
     {
