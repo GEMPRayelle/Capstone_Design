@@ -78,17 +78,26 @@ public class Player : Creature
 
     protected override void UpdateIdle()
     {
-        CheckEnemy(); // Idle -> Skill 체크
+        base.UpdateIdle();
+        CheckEnemy(); // Idle -> Attack 체크
     }
 
     protected override void UpdateMove()
     {
-        CheckEnemy(); // move -> Skill 체크
+        base.UpdateMove();
+        CheckEnemy(); // move -> Attack 체크
     }
 
     protected override void UpdateSkill()
     {
+        base.UpdateSkill();
         CheckEnemy(); // Skill상태에서 적이 근처에 계속 있다면 유지
+    }
+
+    protected override void UpdateAttack()
+    {
+        base.UpdateAttack();
+        CheckEnemy();
     }
 
     private void CheckEnemy() // 근처에 적이 있다면 Attack으로 바꿔주는 함수
@@ -102,7 +111,7 @@ public class Player : Creature
         if (DetectMonster() == true) // 실제 근처 적 체크 함수
         {
             // 적 발견 시 공격 상태로 전환
-            CreatureState = ECreatureState.Skill;
+            CreatureState = ECreatureState.Attack;
             PerformAttack();
             
         }
@@ -159,7 +168,7 @@ public class Player : Creature
 
     private void HandleOnJoystickStateChanged(EJoystickState joystickState)
     {
-        if (CreatureState == ECreatureState.Skill) // 공격중일 땐 move로 변경 x
+        if (CreatureState == ECreatureState.Attack) // 공격중일 땐 move로 변경 x
             return;
 
         if (activePlayerState != PlayerState) // 현재 활성화된 PlayerState랑 다르다면 무시
