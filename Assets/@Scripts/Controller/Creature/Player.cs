@@ -1,5 +1,7 @@
+using Data;
 using Spine.Unity;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using static Define;
 
@@ -8,7 +10,7 @@ public class Player : Creature
     Vector2 _moveDir = Vector2.zero;
     public EPlayerState PlayerState; //Master, Servant 상태를 관리
     private LayerMask MonsterLayer = 1 << 7; // 탐지 할 monster layer
-    private float DeteactionRadius = 5.0f; // 탐지 범위
+    private float nearestDistanceSqr = float.MaxValue; // Distance 검사할때 사용하는 minDistance 값
     public override bool Init()
     {
         if (base.Init() == false)
@@ -79,39 +81,28 @@ public class Player : Creature
     protected override void UpdateIdle()
     {
         base.UpdateIdle();
-        CheckEnemy(); // Idle -> Attack 체크
-
-        //TODO 몬스터 탐색 및 공격하는 코드 구현
-        //범위 기반으로 몬스터를 찾아서
-        //Creature creature = CheckEnemy(PLAYER_SEARCH_DISTANCE, Managers.Object.monsters) as creature;
-        //if (creature != null)
-        //{
-        //    Target = creature;
-        //    CreatureState = ECreatureState.Move;
-        //    //TODO 상태지정
-        //    return;
-        //}
+        CheckEnemy(PLAYER_SEARCH_DISTANCE); // Idle -> Attack 체크
     }
 
     protected override void UpdateMove()
     {
         base.UpdateMove();
-        CheckEnemy(); // move -> Attack 체크
+        CheckEnemy(PLAYER_SEARCH_DISTANCE); // move -> Attack 체크
     }
 
     protected override void UpdateSkill()
     {
         base.UpdateSkill();
-        CheckEnemy(); // Skill상태에서 적이 근처에 계속 있다면 유지
+        CheckEnemy(PLAYER_SEARCH_DISTANCE); // Skill상태에서 적이 근처에 계속 있다면 유지
     }
 
     protected override void UpdateAttack()
     {
         base.UpdateAttack();
-        CheckEnemy();
+        CheckEnemy(PLAYER_SEARCH_DISTANCE);
     }
 
-    private void CheckEnemy() // 근처에 적이 있다면 Attack으로 바꿔주는 함수
+    private void CheckEnemy(float detectionRadius) // 근처에 적이 있다면 Attack으로 바꿔주는 함수
     {
         if (PlayerState == EPlayerState.Master) // 마스터는 적 체크 필요 x
             return;
@@ -119,11 +110,10 @@ public class Player : Creature
         if (activePlayerState == EPlayerState.Master) // 태그 눌러서 현재 활성화된게 마스터면
             return;                                   // 서번트여도 체크 필요 X
 
-        if (DetectMonster() == true) // 실제 근처 적 체크 함수
+        if (DetectMonster(detectionRadius, Managers.Object.monsters) == true) // 실제 근처 적 체크 함수
         {
             // 적 발견 시 공격 상태로 전환
             CreatureState = ECreatureState.Attack;
-            Debug.Log("플레이어가 적을 공격 중...");
 
         }
         else // 근처에 적이 없다면
@@ -133,15 +123,51 @@ public class Player : Creature
     }
 
     // 근처에 몬스터 있다면 true 아니면 false 리턴
-    private bool DetectMonster()
+    private bool DetectMonster(float detectionRadius, HashSet<Monster> monsters)
     {
-        Collider2D monster = Physics2D.OverlapCircle(transform.position, DeteactionRadius, MonsterLayer);
 
-        if (monster != null)
+        // 범위 기반 탐색
+        //Collider2D monster = Physics2D.OverlapCircle(transform.position, detectionRadius, MonsterLayer);
+
+        //if (monster != null)
+        //{
+        //    return true;
+        //}
+
+        //return false;
+
+        // hashSet에서 가장 가까운 적 탐색
+        if (monsters.Count == 0) 
+            return false;
+
+        nearestDistanceSqr = float.MaxValue;
+        Creature target = null;
+
+        foreach (Monster monster in monsters) // 몬스터마다
+        {
+            float distanceSqr = (monster.transform.position - transform.position).sqrMagnitude; // 거리 계산
+            
+            if (distanceSqr >= detectionRadius) // 거리가 일정 범위 이상이면 무시
+                continue;
+            
+            if (distanceSqr < nearestDistanceSqr)
+            {
+                nearestDistanceSqr = distanceSqr;
+                target = monster;
+            }
+        }
+
+        if (target == null)
+        {
+            return false;
+        }
+
+        else
+        {
+            Target = target;
             return true;
-
-        return false;
-
+        }
+        
     }
 
     // 근처 몬스터 없을 때 실행되는 함수
