@@ -39,7 +39,7 @@ public class MonsterSpawner : BaseObject
         return true;
     }
 
-    // 나중에 플레이어 킬이나, 실행시간, 플레이어 레벨? 그런거에 따라 다른 몬스터 스폰되도록 변경
+    // TODO 나중에 코루틴 멈추고 다시 멈춘 부분에서 실행되게 만들기
     private IEnumerator SpawnObjects()
     {
         // 임시 코드
