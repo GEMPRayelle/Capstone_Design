@@ -108,7 +108,6 @@ public abstract class SkillBase : InitBase
     protected virtual void MeeleeAttack(Creature owner, Vector3 spawnPos)
     {
         // 현재 데이터 시트가 없어 templateID = 0
-        Debug.Log("Meelee Attack!");
         AttackEffect skilleffect = Managers.Object.Spawn<AttackEffect>(spawnPos, 0);
         LayerMask excludeMask = 0;
         excludeMask.AddLayer(Define.ELayer.Default);
