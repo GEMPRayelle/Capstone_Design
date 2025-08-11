@@ -105,6 +105,21 @@ public abstract class SkillBase : InitBase
         projectile.SetSpawnInfo(Owner, this, excludeMask);
     }
 
+    protected virtual void MeeleeAttack(Creature owner, Vector3 spawnPos)
+    {
+        // 현재 데이터 시트가 없어 templateID = 0
+        Debug.Log("Meelee Attack!");
+        AttackEffect skilleffect = Managers.Object.Spawn<AttackEffect>(spawnPos, 0);
+        LayerMask excludeMask = 0;
+        excludeMask.AddLayer(Define.ELayer.Default);
+        excludeMask.AddLayer(Define.ELayer.Projectile);
+        excludeMask.AddLayer(Define.ELayer.Env);
+        excludeMask.AddLayer(Define.ELayer.Obstacle);
+        excludeMask.AddLayer(Define.ELayer.Player);
+
+        skilleffect.SetSpawnInfo(Owner, this, excludeMask);
+    }
+
     //애니메이션이 끝났을때 상태를 바꾸는 방식이 아닌
     //항상 상시로 현재의 CreatureState를 Skill상태로 판별하고 거기서 스킬을 수행
     private void OnOwnerAnimEventHandler(TrackEntry trackEntry, Event e)

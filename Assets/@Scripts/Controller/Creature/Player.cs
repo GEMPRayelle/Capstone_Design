@@ -191,7 +191,15 @@ public class Player : Creature
             return;
         }
 
-        transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
+        if (CreatureState == ECreatureState.Move)
+        {
+            transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
+        }
+
+        else if (CreatureState == ECreatureState.Attack)
+        {
+            transform.Translate(_moveDir * Time.deltaTime * Speed);
+        }
         //Debug.Log(CreatureState);
     }
 

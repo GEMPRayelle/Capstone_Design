@@ -11,11 +11,13 @@ public class ObjectManager
     public HashSet<Player> players { get; } = new HashSet<Player>();
     public HashSet<Monster> monsters { get; } = new HashSet<Monster>();
     public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
+    public HashSet<AttackEffect> attackEffects { get; } = new HashSet<AttackEffect>();
 
     #region Roots
     public Transform PlayerRoot { get { return GetRootTransform("@Players"); } }
     public Transform MonsterRoot { get { return GetRootTransform("@Monsters"); } }
     public Transform ProjectileRoot { get { return GetRootTransform("@Projectiles"); } }
+    public Transform EffectRoot { get { return GetRootTransform("@Effects"); } }
 
     //각각의 오브젝트들을 모을 Root 오브젝트를 생성
     public Transform GetRootTransform(string name)
@@ -77,6 +79,14 @@ public class ObjectManager
         else if(obj.ObjectType == EObjectType.Env)
         {
             //TODO
+        }
+
+        else if (obj.ObjectType == EObjectType.Effect)
+        {
+            obj.transform.parent = EffectRoot;
+            AttackEffect attackEffect = go.GetComponent<AttackEffect>();
+            attackEffects.Add(attackEffect);
+            attackEffect.SetInfo(templateId);
         }
 
         //오브젝트를 스폰하고 그 T타입에 obj를 리턴

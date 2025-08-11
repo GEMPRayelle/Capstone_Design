@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Sprites
   m_GUID: 056998fb7d983034c8fa3f262019b34e
   m_SerializeEntries:
+  - m_GUID: 212b9ec4ac7e70a429aecfc2f836dcc3
+    m_Address: meelee_attack.sprite
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 27204a2019d868842b966c3c5fbd5467
     m_Address: Object_Meat
     m_ReadOnly: 0
