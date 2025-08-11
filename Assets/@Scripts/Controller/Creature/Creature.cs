@@ -33,6 +33,19 @@ public class Creature : BaseObject
         }
     }
 
+    #region Stat Property
+    public float Hp { get; set; }
+    public CreatureStat MaxHp;
+    public CreatureStat Atk;
+    public CreatureStat CriRate;
+    public CreatureStat CriDamage;
+    public CreatureStat ReduceDamageRate;
+    public CreatureStat LifeStealRate;
+    public CreatureStat ThornsDamageRate; //쏜즈
+    public CreatureStat MoveSpeed;
+    public CreatureStat AttackSpeedRate;
+    #endregion
+
     public override bool Init()
     {
         if (base.Init() == false)
@@ -71,6 +84,18 @@ public class Creature : BaseObject
         //Skills
         Skills = gameObject.GetOrAddComponent<SkillComponent>();
         Skills.SetInfo(this, CreatureData);
+
+        //Stat
+        Hp = CreatureData.MaxHp;
+        MaxHp = new CreatureStat(CreatureData.MaxHp);
+        Atk = new CreatureStat(CreatureData.Atk);
+        CriRate = new CreatureStat(CreatureData.CriRate);
+        CriDamage = new CreatureStat(CreatureData.CriDamage);
+        ReduceDamageRate = new CreatureStat(0);
+        LifeStealRate = new CreatureStat(0);
+        ThornsDamageRate = new CreatureStat(0);
+        MoveSpeed = new CreatureStat(CreatureData.MoveSpeed);
+        AttackSpeedRate = new CreatureStat(1);
 
         //State
         CreatureState = ECreatureState.Idle;
@@ -138,20 +163,23 @@ public class Creature : BaseObject
         if (attacker.IsValid() == false)
             return;
 
+        //데미지를 주는건 Creature들끼리 가능
         Creature creature = attacker as Creature;
         if (creature == null) 
             return;
 
-        //TODO 데미지 처리 및 HP작업
+        float finalDamage = creature.Atk.Value; //TODO - 최종 공격력 계산식 기입
+        Hp = Mathf.Clamp(Hp - finalDamage, 0, MaxHp.Value); //0과 MaxHp사이에서 벗어나지 않도록함
 
-        //float finalDamage = creature.Atk; //TODO
-        //Hp = 
+        //TOOD 데미지 폰트 출력
 
-        //if (Hp <= 0)
-        //{
-        //    OnDead(attacker, skill);
-        //    CreatureState = ECreatureState.Dead;
-        //}
+        if (Hp <= 0)
+        {
+            OnDead(attacker, skill);
+            CreatureState = ECreatureState.Dead;
+        }
+
+        //TODO 스킬에 따른 Effect 적용
     }
 
     public override void OnDead(BaseObject attacker, SkillBase skill)

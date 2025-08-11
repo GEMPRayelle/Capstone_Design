@@ -21,6 +21,8 @@ public class DataTransformer : EditorWindow
         ParseExcelDataToJson<SkillDataLoader, SkillData>("Skill");
         ParseExcelDataToJson<ProjectileDataLoader, ProjectileData>("Projectile");
 
+        ParseExcelDataToJson<DropTableDataLoader, DropTableData_Internal>("DropTable");
+
         Debug.Log("DataTransformer Completed");
     }
 

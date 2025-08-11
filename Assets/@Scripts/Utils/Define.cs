@@ -39,7 +39,8 @@ public static class Define
         Env,//주변과 상호작용할 오브젝트
         Monster,
         Projectile, //발사체
-        Effect
+        Effect,
+        ItemHolder
     }
 
     public enum ECreatureType 

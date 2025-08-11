@@ -1,9 +1,13 @@
+using Data;
 using Spine.Unity;
+using System.Net.Http.Headers;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static Define;
 
 public class Monster : Creature
 {
+    public Data.MonsterData MonsterData { get { return (Data.MonsterData)CreatureData; } }
     public Rigidbody2D target;
     public Rigidbody2D rigid;
     
@@ -12,7 +16,6 @@ public class Monster : Creature
         get { return base.CreatureState; }
         set
         {
-
             if (_creatureState != value)
             {
                 base.CreatureState = value;
@@ -126,4 +129,62 @@ public class Monster : Creature
     }
     #endregion
 
+    #region Battle
+    public override void OnDamaged(BaseObject attacker, SkillBase skill)
+    {
+        base.OnDamaged(attacker, skill);
+        Debug.Log($"OnDamaged: {attacker.name}");
+    }
+
+    public override void OnDead(BaseObject attacker, SkillBase skill)
+    {
+        base.OnDead(attacker, skill);
+
+        int dropItemId = MonsterData.DropItemId;
+
+        //TODO Item Drop 데이터 연동을 통해 정리
+        RewardData rewardData = GetRandomReward();
+        if (rewardData != null)
+        {
+            var itemHolder = Managers.Object.Spawn<ItemHolder>(transform.position, dropItemId);
+
+            #region 포물선
+            Vector2 ran = new Vector2(transform.position.x + Random.Range(-10, -15) * 0.1f, transform.position.y);
+            Vector2 ran2 = new Vector2(transform.position.x + Random.Range(10, 15) * 0.1f, transform.position.y);
+            Vector2 dropPos = Random.value < 0.5 ? ran : ran2;
+            #endregion
+
+            itemHolder.SetInfo(0, rewardData.ItemTemplateId, dropPos);   
+        }
+
+        Managers.Object.Despawn(this);
+    }
+    #endregion
+
+    RewardData GetRandomReward()
+    {
+        if (MonsterData == null)
+            return null;
+
+        if (Managers.Data.DropTableDic.TryGetValue(MonsterData.DropItemId, out DropTableData dropTableData) == false) 
+            return null;
+
+        if (dropTableData.Rewards.Count <= 0)
+            return null;
+
+        int sum = 0;
+
+        //100분율 확률
+        int randomValue = UnityEngine.Random.Range(0, 100);
+
+        foreach (RewardData item in dropTableData.Rewards)
+        {
+            sum += item.Probability;
+
+            if (randomValue <= sum)
+                return item;
+        }
+
+        return null;
+    }
 }

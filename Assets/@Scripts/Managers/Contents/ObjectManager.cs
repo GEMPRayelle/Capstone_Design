@@ -12,12 +12,14 @@ public class ObjectManager
     public HashSet<Monster> monsters { get; } = new HashSet<Monster>();
     public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
     public HashSet<AttackEffect> attackEffects { get; } = new HashSet<AttackEffect>();
+    public HashSet<ItemHolder> ItemHolders { get; } = new HashSet<ItemHolder>();
 
     #region Roots
     public Transform PlayerRoot { get { return GetRootTransform("@Players"); } }
     public Transform MonsterRoot { get { return GetRootTransform("@Monsters"); } }
     public Transform ProjectileRoot { get { return GetRootTransform("@Projectiles"); } }
     public Transform EffectRoot { get { return GetRootTransform("@Effects"); } }
+    public Transform ItemHolderRoot { get { return GetRootTransform("@ItemHolders"); } }
 
     //각각의 오브젝트들을 모을 Root 오브젝트를 생성
     public Transform GetRootTransform(string name)
@@ -80,13 +82,19 @@ public class ObjectManager
         {
             //TODO
         }
-
         else if (obj.ObjectType == EObjectType.Effect)
         {
             obj.transform.parent = EffectRoot;
             AttackEffect attackEffect = go.GetComponent<AttackEffect>();
             attackEffects.Add(attackEffect);
             attackEffect.SetInfo(templateId);
+        }
+        else if (obj.ObjectType == EObjectType.ItemHolder)
+        {
+            obj.transform.parent = ItemHolderRoot;
+
+            ItemHolder itemHolder = go.GetOrAddComponent<ItemHolder>();
+            ItemHolders.Add(itemHolder);    
         }
 
         //오브젝트를 스폰하고 그 T타입에 obj를 리턴
@@ -114,11 +122,17 @@ public class ObjectManager
         }
         else if (obj.ObjectType == EObjectType.Projectile)
         {
-            //TODO
+            Projectile projectile = obj as Projectile;
+            Projectiles.Remove(projectile);
         }
         else if (obj.ObjectType == EObjectType.Env)
         {
             //TODO
+        }
+        else if (obj.ObjectType == EObjectType.ItemHolder)
+        {
+            ItemHolder itemHolder = obj as ItemHolder;
+            ItemHolders.Remove(itemHolder);
         }
 
         Managers.Resource.Destroy(obj.gameObject);
