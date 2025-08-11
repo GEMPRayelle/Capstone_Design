@@ -115,6 +115,13 @@ public static class Define
         ConeBig,
     }
 
+    public enum EStatModType
+    {
+        Add,//덧셈
+        PercentAdd, //%덧셈
+        PercentMult, //%곱셈
+    }
+
 
     public static class SortingLayers
     {
