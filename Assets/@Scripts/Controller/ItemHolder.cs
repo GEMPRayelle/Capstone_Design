@@ -35,7 +35,7 @@ public class ItemHolder : BaseObject
             //    //TODO => Acquire Item
             //}
 
-            Managers.Object.Despawn(this);
+            //Managers.Object.Despawn(this);
         });
     }
 }

@@ -154,7 +154,7 @@ public class Monster : Creature
             Vector2 dropPos = Random.value < 0.5 ? ran : ran2;
             #endregion
 
-            itemHolder.SetInfo(0, rewardData.ItemTemplateId, dropPos);   
+            itemHolder.SetInfo(0, rewardData.ItemTemplateId, dropPos);
         }
 
         Managers.Object.Despawn(this);
