@@ -14,8 +14,8 @@ public class MonsterSpawner : BaseObject
     public Rigidbody2D target;
     // 임시 코드
     private float SpawnTime = 5.0f;
+    private float elapsed = 0.0f;
     private float _spawnPadding;
-    private EPlayerState activePlayerState = EPlayerState.None;
 
     private Coroutine _spawnCoroutine;
 
@@ -42,9 +42,15 @@ public class MonsterSpawner : BaseObject
     // TODO 나중에 코루틴 멈추고 다시 멈춘 부분에서 실행되게 만들기
     private IEnumerator SpawnObjects()
     {
-        // 임시 코드
         while (true)
         {
+            while (elapsed < SpawnTime)
+            {
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+
             int randomValue = Random.Range(0, 4);
             float SpawnPadding = _spawnPadding + 2.0f;
             Vector2 SpawnPostionPadding = Vector2.zero;
@@ -66,11 +72,11 @@ public class MonsterSpawner : BaseObject
             }
             //Fix -> Spawn함수의 두번째 매개변수로 templateId를 넘겨야하기 때문에 임시 수정
             Monster monster = Managers.Object.Spawn<Monster>(target.position + SpawnPostionPadding, MONSTER_GOBLIN_ARCHER_ID);
-            
+
             if (monster != null)
                 _spawnObjects.Add(monster);
 
-            yield return new WaitForSeconds(SpawnTime);
+            elapsed = 0.0f;
         }
     }
 
@@ -83,10 +89,8 @@ public class MonsterSpawner : BaseObject
             case EPlayerState.None:
                 break;
             case EPlayerState.Master:
-                activePlayerState = EPlayerState.Master;
                 break;
             case EPlayerState.Servant:
-                activePlayerState = EPlayerState.Servant;
                 StartSpawn();
                 break;
         }
