@@ -12,8 +12,9 @@ public class ItemHolder : BaseObject
             return false;
 
         ObjectType = Define.EObjectType.ItemHolder;
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-        _parabolaMotion = GetComponent<ParabolaMotion>();
+        _spriteRenderer = gameObject.GetOrAddComponent<SpriteRenderer>();
+        _parabolaMotion = gameObject.GetOrAddComponent<ParabolaMotion>();
+        _spriteRenderer.sortingOrder = 200;
         return true;
     }
 
@@ -21,7 +22,7 @@ public class ItemHolder : BaseObject
     {
         //_data = Managers.Data.ItemDic[itemDataId];
         //TODO 드랍할 아이템도 DataSheet로 연동
-        _spriteRenderer.sprite = Managers.Resource.Load<Sprite>("Wizard_Shot.sprite");
+        _spriteRenderer.sprite = Managers.Resource.Load<Sprite>("wizard_shot.sprite");
         _parabolaMotion.SetInfo(0, transform.position, pos, endCallback: Arrived);
     }
 
