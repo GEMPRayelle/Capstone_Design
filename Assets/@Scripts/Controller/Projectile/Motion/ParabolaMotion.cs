@@ -15,7 +15,8 @@ public class ParabolaMotion : ProjectileMotionBase
     protected override IEnumerator CoLaunchProjectile()
     {
         float journeyLength = Vector2.Distance(StartPosition, TargetPosition);
-        float totalTime = journeyLength / ProjectileData.ProjSpeed;
+        //float totalTime = journeyLength / ProjectileData.ProjSpeed;
+        float totalTime = journeyLength / _speed; //TEMP
         float elapsedTime = 0;
 
         while (elapsedTime < totalTime)
