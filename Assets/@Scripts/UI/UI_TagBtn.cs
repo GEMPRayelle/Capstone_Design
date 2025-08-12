@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -30,13 +31,25 @@ public class UI_TagBtn : UI_Base
 
         gameObject.BindEvent(OnClick, type: Define.EUIEvent.Click);
 
+        Managers.Game.OnTagBtn -= HandleOnTagBtn;
+        Managers.Game.OnTagBtn += HandleOnTagBtn;
+
         return true;
+    }
+
+    private void HandleOnTagBtn(bool OnTagBtn)
+    {
+        if (OnTagBtn == true)
+        {
+            gameObject.SetActive(true);
+        }
     }
 
     #region Event Func
     public void OnClick(PointerEventData eventData)
     {
         Managers.Game.InverserPlayerState();
+        gameObject.SetActive(false);
     }
 
     #endregion

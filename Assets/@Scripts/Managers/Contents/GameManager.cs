@@ -42,10 +42,31 @@ public class GameManager : MonoBehaviour
 
     public void InverserPlayerState()
     {
-        if (PlayerState == EPlayerState.Servant)
+        if (_playerState == EPlayerState.Servant)
             PlayerState = EPlayerState.Master;
         else
             PlayerState = EPlayerState.Servant;
+    }
+    #endregion
+
+
+    // TODO : Gauge 단계별로 증가 필요시 배열같은걸로 만들어서 처리
+    #region TagBtn
+    private float _gauge; // 현재 TagBtn 활성화에 필요한 게이지
+    public float Gauge
+    {
+        get { return _gauge; }
+        set
+        {
+            _gauge += value;
+            if (_gauge >= MAX_GAUGE)
+            {
+                OnTagBtn?.Invoke(true);
+                _gauge = Math.Clamp(_gauge - MAX_GAUGE, 0, MAX_GAUGE);
+            }
+            float GaugePercent = _gauge / MAX_GAUGE;
+            OnGaugeChanged?.Invoke(GaugePercent);
+        }
     }
     #endregion
 
@@ -53,6 +74,7 @@ public class GameManager : MonoBehaviour
     public event Action<Vector2> OnMoveDirChanged; //moveDir에 관련 있다면 콜백함수를 등록해야 함
     public event Action<Define.EJoystickState> OnJoystickStateChanged; //조이스틱에 상태 변화에 대해 관심이 있으면 콜백함수 등록
     public event Action<Define.EPlayerState> OnPlayerStateChanged; // 플레이어 상태 변화에 관심 있으면 콜백함수 등록
-   
+    public event Action<float> OnGaugeChanged;
+    public event Action<bool> OnTagBtn;
     #endregion
 }

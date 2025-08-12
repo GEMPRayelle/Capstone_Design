@@ -21,6 +21,7 @@ public static class Define
         PointerDown,//마우스 누르는순간
         PointerUp,//마우스 때는 순간
         Drag,//누르면서 드래그
+        OnValueUpdate
     }
 
     //Sound 타입
@@ -128,6 +129,7 @@ public static class Define
     {
         public const int UI_TAGBTN = 600;
         public const int UI_JOYSTICK = 500;
+        public const int UI_TagGauge = 400;
         public const int CREATURE = 300;
         public const int PLAYER = 350;
         public const int PROJECTILE = 310;
@@ -153,7 +155,7 @@ public static class Define
 
     //Hard Coding
     public const float PLAYER_SEARCH_DISTANCE = 20.0f;
-
+    public const float MAX_GAUGE = 500.0f;
     public const int HERO_WIZARD_ID = 201000;
     public const int HERO_KNIGHT_ID = 201001;
     public const int HERO_LION_ID = 201003;

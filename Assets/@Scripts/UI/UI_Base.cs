@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.Connect;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -44,6 +45,7 @@ public class UI_Base : InitBase
     protected void BindTexts(Type type) { Bind<TMP_Text>(type); }
     protected void BindButtons(Type type) { Bind<Button>(type); }
     protected void BindToggles(Type type) { Bind<Toggle>(type); }
+    protected void BindSliders(Type type) { Bind<Slider>(type); }
 
 
     /// <summary>
@@ -68,6 +70,7 @@ public class UI_Base : InitBase
     protected Button GetButton(int idx) { return Get<Button>(idx); }
     protected Image GetImage(int idx) { return Get<Image>(idx); }
     protected Toggle GetToggle(int idx) { return Get<Toggle>(idx); }
+    protected Slider GetSlider(int idx) { return Get<Slider>(idx); }
 
     /// <summary>
     /// 어떤 게임오브젝트(go)에다가 type이라는 이벤트를 추적하고 싶고 그 이벤트가 발생하면 action 이벤트를 실행하는 함수
