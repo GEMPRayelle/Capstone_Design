@@ -94,7 +94,8 @@ public class ObjectManager
             obj.transform.parent = ItemHolderRoot;
 
             ItemHolder itemHolder = go.GetOrAddComponent<ItemHolder>();
-            ItemHolders.Add(itemHolder);    
+            ItemHolders.Add(itemHolder);
+            // 아이템의 setinfo는 예외적으로 소환하는 몬스터의 OnDead에서 구현
         }
 
         //오브젝트를 스폰하고 그 T타입에 obj를 리턴

@@ -1,16 +1,19 @@
 using Data;
 using Spine.Unity;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.Rendering;
 using static Define;
 
 public class Monster : Creature
 {
     public Data.MonsterData MonsterData { get { return (Data.MonsterData)CreatureData; } }
-    public Rigidbody2D target;
     public Rigidbody2D rigid;
-    
+    private float nearestDistanceSqr;
+
+
     public override ECreatureState CreatureState
     {
         get { return base.CreatureState; }
@@ -39,10 +42,35 @@ public class Monster : Creature
         }
 
     }
+
+    protected override void UpdateAnimation()
+    {
+        switch (CreatureState)
+        {
+            case ECreatureState.Idle:
+                PlayAnimation(0, AnimName.IDLE, true);
+                break;
+            case ECreatureState.Attack:
+                PlayAnimation(0, AnimName.ATTACK_A, true);
+                break;
+            case ECreatureState.Skill:
+                PlayAnimation(0, AnimName.ATTACK_A, true);
+                break;
+            case ECreatureState.Move:
+                PlayAnimation(0, AnimName.MOVE, true);
+                break;
+            case ECreatureState.Dead:
+                PlayAnimation(0, AnimName.DEAD, true);
+                RigidBody.simulated = false;
+                break;
+            default:
+                break;
+        }
+    }
     public override bool Init()
     {
         if (base.Init() == false)
-           return false;
+            return false;
 
         CreatureType = ECreatureType.Monster;
         CreatureState = ECreatureState.Idle;
@@ -56,7 +84,7 @@ public class Monster : Creature
         GameObject player = GameObject.Find("@Players");
 
         if (player != null)
-            target = player.transform.GetChild(0).GetComponent<Rigidbody2D>();
+            Target = player.transform.GetChild(0).GetComponent<Player>() as BaseObject;
 
         StartCoroutine(CoUpdateAI());
 
@@ -72,41 +100,59 @@ public class Monster : Creature
 
     public void Update()
     {
-        
+
     }
 
     #region AI
     protected override void UpdateIdle()
     {
-        
+        // idle은 플레이어가 마스터일떼만 적용
     }
 
     protected override void UpdateMove()
     {
-        // 플레이어 따라가기(Test용)
-        Vector2 dirVec = target.position - rigid.position;
-        Vector2 nextVec = dirVec.normalized * Speed * Time.deltaTime;
+        if (DetectPlayer(MONSTER_SEARCH_DISTANCE, Target) == true) // 실제 근처 플레이어 체크 함수
+        {
+            // 적 발견 시 공격 상태로 전환
+            CreatureState = ECreatureState.Skill;
 
-        rigid.MovePosition(rigid.position + nextVec);
-        rigid.linearVelocity = Vector2.zero;
+        }
 
-        if (dirVec.x < 0.1)
-            LookLeft = true;
-        else if (dirVec.x > 0.1)
-            LookLeft = false;
-        //else
-        //    ;
+        else // 근처에 적이 없다면
+        {
+            Vector2 dirVec = (Vector2)Target.transform.position - rigid.position;
+            Vector2 nextVec = dirVec.normalized * Speed * Time.deltaTime;
 
+            rigid.MovePosition(rigid.position + nextVec);
+            rigid.linearVelocity = Vector2.zero;
+
+            if (dirVec.x < 0.1)
+                LookLeft = true;
+            else if (dirVec.x > 0.1)
+                LookLeft = false;
+        };
+
+    }
+
+    protected override void UpdateAttack()
+    {
+        base.UpdateAttack();
+
+        if (DetectPlayer(MONSTER_SEARCH_DISTANCE, Target) == false)
+        {
+            CreatureState = ECreatureState.Move;
+        }
+
+       
     }
 
     protected override void UpdateSkill()
     {
         base.UpdateSkill();
 
-        if (Target.IsValid() == false)
+        if (DetectPlayer(MONSTER_SEARCH_DISTANCE, Target) == false)
         {
-            //타겟이 죽으면 원상태로 복귀
-            Target = null;
+            //근처에 플레이어가 없으면 원상태로 복귀
             CreatureState = ECreatureState.Move;
             return;
         }
@@ -156,7 +202,7 @@ public class Monster : Creature
             Vector2 dropPos = Random.value < 0.5 ? ran : ran2;
             #endregion
 
-            itemHolder.SetInfo(0, rewardData.ItemTemplateId, dropPos);
+            itemHolder.SetInfo(dropItemId, rewardData.ItemTemplateId, dropPos);
         }
 
         Managers.Object.Despawn(this);
@@ -168,7 +214,7 @@ public class Monster : Creature
         if (MonsterData == null)
             return null;
 
-        if (Managers.Data.DropTableDic.TryGetValue(MonsterData.DropItemId, out DropTableData dropTableData) == false) 
+        if (Managers.Data.DropTableDic.TryGetValue(MonsterData.DropItemId, out DropTableData dropTableData) == false)
             return null;
 
         if (dropTableData.Rewards.Count <= 0)
@@ -189,4 +235,22 @@ public class Monster : Creature
 
         return null;
     }
+
+
+    // 근처에 플레이어 있다면 true 아니면 false 리턴
+    private bool DetectPlayer(float detectionRadius, BaseObject target)
+    {
+        if (target.IsValid() == false)
+            return false;
+
+        float distanceSqr = (Target.transform.position - transform.position).sqrMagnitude; // 거리 계산
+
+        if (distanceSqr >= detectionRadius) // 거리가 일정 범위 이상이면 무시
+            return false;
+
+
+        return true;
+
+    }
+
 }

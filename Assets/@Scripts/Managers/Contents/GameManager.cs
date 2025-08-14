@@ -58,15 +58,21 @@ public class GameManager : MonoBehaviour
         get { return _gauge; }
         set
         {
-            _gauge += value;
+            _gauge = value;
             if (_gauge >= MAX_GAUGE)
             {
                 OnTagBtn?.Invoke(true);
-                _gauge = Math.Clamp(_gauge - MAX_GAUGE, 0, MAX_GAUGE);
+                _gauge = Math.Clamp(_gauge, 0, MAX_GAUGE);
             }
             float GaugePercent = _gauge / MAX_GAUGE;
             OnGaugeChanged?.Invoke(GaugePercent);
         }
+    }
+
+    public void InitGauge()
+    {
+        _gauge = 0;
+        OnGaugeChanged?.Invoke(0.0f);
     }
     #endregion
 

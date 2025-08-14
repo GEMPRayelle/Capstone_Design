@@ -2,7 +2,7 @@
   "dropTables": [
     {
       "DataId": 400000,
-      "RewardExp": 0,
+      "RewardExp": 50,
       "Prob1": 50,
       "Item1": 1
     }

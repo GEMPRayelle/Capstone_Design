@@ -13,7 +13,7 @@ public class MonsterSpawner : BaseObject
 
     public Rigidbody2D target;
     // 임시 코드
-    private float SpawnTime = 5.0f;
+    private float SpawnTime = 1.0f;
     private float elapsed = 0.0f;
     private float _spawnPadding;
 

@@ -9,8 +9,8 @@ public class Player : Creature
 {
     Vector2 _moveDir = Vector2.zero;
     public EPlayerState PlayerState; //Master, Servant 상태를 관리
-    private LayerMask MonsterLayer = 1 << 7; // 탐지 할 monster layer
     private float nearestDistanceSqr = float.MaxValue; // Distance 검사할때 사용하는 minDistance 값
+
     public override bool Init()
     {
         if (base.Init() == false)
@@ -19,7 +19,7 @@ public class Player : Creature
         CreatureType = ECreatureType.Player;
         CreatureState = ECreatureState.Idle;
         Speed = 5.0f; //임시 하드코딩
-
+        Physics2D.queriesHitTriggers = true;
         Managers.Game.OnJoystickStateChanged -= HandleOnJoystickStateChanged;
         Managers.Game.OnJoystickStateChanged += HandleOnJoystickStateChanged;
 
@@ -27,7 +27,7 @@ public class Player : Creature
         Managers.Game.OnMoveDirChanged += HandleOnMoveDirChanged;
 
         Collider.isTrigger = true;
-        RigidBody.simulated = false;
+        RigidBody.simulated = true;
         PlayerState = EPlayerState.None;
 
         SkeletonAnimation skeletonAnim = GetComponent<SkeletonAnimation>();
@@ -44,6 +44,31 @@ public class Player : Creature
 
         //State
         CreatureState = ECreatureState.Idle;
+    }
+
+    protected override void UpdateAnimation()
+    {
+        switch (CreatureState)
+        {
+            case ECreatureState.Idle:
+                PlayAnimation(0, AnimName.IDLE, true);
+                break;
+            case ECreatureState.Attack:
+                PlayAnimation(0, AnimName.ATTACK, true);
+                break;
+            case ECreatureState.Skill:
+                PlayAnimation(0, AnimName.SKILL_A, true);
+                break;
+            case ECreatureState.Move:
+                PlayAnimation(0, AnimName.MOVE, true);
+                break;
+            case ECreatureState.Dead:
+                PlayAnimation(0, AnimName.DEAD, true);
+                RigidBody.simulated = false;
+                break;
+            default:
+                break;
+        }
     }
 
     public override ECreatureState CreatureState

@@ -97,6 +97,7 @@ public static class Define
         Env = 8,
         Obstacle = 9,
         Projectile = 10,
+        Effect = 11,
     }
 
     public enum ESkillSlot
@@ -141,10 +142,12 @@ public static class Define
         public const string IDLE = "idle";
         public const string MOVE = "move";
         public const string DEAD = "dead";
-        public const string ATTACK_A = "attack";
-        public const string ATTACK_B = "attack";
-        public const string SKILL_A = "skill";
-        public const string SKILL_B = "skill";
+        public const string ATTACK = "attack";
+        public const string ATTACK_A = "attack_a";
+        public const string ATTACK_B = "attack_b";
+        public const string SKILL = "skill";
+        public const string SKILL_A = "skill_a";
+        public const string SKILL_B = "skill_b";
         public const string DAMAGED = "hit";
         public const string EVENT_ATTACK_A = "event_attack";
         public const string EVENT_ATTACK_B = "event_attack";
@@ -156,6 +159,7 @@ public static class Define
     //Hard Coding
     public const float PLAYER_SEARCH_DISTANCE = 20.0f;
     public const float MONSTER_SEARCH_DISTANCE = 8.0f;
+    public const float ITEM_DETECTION_DISTANCE = 10.0f;
     public const float MAX_GAUGE = 500.0f;
     public const int HERO_WIZARD_ID = 201000;
     public const int HERO_KNIGHT_ID = 201001;

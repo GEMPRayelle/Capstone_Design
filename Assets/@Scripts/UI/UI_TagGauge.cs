@@ -25,7 +25,7 @@ public class UI_TagGauge : UI_Base
 
         Managers.Game.OnGaugeChanged -= HandleGaugeChanged;
         Managers.Game.OnGaugeChanged += HandleGaugeChanged;
-
+        Managers.Game.InitGauge();
 
         return true;
     }
