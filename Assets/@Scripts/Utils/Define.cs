@@ -155,6 +155,7 @@ public static class Define
 
     //Hard Coding
     public const float PLAYER_SEARCH_DISTANCE = 20.0f;
+    public const float MONSTER_SEARCH_DISTANCE = 8.0f;
     public const float MAX_GAUGE = 500.0f;
     public const int HERO_WIZARD_ID = 201000;
     public const int HERO_KNIGHT_ID = 201001;

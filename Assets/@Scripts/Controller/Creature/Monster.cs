@@ -105,10 +105,12 @@ public class Monster : Creature
 
         if (Target.IsValid() == false)
         {
+            //타겟이 죽으면 원상태로 복귀
             Target = null;
             CreatureState = ECreatureState.Move;
             return;
         }
+        //그게 아니라면 스킬 상태를 유지
     }
 
     protected override void UpdateDead()
