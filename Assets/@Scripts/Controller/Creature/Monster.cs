@@ -40,7 +40,6 @@ public class Monster : Creature
                 }
             }
         }
-
     }
 
     public override bool Init()
@@ -49,14 +48,9 @@ public class Monster : Creature
             return false;
 
         CreatureType = ECreatureType.Monster;
-        CreatureState = ECreatureState.Idle;
 
         Speed = 2.5f;
         rigid = GetComponent<Rigidbody2D>();
-        SkeletonAnimation skeletonAnim = GetComponent<SkeletonAnimation>();
-        skeletonAnim.GetComponent<MeshRenderer>().sortingOrder = SortingLayers.MONSTER;
-        Collider.radius = 0.25f;
-        Collider.offset = transform.InverseTransformPoint(transform.position + (Vector3.right * 0.5f + Vector3.up) * ColliderRadius);
         GameObject player = GameObject.Find("@Players");
 
         if (player != null)
@@ -118,8 +112,6 @@ public class Monster : Creature
         {
             CreatureState = ECreatureState.Move;
         }
-
-       
     }
 
     protected override void UpdateSkill()
@@ -135,10 +127,7 @@ public class Monster : Creature
         //그게 아니라면 스킬 상태를 유지
     }
 
-    protected override void UpdateDead()
-    {
-
-    }
+    protected override void UpdateDead() { }
 
     protected override void ChangedMaster() // 서번트->마스터 변경 시 로직
     {
@@ -154,6 +143,22 @@ public class Monster : Creature
     #endregion
 
     #region Battle
+    // 근처에 플레이어 있다면 true 아니면 false 리턴
+    private bool DetectPlayer(float detectionRadius, BaseObject target)
+    {
+        if (target.IsValid() == false)
+            return false;
+
+        float distanceSqr = (Target.transform.position - transform.position).sqrMagnitude; // 거리 계산
+
+        if (distanceSqr >= detectionRadius) // 거리가 일정 범위 이상이면 무시
+            return false;
+
+
+        return true;
+
+    }
+
     public override void OnDamaged(BaseObject attacker, SkillBase skill)
     {
         base.OnDamaged(attacker, skill);
@@ -211,22 +216,4 @@ public class Monster : Creature
 
         return null;
     }
-
-
-    // 근처에 플레이어 있다면 true 아니면 false 리턴
-    private bool DetectPlayer(float detectionRadius, BaseObject target)
-    {
-        if (target.IsValid() == false)
-            return false;
-
-        float distanceSqr = (Target.transform.position - transform.position).sqrMagnitude; // 거리 계산
-
-        if (distanceSqr >= detectionRadius) // 거리가 일정 범위 이상이면 무시
-            return false;
-
-
-        return true;
-
-    }
-
 }

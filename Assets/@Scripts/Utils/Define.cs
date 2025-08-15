@@ -81,7 +81,11 @@ public static class Define
     public enum EPlayerMoveState
     {
         None,
-        ForceMove,
+        TargetMonster,//몬스터를 찾아서 전투
+        CollectEnv,//주변과 상호작용
+        ReturnToPos,//어딘가 정해진 위치로 이동해야할때
+        ForceMove,//강제 이동
+        ForcePath//전체를 탐색하더라도 찾아가게함
     }
 
     public enum ELayer
@@ -131,9 +135,9 @@ public static class Define
         public const int UI_TAGBTN = 600;
         public const int UI_JOYSTICK = 500;
         public const int UI_TagGauge = 400;
-        public const int CREATURE = 300;
-        public const int PLAYER = 350;
+        public const int CREATURE = 350;
         public const int PROJECTILE = 310;
+        public const int PLAYER = 300;
         public const int MONSTER = 300;
     }
 

@@ -7,6 +7,8 @@ using static Define;
 
 public class Player : Creature
 {
+    public bool isNeedArrange { get; set; }//정리가 필요한지
+
     Vector2 _moveDir = Vector2.zero;
     public EPlayerState PlayerState; //Master, Servant 상태를 관리
     private float nearestDistanceSqr = float.MaxValue; // Distance 검사할때 사용하는 minDistance 값
@@ -23,14 +25,38 @@ public class Player : Creature
         }
     }
 
+    EPlayerMoveState _playerMoveState = EPlayerMoveState.None;
+    public EPlayerMoveState PlayerMoveState //player가 움직이고 있는 사유
+    {
+        get { return _playerMoveState; }
+        private set
+        {
+            _playerMoveState = value;
+            switch (value)
+            {
+                case EPlayerMoveState.CollectEnv:
+                    isNeedArrange = true;
+                    break;
+                case EPlayerMoveState.TargetMonster:
+                    isNeedArrange = true;
+                    break;
+                case EPlayerMoveState.ForceMove:
+                    isNeedArrange = true;
+                    break;
+            }
+        }
+    }
+
     public override bool Init()
     {
         if (base.Init() == false)
             return false;
 
         CreatureType = ECreatureType.Player;
-        CreatureState = ECreatureState.Idle;
+        PlayerState = EPlayerState.None;
+
         Speed = 5.0f; //임시 하드코딩
+        
         Physics2D.queriesHitTriggers = true;
         Managers.Game.OnJoystickStateChanged -= HandleOnJoystickStateChanged;
         Managers.Game.OnJoystickStateChanged += HandleOnJoystickStateChanged;
@@ -40,10 +66,6 @@ public class Player : Creature
 
         Collider.isTrigger = true;
         RigidBody.simulated = true;
-        PlayerState = EPlayerState.None;
-
-        SkeletonAnimation skeletonAnim = GetComponent<SkeletonAnimation>();
-        skeletonAnim.GetComponent<MeshRenderer>().sortingOrder = SortingLayers.PLAYER;
 
         StartCoroutine(CoUpdateAI());
 
@@ -56,12 +78,15 @@ public class Player : Creature
 
         //State
         CreatureState = ECreatureState.Idle;
+
+        RigidBody.linearDamping = 0; //마찰력 설정
     }
 
     #region AI
     protected override void UpdateIdle()
     {
-        base.UpdateIdle();
+        //TODO -> 플레이어 이동 사유에 따라 State전환
+
         CheckEnemy(PLAYER_SEARCH_DISTANCE); // Idle -> Attack 체크
     }
 
