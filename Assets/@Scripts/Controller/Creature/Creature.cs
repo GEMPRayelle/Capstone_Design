@@ -173,7 +173,7 @@ public class Creature : BaseObject
         float finalDamage = creature.Atk.Value; //TODO - 최종 공격력 계산식 기입
         Hp = Mathf.Clamp(Hp - finalDamage, 0, MaxHp.Value); //0과 MaxHp사이에서 벗어나지 않도록함
 
-        //TOOD 데미지 폰트 출력
+        Managers.Object.ShowDamageFont(CenterPosition, finalDamage, transform, false);
 
         if (Hp <= 0)
         {

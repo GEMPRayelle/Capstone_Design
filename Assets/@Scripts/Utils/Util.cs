@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.Rendering.Universal;
 
 public static class Util
 {
@@ -59,6 +60,16 @@ public static class Util
         }
 
         return null;
+    }
+
+    //string 16진수 번호를 받아서 Color r,g,b를 리턴시키는 함수
+    public static Color HexToColor(string color)
+    {
+        if (color.Contains("#") == false)
+            color = $"{color}";
+        ColorUtility.TryParseHtmlString(color, out Color parsedColor);
+
+        return parsedColor;
     }
 
 

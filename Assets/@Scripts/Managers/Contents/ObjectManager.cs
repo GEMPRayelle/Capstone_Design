@@ -35,6 +35,14 @@ public class ObjectManager
     }
     #endregion
 
+    public void ShowDamageFont(Vector2 position, float damage, Transform parent, bool isCiritical = false)
+    {
+        //Pooling 방식
+        GameObject go = Managers.Resource.Instantiate("DamageFont", pooling: true);
+        DamageFont damageText = go.GetComponent<DamageFont>();
+        damageText.SetInfo(position, damage, parent, isCiritical);
+    }
+
     public T Spawn<T>(Vector3 position, int templateId) where T : BaseObject
     {
         string prefabName = typeof(T).Name;//컴포넌트의 오브젝트 이름을 가져옴
