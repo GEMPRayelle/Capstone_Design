@@ -60,7 +60,7 @@ public static class Define
         Move,
         Attack,
         Skill,
-        OnDamaged,
+        OnDamaged, //CC상태
         Dead
     }
 

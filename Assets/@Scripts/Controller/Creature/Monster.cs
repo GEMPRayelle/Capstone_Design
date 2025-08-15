@@ -43,30 +43,6 @@ public class Monster : Creature
 
     }
 
-    protected override void UpdateAnimation()
-    {
-        switch (CreatureState)
-        {
-            case ECreatureState.Idle:
-                PlayAnimation(0, AnimName.IDLE, true);
-                break;
-            case ECreatureState.Attack:
-                PlayAnimation(0, AnimName.ATTACK_A, true);
-                break;
-            case ECreatureState.Skill:
-                PlayAnimation(0, AnimName.ATTACK_A, true);
-                break;
-            case ECreatureState.Move:
-                PlayAnimation(0, AnimName.MOVE, true);
-                break;
-            case ECreatureState.Dead:
-                PlayAnimation(0, AnimName.DEAD, true);
-                RigidBody.simulated = false;
-                break;
-            default:
-                break;
-        }
-    }
     public override bool Init()
     {
         if (base.Init() == false)

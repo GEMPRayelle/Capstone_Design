@@ -27,7 +27,6 @@ public class Creature : BaseObject
             if (_creatureState != value)
             {
                 _creatureState = value;
-                //TODO -> UpdateAnimation 구현
                 UpdateAnimation();
             }
         }
@@ -109,14 +108,17 @@ public class Creature : BaseObject
             case ECreatureState.Idle:
                 PlayAnimation(0, AnimName.IDLE, true);
                 break;
+            //공격 애니메이션 적용은 Skill쪽으로 이전
             case ECreatureState.Attack:
-                PlayAnimation(0, AnimName.ATTACK_A, true);
                 break;
             case ECreatureState.Skill:
-                PlayAnimation(0, AnimName.SKILL_A, true);
                 break;
             case ECreatureState.Move:
                 PlayAnimation(0, AnimName.MOVE, true);
+                break;
+            case ECreatureState.OnDamaged:
+                PlayAnimation(0, AnimName.IDLE, true);
+                Skills.CurrentSkill.CancelSkill();//현재 사용하는 스킬은 캔슬함
                 break;
             case ECreatureState.Dead:
                 PlayAnimation(0, AnimName.DEAD, true);
@@ -254,6 +256,12 @@ public class Creature : BaseObject
         //    CreatureState = ECreatureState.Idle;
         //    return;
         //}
+
+        //Debugging
+        if (Skills.CurrentSkill == null)
+        {
+            Debug.LogWarning($"{name}의 CurrentSkill이 null입니다.");
+        }
 
         //현재 사용할 수 있는 스킬을 사용
         Skills.CurrentSkill.DoSkill();

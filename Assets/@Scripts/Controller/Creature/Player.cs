@@ -11,6 +11,18 @@ public class Player : Creature
     public EPlayerState PlayerState; //Master, Servant 상태를 관리
     private float nearestDistanceSqr = float.MaxValue; // Distance 검사할때 사용하는 minDistance 값
 
+    public override ECreatureState CreatureState
+    {
+        get { return base.CreatureState; }
+        set
+        {
+            if (_creatureState != value)
+            {
+                base.CreatureState = value;
+            }
+        }
+    }
+
     public override bool Init()
     {
         if (base.Init() == false)
@@ -46,63 +58,7 @@ public class Player : Creature
         CreatureState = ECreatureState.Idle;
     }
 
-    protected override void UpdateAnimation()
-    {
-        switch (CreatureState)
-        {
-            case ECreatureState.Idle:
-                PlayAnimation(0, AnimName.IDLE, true);
-                break;
-            case ECreatureState.Attack:
-                PlayAnimation(0, AnimName.ATTACK, true);
-                break;
-            case ECreatureState.Skill:
-                PlayAnimation(0, AnimName.SKILL_A, true);
-                break;
-            case ECreatureState.Move:
-                PlayAnimation(0, AnimName.MOVE, true);
-                break;
-            case ECreatureState.Dead:
-                PlayAnimation(0, AnimName.DEAD, true);
-                RigidBody.simulated = false;
-                break;
-            default:
-                break;
-        }
-    }
-
-    public override ECreatureState CreatureState
-    {
-        get { return base.CreatureState; }
-        set
-        {
-            if (_creatureState != value)
-            {
-                base.CreatureState = value;
-                switch (value)
-                {
-                    case ECreatureState.Idle:
-                        UpdateAITick = 0.2f;
-                        break;
-                    case ECreatureState.Skill:
-                        UpdateAITick = 1.0f;
-                        break;
-                    case ECreatureState.Attack:
-                        UpdateAITick = 1.0f;
-                        break;
-                    case ECreatureState.Move:
-                        UpdateAITick = 0.2f;
-                        break;
-                    case ECreatureState.Dead:
-                        UpdateAITick = 1.0f;
-                        break;
-
-                }
-            }
-        }
-
-    }
-
+    #region AI
     protected override void UpdateIdle()
     {
         base.UpdateIdle();
@@ -127,6 +83,10 @@ public class Player : Creature
         CheckEnemy(PLAYER_SEARCH_DISTANCE);
     }
 
+    protected override void UpdateDead()
+    {
+        base.UpdateDead();
+    }
     private void CheckEnemy(float detectionRadius) // 근처에 적이 있다면 Attack으로 바꿔주는 함수
     {
         if (PlayerState == EPlayerState.Master) // 마스터는 적 체크 필요 x
@@ -137,8 +97,8 @@ public class Player : Creature
 
         if (DetectMonster(detectionRadius, Managers.Object.monsters) == true) // 실제 근처 적 체크 함수
         {
-            // 적 발견 시 공격 상태로 전환
-            CreatureState = ECreatureState.Attack;
+            // 적 발견 시 공격 상태로 전환 -> 스킬 상태로 전환
+            CreatureState = ECreatureState.Skill;
 
         }
         else // 근처에 적이 없다면
@@ -146,6 +106,8 @@ public class Player : Creature
             disappearMonster(); 
         }
     }
+    #endregion
+
 
     // 근처에 몬스터 있다면 true 아니면 false 리턴
     private bool DetectMonster(float detectionRadius, HashSet<Monster> monsters)
