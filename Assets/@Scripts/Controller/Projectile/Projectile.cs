@@ -77,7 +77,8 @@ public class Projectile : BaseObject
         if (target.IsValid() == false)
             return;
 
-        //target.OnDamaged(Owner, Skill);
+        //타겟에게 데미지 적용
+        target.OnDamaged(Owner, Skill);
         Managers.Object.Despawn(this);
     }
 
