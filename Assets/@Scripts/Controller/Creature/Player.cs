@@ -48,6 +48,8 @@ public class Player : Creature
         }
     }
 
+    private UI_BattleBarWorldSpace _battleBarUI;
+
     public override bool Init()
     {
         if (base.Init() == false)
@@ -55,6 +57,8 @@ public class Player : Creature
 
         CreatureType = ECreatureType.Player;
         PlayerState = EPlayerState.None;
+
+        _battleBarUI = GetComponentInChildren<UI_BattleBarWorldSpace>();
 
         Speed = 5.0f; //임시 하드코딩
 
@@ -80,7 +84,20 @@ public class Player : Creature
         //State
         CreatureState = ECreatureState.Idle;
 
+        UpdateHpText();
+
         RigidBody.linearDamping = 0; //마찰력 설정
+    }
+    protected void UpdateHpText()
+    {
+        _battleBarUI.SetInfo((int)Hp, (int)MaxHp.Value);
+    }
+
+    public void ResetHp()
+    {
+        Hp = MaxHp.Value;
+
+        UpdateHpText();
     }
 
     #region AI

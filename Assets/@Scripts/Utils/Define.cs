@@ -1,3 +1,4 @@
+using Spine;
 using UnityEngine;
 
 /// <summary>
@@ -155,6 +156,7 @@ public static class Define
         public const int UI_TAGBTN = 600;
         public const int UI_JOYSTICK = 500;
         public const int UI_TagGauge = 400;
+        public const int UI_HpBar = 400;
         public const int CREATURE = 350;
         public const int PROJECTILE = 310;
         public const int SKILL_EFFECT = 310;
