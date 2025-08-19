@@ -15,6 +15,7 @@ public class Creature : BaseObject
     public ECreatureType CreatureType { get; protected set; } = ECreatureType.None;
     public Data.CreatureData CreatureData { get; private set; }
 
+    public EffectComponent Effects { get; set; }//이펙트(상태 이상효과) 목록
     protected EPlayerState activePlayerState { get; private set; } = EPlayerState.None; // 현재 활성화된 플레이어 스테이트(마스터, 서번트)에 대한 정보. 가져오기만 하면 됨
 
     protected ECreatureState _creatureState = ECreatureState.None;
@@ -99,6 +100,9 @@ public class Creature : BaseObject
         //State
         CreatureState = ECreatureState.Idle;
 
+        //Effect
+        Effects = gameObject.GetOrAddComponent<EffectComponent>();
+        Effects.SetInfo(this);
     }
 
     protected override void UpdateAnimation()
@@ -182,6 +186,8 @@ public class Creature : BaseObject
         }
 
         //TODO 스킬에 따른 Effect 적용
+        if (skill.SkillData.EffectIds != null)
+            Effects.GenerateEffects(skill.SkillData.EffectIds.ToArray(), EEffectSpawnType.Skill, skill);
     }
 
     public override void OnDead(BaseObject attacker, SkillBase skill)

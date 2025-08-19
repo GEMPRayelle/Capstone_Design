@@ -11,7 +11,9 @@ public class ObjectManager
     public HashSet<Player> players { get; } = new HashSet<Player>();
     public HashSet<Monster> monsters { get; } = new HashSet<Monster>();
     public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
+
     public HashSet<AttackEffect> attackEffects { get; } = new HashSet<AttackEffect>();
+    public HashSet<EffectBase> Effects { get; } = new HashSet<EffectBase>();
     public HashSet<ItemHolder> ItemHolders { get; } = new HashSet<ItemHolder>();
 
     #region Roots
@@ -41,6 +43,13 @@ public class ObjectManager
         GameObject go = Managers.Resource.Instantiate("DamageFont", pooling: true);
         DamageFont damageText = go.GetComponent<DamageFont>();
         damageText.SetInfo(position, damage, parent, isCiritical);
+    }
+
+    public GameObject SpawnGameObject(Vector3 position, string prefabName)
+    {
+        GameObject go = Managers.Resource.Instantiate(prefabName, pooling: true);
+        go.transform.position = position;
+        return go;
     }
 
     public T Spawn<T>(Vector3 position, int templateId) where T : BaseObject
@@ -96,6 +105,9 @@ public class ObjectManager
             AttackEffect attackEffect = go.GetComponent<AttackEffect>();
             attackEffects.Add(attackEffect);
             attackEffect.SetInfo(templateId);
+            // TODO Effect만 처리되게
+            //EffectBase effect = go.GetComponent<EffectBase>();
+            //Effects.Add(effect);
         }
         else if (obj.ObjectType == EObjectType.ItemHolder)
         {
@@ -103,7 +115,7 @@ public class ObjectManager
 
             ItemHolder itemHolder = go.GetOrAddComponent<ItemHolder>();
             ItemHolders.Add(itemHolder);
-            // 아이템의 setinfo는 예외적으로 소환하는 몬스터의 OnDead에서 구현
+            // 아이템의 setinfo는 소환하는 몬스터의 OnDead에서 구현
         }
 
         //오브젝트를 스폰하고 그 T타입에 obj를 리턴

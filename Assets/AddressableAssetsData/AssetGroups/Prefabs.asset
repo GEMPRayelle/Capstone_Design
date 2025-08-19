@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 21924fc6c6130d142aee72a79b0012d4
+    m_Address: EffectBase
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3a5e4b1bc5f22d243af02ab5bdf4d607
     m_Address: Player
     m_ReadOnly: 0

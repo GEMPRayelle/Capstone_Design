@@ -81,7 +81,7 @@ public class AttackEffect : BaseObject
 
     public void SetRotationToTarget(Transform target)
     {
-        if (target == null) 
+        if (target == null)
             return;
 
         // 2D에서 타겟 방향 계산
@@ -147,7 +147,7 @@ public class AttackEffect : BaseObject
         _spriteRenderer.color = endColor;
     }
 
-    
+
 
     /// <summary>
     /// 애니메이션 설정을 런타임에 변경할 수 있는 함수

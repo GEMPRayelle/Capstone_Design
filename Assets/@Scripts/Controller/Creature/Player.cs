@@ -57,7 +57,7 @@ public class Player : Creature
         PlayerState = EPlayerState.None;
 
         Speed = 5.0f; //임시 하드코딩
-        
+
         Physics2D.queriesHitTriggers = true;
         Managers.Game.OnJoystickStateChanged -= HandleOnJoystickStateChanged;
         Managers.Game.OnJoystickStateChanged += HandleOnJoystickStateChanged;
@@ -129,7 +129,7 @@ public class Player : Creature
         }
         else // 근처에 적이 없다면
         {
-            disappearMonster(); 
+            disappearMonster();
         }
     }
     #endregion
@@ -150,7 +150,7 @@ public class Player : Creature
         //return false;
 
         // hashSet에서 가장 가까운 적 탐색
-        if (monsters.Count == 0) 
+        if (monsters.Count == 0)
             return false;
 
         nearestDistanceSqr = float.MaxValue;
@@ -159,10 +159,10 @@ public class Player : Creature
         foreach (Monster monster in monsters) // 몬스터마다
         {
             float distanceSqr = (monster.transform.position - transform.position).sqrMagnitude; // 거리 계산
-            
+
             if (distanceSqr >= detectionRadius) // 거리가 일정 범위 이상이면 무시
                 continue;
-            
+
             if (distanceSqr < nearestDistanceSqr)
             {
                 nearestDistanceSqr = distanceSqr;
@@ -180,7 +180,7 @@ public class Player : Creature
             Target = target;
             return true;
         }
-        
+
     }
 
     // 근처 몬스터 없을 때 실행되는 함수
@@ -209,7 +209,7 @@ public class Player : Creature
             transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
         }
 
-        else if (CreatureState == ECreatureState.Attack)
+        else if (CreatureState == ECreatureState.Attack || CreatureState == ECreatureState.Skill)
         {
             transform.Translate(_moveDir * Time.deltaTime * Speed);
         }

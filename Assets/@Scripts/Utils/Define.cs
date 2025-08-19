@@ -129,6 +129,26 @@ public static class Define
         PercentMult, //%곱셈
     }
 
+    public enum EEffectType
+    {
+        Buff,
+        Debuff,
+        CrowdControl,
+    }
+
+    public enum EEffectSpawnType
+    {
+        Skill, //지속시간이 있는 기본적인 이펙트
+        External, //외부(장판스킬)에서 이펙트를 관리(지속시간에 영향을 받지않음)
+    }
+
+    public enum EEffectClearType
+    {
+        TimeOut,//시간초과로 인한 Effect종료
+        ClearSkill,//정화 스킬로 인한 Effect종료
+        TriggerOutAoE,//AoE스킬을 벗어난 경우 종료
+        EndOfAirbone,//에어본이 끝난 경우 호출되는 종료
+    }
 
     public static class SortingLayers
     {
@@ -137,6 +157,7 @@ public static class Define
         public const int UI_TagGauge = 400;
         public const int CREATURE = 350;
         public const int PROJECTILE = 310;
+        public const int SKILL_EFFECT = 310;
         public const int PLAYER = 300;
         public const int MONSTER = 300;
     }
