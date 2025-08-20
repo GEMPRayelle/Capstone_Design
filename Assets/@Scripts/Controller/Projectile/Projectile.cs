@@ -78,7 +78,17 @@ public class Projectile : BaseObject
             return;
 
         //타겟에게 데미지 적용
-        target.OnDamaged(Owner, Skill);
+        if (Owner.CreatureType == ECreatureType.Monster)
+        {
+            Creature creature = target as Player;
+            creature.OnDamaged(Owner, Skill);
+        }
+        else if (Owner.CreatureType == ECreatureType.Player)
+        {
+            Creature creature = target as Monster;
+            creature.OnDamaged(Owner, Skill);
+        }
+
         Managers.Object.Despawn(this);
     }
 

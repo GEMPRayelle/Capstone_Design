@@ -1,4 +1,5 @@
 using Data;
+using Newtonsoft.Json.Serialization;
 using Spine.Unity;
 using System;
 using System.Collections.Generic;
@@ -88,6 +89,14 @@ public class Player : Creature
 
         RigidBody.linearDamping = 0; //마찰력 설정
     }
+
+    public override void OnDamaged(BaseObject attacker, SkillBase skill)
+    {
+        base.OnDamaged(attacker, skill);
+
+        UpdateHpText();
+    }
+
     protected void UpdateHpText()
     {
         _battleBarUI.SetInfo((int)Hp, (int)MaxHp.Value);

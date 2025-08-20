@@ -181,6 +181,7 @@ public class Creature : BaseObject
 
         if (Hp <= 0)
         {
+            Hp = 0;
             OnDead(attacker, skill);
             CreatureState = ECreatureState.Dead;
         }
