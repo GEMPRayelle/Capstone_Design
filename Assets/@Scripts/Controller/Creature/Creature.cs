@@ -2,6 +2,7 @@ using Data;
 using Spine;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -194,6 +195,37 @@ public class Creature : BaseObject
     public override void OnDead(BaseObject attacker, SkillBase skill)
     {
         base.OnDead(attacker, skill);
+    }
+
+    //range범위에 있는 Objs중에서 가장 가까이 있는 BaseObject를 반환
+    public BaseObject FindClosetObjectInRange(float range, IEnumerable<BaseObject> objs, Func<BaseObject, bool> func = null)
+    {
+        BaseObject target = null;
+        float bestDistanceSqr = float.MaxValue;
+        float searchDistanceSqr = range * range;
+
+        foreach (BaseObject obj in objs)
+        {
+            Vector3 dir = obj.transform.position - transform.position;
+            float distToTargetSqr = dir.sqrMagnitude; //연산의 효율성땜에 제곱으로 계산
+
+            // 탐색 범위보다 멀리 있으면 스킵.
+            if (distToTargetSqr > searchDistanceSqr)
+                continue;
+
+            // 이미 더 좋은 후보를 찾았으면 스킵.
+            if (distToTargetSqr > bestDistanceSqr)
+                continue;
+
+            // 추가 조건
+            if (func != null && func.Invoke(obj) == false)
+                continue;
+
+            target = obj;
+            bestDistanceSqr = distToTargetSqr;
+        }
+
+        return target;
     }
     #endregion
 

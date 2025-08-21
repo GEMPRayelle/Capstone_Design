@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 using static Define;
 
 //도트, 버프, 힐 등의 이펙트의 베이스 클래스
-public class EffectBase : BaseObject
+public class EffectBase : BaseObject //Buff, Debuff
 {
     public Creature Owner;
     public SkillBase Skill;//어떤 스킬에서 파생된 이펙트인지 확인하기 위한 변수

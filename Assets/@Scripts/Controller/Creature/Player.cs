@@ -112,21 +112,74 @@ public class Player : Creature
     #region AI
     protected override void UpdateIdle()
     {
-        //TODO -> 플레이어 이동 사유에 따라 State전환
+        //0. 이동 상태라면 강제 이동
+        if (PlayerMoveState == EPlayerMoveState.ForceMove)
+        {
+            CreatureState = ECreatureState.Move;
+            return;
+        }
 
-        CheckEnemy(PLAYER_SEARCH_DISTANCE); // Idle -> Attack 체크
+        //2. 몬스터 탐색 및 사냥
+        //BaseObject를 반환하기 때문에 Creature로 다시 캐스팅
+        Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.monsters) as Creature;
+        if (creature != null)
+        {
+            Target = creature;
+            CreatureState = ECreatureState.Move;
+            PlayerMoveState = EPlayerMoveState.TargetMonster;
+            return;
+        }
     }
 
     protected override void UpdateMove()
     {
-        base.UpdateMove();
-        CheckEnemy(PLAYER_SEARCH_DISTANCE); // move -> Attack 체크
+        //0. 이동 상태라면 강제 변경
+        if (PlayerMoveState == EPlayerMoveState.ForceMove)
+        {
+            CreatureState = ECreatureState.Move;
+            return;
+        }
+
+        //1. 주면에 몬스터가 있다면
+        Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.monsters) as Creature;
+
+        if (PlayerState == EPlayerState.Master) // 마스터는 적 체크 필요 x
+            return;
+
+        if (activePlayerState == EPlayerState.Master) // 태그 눌러서 현재 활성화된게 마스터면
+            return;
+
+        if (creature != null) 
+        {
+            Target = creature;
+            CreatureState = ECreatureState.Skill;
+            PlayerMoveState = EPlayerMoveState.TargetMonster;
+            return;
+        }
+        else
+        {
+            disappearMonster();
+        }
     }
 
     protected override void UpdateSkill()
     {
         base.UpdateSkill();
-        CheckEnemy(PLAYER_SEARCH_DISTANCE); // Skill상태에서 적이 근처에 계속 있다면 유지
+
+        if (PlayerMoveState == EPlayerMoveState.ForceMove)
+        {
+            CreatureState = ECreatureState.Move;
+            return;
+        }
+
+        if (Target.IsValid() == false)
+        {
+            CreatureState = ECreatureState.Move;
+            return;
+            
+        }
+
+        //CheckEnemy(PLAYER_SEARCH_DISTANCE); // Skill상태에서 적이 근처에 계속 있다면 유지
     }
 
     protected override void UpdateAttack()
@@ -139,6 +192,7 @@ public class Player : Creature
     {
         base.UpdateDead();
     }
+
     private void CheckEnemy(float detectionRadius) // 근처에 적이 있다면 Attack으로 바꿔주는 함수
     {
         if (PlayerState == EPlayerState.Master) // 마스터는 적 체크 필요 x
@@ -234,12 +288,6 @@ public class Player : Creature
         {
             transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
         }
-
-        else if (CreatureState == ECreatureState.Attack || CreatureState == ECreatureState.Skill)
-        {
-            transform.Translate(_moveDir * Time.deltaTime * Speed);
-        }
-        //Debug.Log(CreatureState);
     }
 
     private void HandleOnJoystickStateChanged(EJoystickState joystickState)
@@ -253,12 +301,13 @@ public class Player : Creature
         switch (joystickState)
         {
             case EJoystickState.PointerDown:
-                CreatureState = ECreatureState.Move;
+                PlayerMoveState = EPlayerMoveState.ForceMove;
                 break;
             case EJoystickState.Drag:
+                PlayerMoveState = EPlayerMoveState.ForceMove;
                 break;
             case EJoystickState.PointerUp:
-                CreatureState = ECreatureState.Idle;
+                PlayerMoveState = EPlayerMoveState.None;//강제 이동 해제
                 break;
             default:
                 break;
