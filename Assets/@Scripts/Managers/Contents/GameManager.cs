@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
     #endregion
 
 
-    // TODO : Gauge 단계별로 증가 필요시 배열같은걸로 만들어서 처리
+    
     #region TagBtn
     private float _gauge; // 현재 TagBtn 활성화에 필요한 게이지
     public float Gauge

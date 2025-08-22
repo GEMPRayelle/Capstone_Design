@@ -13,7 +13,7 @@ public class MonsterSpawner : BaseObject
 
     public Rigidbody2D target;
     // 임시 코드
-    private float SpawnTime = 1.0f;
+    private float SpawnTime = 0.5f;
     private float elapsed = 0.0f;
     private float _spawnPadding;
 
@@ -33,13 +33,12 @@ public class MonsterSpawner : BaseObject
         Managers.Game.OnPlayerStateChanged -= HandleOnPlayerStateChanged;
         Managers.Game.OnPlayerStateChanged += HandleOnPlayerStateChanged;
 
-        _spawnPadding = Camera.main.orthographicSize;
+        _spawnPadding = Camera.main.orthographicSize / 2.0f;
         _spawnCoroutine = StartCoroutine(SpawnObjects());
 
         return true;
     }
 
-    // TODO 나중에 코루틴 멈추고 다시 멈춘 부분에서 실행되게 만들기
     private IEnumerator SpawnObjects()
     {
         while (true)
@@ -52,7 +51,7 @@ public class MonsterSpawner : BaseObject
 
 
             int randomValue = Random.Range(0, 4);
-            float SpawnPadding = _spawnPadding + 2.0f;
+            float SpawnPadding = _spawnPadding;
             Vector2 SpawnPostionPadding = Vector2.zero;
             switch (randomValue)
             {

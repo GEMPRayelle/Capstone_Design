@@ -275,4 +275,30 @@ namespace Data
         }
     }
     #endregion
+
+    #region Level Data
+    [Serializable]
+    public class LevelData
+    {
+        public int DataId;
+        public int Level;
+        public int MaxGauge;
+        public int MaxMonsterNum;
+        public int MonsterId; // TODO 스폰될 몬스터들 List로 작성?
+    }
+
+    [Serializable]
+    public class LevelDataLoader : ILoader<int, LevelData>
+    {
+        public List<LevelData> levels = new List<LevelData>();
+        public Dictionary<int, LevelData> MakeDict()
+        {
+            Dictionary<int, LevelData> dict = new Dictionary<int, LevelData>();
+            foreach (LevelData level in levels)
+                dict.Add(level.DataId, level);
+            return dict;
+        }
+    }
+    #endregion
+
 }
