@@ -9,6 +9,8 @@ using static Define;
 //Scene의 배치될 모든 오브젝트들의 조상 클래스
 public class BaseObject : InitBase
 {
+    public int ExtraCells { get; set; } = 0;//그리드기반 최적화에서 쓸 추가Cell단위
+
     //모든 오브젝트들이 가질 기본적인 컴포넌트
     public EObjectType ObjectType { get; protected set; } = EObjectType.None;
     public CircleCollider2D Collider { get; private set; }

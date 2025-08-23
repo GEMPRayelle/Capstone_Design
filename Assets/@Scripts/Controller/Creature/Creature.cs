@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
 using static Define;
 
 public class Creature : BaseObject
@@ -31,6 +30,29 @@ public class Creature : BaseObject
                 _creatureState = value;
                 UpdateAnimation();
             }
+        }
+    }
+
+    protected float AttackDistance
+    {
+        get
+        {
+            float env = 2.2f;
+            if (Target != null && Target.ObjectType == EObjectType.Env)
+                return Mathf.Max(env, Collider.radius + Target.Collider.radius + 0.1f);
+
+            float baseValue = CreatureData.AtkRange;
+            return baseValue;
+        }
+    }
+
+    private float DistToTargetSqr
+    {
+        get
+        {
+            Vector3 dir = (Target.transform.position - transform.position);
+            float distToTarget = Math.Max(0, dir.magnitude - Target.ExtraCells * 1f - ExtraCells * 1f); // TEMP
+            return distToTarget * distToTarget;
         }
     }
 
@@ -288,13 +310,13 @@ public class Creature : BaseObject
         }
 
         //예외처리
-        //float distToTargetSqr = DistToTargetSqr;
-        //float attackDistanceSqr = AttackDistance * AttackDistance;
-        //if (distToTargetSqr > attackDistanceSqr)
-        //{
-        //    CreatureState = ECreatureState.Idle;
-        //    return;
-        //}
+        float distToTargetSqr = DistToTargetSqr;
+        float attackDistanceSqr = AttackDistance * AttackDistance;
+        if (distToTargetSqr > attackDistanceSqr)
+        {
+            CreatureState = ECreatureState.Idle;
+            return;
+        }
 
         //Debugging
         if (Skills.CurrentSkill == null)
