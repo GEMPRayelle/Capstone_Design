@@ -39,14 +39,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8196f35f2b157164dab41d658b64a722
-    m_Address: ProjectileData
+  - m_GUID: 3c751791bffb1f442a3450cd2182a244
+    m_Address: LevelData
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: cbcc2e7696448c049b86bb4e7c49945e
-    m_Address: LevelData
+  - m_GUID: 8196f35f2b157164dab41d658b64a722
+    m_Address: ProjectileData
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad

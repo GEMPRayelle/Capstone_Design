@@ -40,6 +40,7 @@ public class DataManager
         //경로에 있는 TextAsset을 가져와서
         TextAsset textAsset = Managers.Resource.Load<TextAsset>(path);
         //그 textAsset을 Json으로 파싱
+        Debug.Log(path);
         return JsonConvert.DeserializeObject<Loader>(textAsset.text);
     }
 }
