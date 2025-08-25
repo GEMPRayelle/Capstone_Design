@@ -77,19 +77,7 @@ public class Projectile : BaseObject
         if (target.IsValid() == false)
             return;
 
-        //타겟에게 데미지 적용
-        if (Owner.CreatureType == ECreatureType.Monster)
-        {
-            Creature creature = target as Player;
-            if (Owner == null) return; //화살이 날라가는 도중 죽어버리면 스킵
-            else creature.OnDamaged(Owner, Skill); //그게 아니면 데미지 적용
-        }
-        else if (Owner.CreatureType == ECreatureType.Player)
-        {
-            Creature creature = target as Monster;
-            creature.OnDamaged(Owner, Skill);
-        }
-
+        target.OnDamaged(Owner, Skill);
         Managers.Object.Despawn(this);
     }
 
