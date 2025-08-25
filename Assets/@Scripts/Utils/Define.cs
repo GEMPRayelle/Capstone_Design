@@ -184,7 +184,7 @@ public static class Define
 
 
     //Hard Coding
-    public const float PLAYER_SEARCH_DISTANCE = 20.0f;
+    public const float PLAYER_SEARCH_DISTANCE = 4.0f;
     public const float MONSTER_SEARCH_DISTANCE = 8.0f;
     public const float ITEM_DETECTION_DISTANCE = 10.0f;
     public const float MAX_GAUGE = 500.0f;

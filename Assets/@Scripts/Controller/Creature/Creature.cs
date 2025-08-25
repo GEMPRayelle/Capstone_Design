@@ -328,11 +328,14 @@ public class Creature : BaseObject
         //스킬을 쓰는 상대를 보도록함
         LookAtTarget(Target);
 
-        //딜레이
         var trackEntry = SkeletonAnim.state.GetCurrent(0);
-        float delay = trackEntry.Animation.Duration;
+        float animationDuration = trackEntry.Animation.Duration;
+        float timeScale = trackEntry.TimeScale;
+        float actualDuration = animationDuration / timeScale;
 
-        StartWait(delay);
+        Debug.Log($"Animation Duration: {animationDuration}, TimeScale: {timeScale}, Actual Duration: {actualDuration}");
+
+        StartWait(actualDuration);
     }
     protected virtual void UpdateOnDamaged() { }
     protected virtual void UpdateDead() { }

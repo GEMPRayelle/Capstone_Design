@@ -112,7 +112,7 @@ public class Player : Creature
     protected override void UpdateIdle()
     {
         //0. 이동 상태라면 강제 이동
-        if (PlayerMoveState == EPlayerMoveState.ForceMove)
+        if (PlayerMoveState == EPlayerMoveState.ForceMove && _moveDir != Vector2.zero)
         {
             CreatureState = ECreatureState.Move;
             return;
@@ -130,7 +130,7 @@ public class Player : Creature
         if (creature != null)
         {
             Target = creature;
-            CreatureState = ECreatureState.Move;
+            CreatureState = ECreatureState.Skill;
             PlayerMoveState = EPlayerMoveState.TargetMonster;
             return;
         }
@@ -139,7 +139,7 @@ public class Player : Creature
     protected override void UpdateMove()
     {
         //0. 이동 상태라면 강제 변경
-        if (PlayerMoveState == EPlayerMoveState.ForceMove)
+        if (PlayerMoveState == EPlayerMoveState.ForceMove && _moveDir != Vector2.zero)
         {
             CreatureState = ECreatureState.Move;
             return;
@@ -176,20 +176,17 @@ public class Player : Creature
     {
         base.UpdateSkill();
 
-        if (PlayerMoveState == EPlayerMoveState.ForceMove)
+        if (PlayerMoveState == EPlayerMoveState.ForceMove && _moveDir != Vector2.zero)
         {
             CreatureState = ECreatureState.Move;
             return;
         }
 
-        if (Target.IsValid() == false)
+        if (Target.IsValid() == false && _moveDir != Vector2.zero)
         {
             CreatureState = ECreatureState.Move;
             return;
-            
         }
-
-        //CheckEnemy(PLAYER_SEARCH_DISTANCE); // Skill상태에서 적이 근처에 계속 있다면 유지
     }
 
     protected override void UpdateAttack()
@@ -201,11 +198,6 @@ public class Player : Creature
     {
         base.UpdateDead();
     }
-    #endregion
-
-
-    // 근처에 몬스터 있다면 true 아니면 false 리턴
-    
 
     // 근처 몬스터 없을 때 실행되는 함수
     private void disappearMonster()
@@ -220,6 +212,7 @@ public class Player : Creature
             CreatureState = ECreatureState.Move;
         }
     }
+    #endregion
 
     private void Update()
     {
@@ -233,13 +226,11 @@ public class Player : Creature
             transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
         }
 
+        Debug.Log(CreatureState);
     }
 
     private void HandleOnJoystickStateChanged(EJoystickState joystickState)
     {
-        if (CreatureState == ECreatureState.Attack) // 공격중일 땐 move로 변경 x
-            return;
-
         if (activePlayerState != PlayerState) // 현재 활성화된 PlayerState랑 다르다면 무시
             return;
 
