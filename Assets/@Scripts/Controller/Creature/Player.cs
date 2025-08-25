@@ -13,7 +13,6 @@ public class Player : Creature
 
     Vector2 _moveDir = Vector2.zero;
     public EPlayerState PlayerState; //Master, Servant 상태를 관리
-    private float nearestDistanceSqr = float.MaxValue; // Distance 검사할때 사용하는 minDistance 값
 
     public override ECreatureState CreatureState
     {

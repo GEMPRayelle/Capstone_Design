@@ -81,7 +81,8 @@ public class Projectile : BaseObject
         if (Owner.CreatureType == ECreatureType.Monster)
         {
             Creature creature = target as Player;
-            creature.OnDamaged(Owner, Skill);
+            if (Owner == null) return; //화살이 날라가는 도중 죽어버리면 스킵
+            else creature.OnDamaged(Owner, Skill); //그게 아니면 데미지 적용
         }
         else if (Owner.CreatureType == ECreatureType.Player)
         {
