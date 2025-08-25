@@ -106,12 +106,7 @@ public class Monster : Creature
 
     protected override void UpdateAttack()
     {
-        base.UpdateAttack();
-
-        if (DetectPlayer(MONSTER_SEARCH_DISTANCE, Target) == false)
-        {
-            CreatureState = ECreatureState.Move;
-        }
+        
     }
 
     protected override void UpdateSkill()

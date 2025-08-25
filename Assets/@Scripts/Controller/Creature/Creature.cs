@@ -292,9 +292,7 @@ public class Creature : BaseObject
     protected virtual void UpdateMove() { }
     protected virtual void UpdateAttack() 
     {
-        //TODO
-        //SkillBase에서 작업한 NormalAttack을
-        //UpdateAttack에서 호출할 수 있도록 수정
+
     }
 
     protected virtual void UpdateSkill() 

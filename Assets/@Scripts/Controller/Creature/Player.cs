@@ -119,6 +119,12 @@ public class Player : Creature
             return;
         }
 
+        if (PlayerState == EPlayerState.Master) // 마스터는 적 체크 필요 x
+            return;
+
+        if (activePlayerState != PlayerState) // 현재 활성화된 playerState와 다르면 행동 X
+            return;
+
         //2. 몬스터 탐색 및 사냥
         //BaseObject를 반환하기 때문에 Creature로 다시 캐스팅
         Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.monsters) as Creature;
@@ -140,14 +146,19 @@ public class Player : Creature
             return;
         }
 
+        if (PlayerState == EPlayerState.Master) // 마스터는 적 체크 필요 x
+        {
+            if (_moveDir == Vector2.zero) // 조이스틱으로 움직이지않으면 
+                CreatureState = ECreatureState.Idle; // Idle 상태
+
+            return;
+        }
+
+        if (activePlayerState != PlayerState) // 현재 활성화된 playerState와 다르면 행동 X
+            return;
+
         //1. 주면에 몬스터가 있다면
         Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.monsters) as Creature;
-
-        if (PlayerState == EPlayerState.Master) // 마스터는 적 체크 필요 x
-            return;
-
-        if (activePlayerState == EPlayerState.Master) // 태그 눌러서 현재 활성화된게 마스터면
-            return;
 
         if (creature != null) 
         {
@@ -184,84 +195,18 @@ public class Player : Creature
 
     protected override void UpdateAttack()
     {
-        base.UpdateAttack();
-        CheckEnemy(PLAYER_SEARCH_DISTANCE);
+
     }
 
     protected override void UpdateDead()
     {
         base.UpdateDead();
     }
-
-    private void CheckEnemy(float detectionRadius) // 근처에 적이 있다면 Attack으로 바꿔주는 함수
-    {
-        if (PlayerState == EPlayerState.Master) // 마스터는 적 체크 필요 x
-            return;
-
-        if (activePlayerState == EPlayerState.Master) // 태그 눌러서 현재 활성화된게 마스터면
-            return;                                   // 서번트여도 체크 필요 X
-
-        if (DetectMonster(detectionRadius, Managers.Object.monsters) == true) // 실제 근처 적 체크 함수
-        {
-            // 적 발견 시 공격 상태로 전환 -> 스킬 상태로 전환
-            CreatureState = ECreatureState.Skill;
-
-        }
-        else // 근처에 적이 없다면
-        {
-            disappearMonster();
-        }
-    }
     #endregion
 
 
     // 근처에 몬스터 있다면 true 아니면 false 리턴
-    private bool DetectMonster(float detectionRadius, HashSet<Monster> monsters)
-    {
-
-        // 범위 기반 탐색
-        //Collider2D monster = Physics2D.OverlapCircle(transform.position, detectionRadius, MonsterLayer);
-
-        //if (monster != null)
-        //{
-        //    return true;
-        //}
-
-        //return false;
-
-        // hashSet에서 가장 가까운 적 탐색
-        if (monsters.Count == 0)
-            return false;
-
-        nearestDistanceSqr = float.MaxValue;
-        Creature target = null;
-
-        foreach (Monster monster in monsters) // 몬스터마다
-        {
-            float distanceSqr = (monster.transform.position - transform.position).sqrMagnitude; // 거리 계산
-
-            if (distanceSqr >= detectionRadius) // 거리가 일정 범위 이상이면 무시
-                continue;
-
-            if (distanceSqr < nearestDistanceSqr)
-            {
-                nearestDistanceSqr = distanceSqr;
-                target = monster;
-            }
-        }
-
-        if (target == null)
-        {
-            return false;
-        }
-
-        else
-        {
-            Target = target;
-            return true;
-        }
-
-    }
+    
 
     // 근처 몬스터 없을 때 실행되는 함수
     private void disappearMonster()
@@ -288,6 +233,7 @@ public class Player : Creature
         {
             transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
         }
+
     }
 
     private void HandleOnJoystickStateChanged(EJoystickState joystickState)
