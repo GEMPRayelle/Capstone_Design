@@ -151,6 +151,24 @@ public static class Define
         EndOfAirbone,//에어본이 끝난 경우 호출되는 종료
     }
 
+    public enum ArrowDirection 
+    {
+        None = 0,           // 방향 없음 (화살표 숨김)
+        Up = 1,             // 위쪽 방향
+        Down = 2,           // 아래쪽 방향
+        Left = 3,           // 왼쪽 방향
+        Right = 4,          // 오른쪽 방향
+        TopLeft = 5,        // ↖ 대각선 방향
+        BottomLeft = 6,     // ↙ 대각선 방향
+        TopRight = 7,       // ↗ 대각선 방향
+        BottomRight = 8,    // ↘ 대각선 방향
+        UpFinished = 9,     // 마지막 타일에서 위쪽 방향
+        DownFinished = 10,  // 마지막 타일에서 아래쪽 방향
+        LeftFinished = 11,  // 마지막 타일에서 왼쪽 방향
+        RightFinished = 12  // 마지막 타일에서 오른쪽 방향
+    }
+
+
     public static class SortingLayers
     {
         public const int UI_TAGBTN = 600;

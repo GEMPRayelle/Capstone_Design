@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static Define;
 
 //오브젝트들의 스폰과 디스폰을 관리할 클래스
@@ -49,6 +50,13 @@ public class ObjectManager
     {
         GameObject go = Managers.Resource.Instantiate(prefabName, pooling: true);
         go.transform.position = position;
+        return go;
+    }
+
+    public GameObject SpawnTileObject(GameObject tile, Transform tilePosition)
+    {
+        //임시로 ToString처리
+        GameObject go = Managers.Resource.Instantiate(tile.ToString(), tilePosition);
         return go;
     }
 

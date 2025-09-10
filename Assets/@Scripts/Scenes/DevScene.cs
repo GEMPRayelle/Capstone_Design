@@ -11,10 +11,8 @@ public class DevScene : BaseScene
         //Scene타입 정의
         SceneType = Define.EScene.DevScene;
 
-        //맵 생성
-        GameObject map = Managers.Resource.Instantiate("BaseMap");
-        map.transform.position = Vector3.zero;
-        map.name = "@BaseMap";
+        //DevScene에서 맵 로딩
+        Managers.Map.LoadMap("BaseMap");
 
         #region Player
         {

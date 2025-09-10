@@ -14,7 +14,7 @@ public class Creature : BaseObject
     public float Speed { get; protected set; } = 1.0f;
     public ECreatureType CreatureType { get; protected set; } = ECreatureType.None;
     public Data.CreatureData CreatureData { get; private set; }
-
+    public OverlayTile currentStandingTile;//현재 서 있는 타일 정보
     public EffectComponent Effects { get; set; }//이펙트(상태 이상효과) 목록
     protected EPlayerState activePlayerState { get; private set; } = EPlayerState.None; // 현재 활성화된 플레이어 스테이트(마스터, 서번트)에 대한 정보. 가져오기만 하면 됨
 
