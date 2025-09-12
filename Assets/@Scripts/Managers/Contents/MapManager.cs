@@ -9,6 +9,8 @@ public class MapManager
     public string MapName { get; private set; }
     public Grid CellGrid { get; private set; }
 
+    public GameObject MouseController { get; private set; }
+
     public Dictionary<Vector3Int, BaseObject> _cells = new Dictionary<Vector3Int, BaseObject>();
 
     public Vector3Int World2Cell(Vector3 worldPos) { return CellGrid.WorldToCell(worldPos); }
@@ -29,6 +31,8 @@ public class MapManager
         //TODO 맵 로딩시 할 작업들
         //var tileMaps = Map.transform.GetComponentsInChildren<Tilemap>().
         //    OrderByDescending(x => x.GetComponent<TilemapRenderer>().sortingOrder);
+
+        MouseController = Managers.Resource.Instantiate("MouseController");
         Transform forest = map.gameObject.GetComponentInChildren<Transform>();
         var tileMaps = forest.GetComponentsInChildren<Tilemap>()
             .Where(x => x.name == "Terrain_tile")
