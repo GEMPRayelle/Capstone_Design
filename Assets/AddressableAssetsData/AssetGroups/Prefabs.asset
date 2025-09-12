@@ -33,6 +33,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a399efa9582aee438f50c4b36936e9c
+    m_Address: Cursor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4ed5e22987842264f968e1074759fa65
     m_Address: DamageFont
     m_ReadOnly: 0
@@ -41,6 +47,18 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5a40e413d750cdb44b0fe888fbf55284
     m_Address: BaseMap
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d238ce89120f904c8e14484820a068c
+    m_Address: '@TileRoot'
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7eee9941f5c846b46bf3f11b76ffee6a
+    m_Address: OverlayTile
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad

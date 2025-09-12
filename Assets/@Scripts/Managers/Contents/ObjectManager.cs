@@ -53,10 +53,10 @@ public class ObjectManager
         return go;
     }
 
-    public GameObject SpawnTileObject(GameObject tile, Transform tilePosition)
+    public GameObject SpawnTileObject(string tileName, Transform tilePosition)
     {
         //임시로 ToString처리
-        GameObject go = Managers.Resource.Instantiate(tile.ToString(), tilePosition);
+        GameObject go = Managers.Resource.Instantiate(tileName, tilePosition);
         return go;
     }
 
@@ -125,7 +125,7 @@ public class ObjectManager
             ItemHolders.Add(itemHolder);
             // 아이템의 setinfo는 소환하는 몬스터의 OnDead에서 구현
         }
-
+        
         //오브젝트를 스폰하고 그 T타입에 obj를 리턴
         return obj as T;
     }

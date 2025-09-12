@@ -9,11 +9,6 @@ public class MapManager
     public string MapName { get; private set; }
     public Grid CellGrid { get; private set; }
 
-    #region Addressable
-    public GameObject overlayPrefab;
-    public GameObject overlayContainer;
-    #endregion
-
     public Dictionary<Vector3Int, BaseObject> _cells = new Dictionary<Vector3Int, BaseObject>();
 
     public Vector3Int World2Cell(Vector3 worldPos) { return CellGrid.WorldToCell(worldPos); }
@@ -32,10 +27,17 @@ public class MapManager
         //렌더링 순서 기준으로 정렬
 
         //TODO 맵 로딩시 할 작업들
-        var tileMaps = Map.transform.GetComponentsInChildren<Tilemap>().
-            OrderByDescending(x => x.GetComponent<TilemapRenderer>().sortingOrder);
+        //var tileMaps = Map.transform.GetComponentsInChildren<Tilemap>().
+        //    OrderByDescending(x => x.GetComponent<TilemapRenderer>().sortingOrder);
+        Transform forest = map.gameObject.GetComponentInChildren<Transform>();
+        var tileMaps = forest.GetComponentsInChildren<Tilemap>()
+            .Where(x => x.name == "Terrain_tile")
+            .OrderByDescending(x => x.GetComponent<TilemapRenderer>().sortingOrder);
         //타일 위치와 OverlayTile을 저장할 딕셔너리 초기화
         mapDict = new Dictionary<Vector2Int, OverlayTile>();
+
+        // tile root 생성
+        GameObject tileRoot = Managers.Resource.Instantiate("@TileRoot");
 
         //TileMap의 모든 셀을 순회
         foreach (var tm in tileMaps)
@@ -44,7 +46,7 @@ public class MapManager
             BoundsInt bounds = tm.cellBounds;
 
             //z축부터 역순으로 순회 (렌더링 순서 고려)
-            for (int z = bounds.max.z; z > bounds.min.z; z--)
+            for (int z = bounds.max.z - 1; z >= bounds.min.z; z--)
             {
                 for (int y = bounds.min.y; y < bounds.max.y; y++)
                 {
@@ -56,14 +58,16 @@ public class MapManager
                             //해당 위치에 OverlayTile이 없으면 생성
                             if (!mapDict.ContainsKey(new Vector2Int(x, y)))
                             {
-                                //OverlayTile 프리팹을 생성하고 부모 컨테이너에 배치
-                                var overlayTile = Managers.Object.SpawnTileObject(overlayPrefab, overlayContainer.transform);
                                 //타일의 월드 좌표 중심 위치 계산
-                                var cellWorldPosition = tm.GetCellCenterWorld(new Vector3Int(x, y, z));
+                                var cellWorldPosition = tm.GetCellCenterWorld(new Vector3Int(x, y, z + 1));
+
+                                //OverlayTile 프리팹을 생성하고 부모 컨테이너에 배치
+                                var overlayTile = Managers.Object.SpawnTileObject("OverlayTile", tileRoot.transform);
+
                                 //OverlayTile 위치 설정 (Z값 + 1로 살짝 띄워서 렌더링 우선순위 확보)
                                 overlayTile.transform.position = new Vector3(cellWorldPosition.x, cellWorldPosition.y, cellWorldPosition.z + 1);
-                                //OverlayTile의 렌더링 순서를 타일맵과 동일하게 설정
-                                overlayTile.GetComponent<SpriteRenderer>().sortingOrder = tm.GetComponent<TilemapRenderer>().sortingOrder;
+                                //OverlayTile의 렌더링 순서를 타일맵과 동일하게 설정, 테스트를 위해 2로 임의로 설정
+                                overlayTile.GetComponent<SpriteRenderer>().sortingOrder = 2; // tm.GetComponent<TilemapRenderer>().sortingOrder;
                                 //OverlayTile의 그리드 위치 정보 저장
                                 overlayTile.gameObject.GetComponent<OverlayTile>().gridLocation = new Vector3Int(x, y, z);
 

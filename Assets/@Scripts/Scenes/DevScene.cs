@@ -10,7 +10,7 @@ public class DevScene : BaseScene
 
         //Scene타입 정의
         SceneType = Define.EScene.DevScene;
-
+        
         //DevScene에서 맵 로딩
         Managers.Map.LoadMap("BaseMap");
 
@@ -23,9 +23,11 @@ public class DevScene : BaseScene
 
             //ObjectManager를 통한 플레이어 스폰
             //Player servant = Managers.Object.Spawn<Player>(Vector3.right, HERO_LION_ID);
-            Player servant = Managers.Object.Spawn<Player>(Vector3.right, HERO_WIZARD_ID);
-            servant.CreatureState = Define.ECreatureState.Idle;
-            servant.PlayerState = Define.EPlayerState.Servant;
+            //Player servant = Managers.Object.Spawn<Player>(Vector3.right, HERO_WIZARD_ID);
+            //servant.CreatureState = Define.ECreatureState.Idle;
+            //servant.PlayerState = Define.EPlayerState.Servant;
+
+            
 
             Player master = Managers.Object.Spawn<Player>(Vector3.left, heroTemplateID);
             master.CreatureState = Define.ECreatureState.Idle;
@@ -36,9 +38,9 @@ public class DevScene : BaseScene
 
             //카메라 설정
             CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
-            camera.Servant = servant;
             camera.Master = master;
-            camera.Target = servant;
+
+            
         }
         #endregion
 
@@ -54,7 +56,7 @@ public class DevScene : BaseScene
         #region UI
         {
             //조이스틱 UI 생성
-            Managers.UI.ShowBaseUI<UI_Joystick>();
+            //Managers.UI.ShowBaseUI<UI_Joystick>();
             // Tag 버튼 UI 생성
             UI_TagBtn tagBtn = Managers.UI.ShowBaseUI<UI_TagBtn>();
             tagBtn.gameObject.SetActive(false);

@@ -16,6 +16,8 @@ public class Creature : BaseObject
     public Data.CreatureData CreatureData { get; private set; }
     public OverlayTile currentStandingTile;//현재 서 있는 타일 정보
     public EffectComponent Effects { get; set; }//이펙트(상태 이상효과) 목록
+
+    public int movementRange = 3; // 캐릭터의 이동 가능 범위 (타일 수 기준)
     protected EPlayerState activePlayerState { get; private set; } = EPlayerState.None; // 현재 활성화된 플레이어 스테이트(마스터, 서번트)에 대한 정보. 가져오기만 하면 됨
 
     protected ECreatureState _creatureState = ECreatureState.None;
@@ -107,7 +109,6 @@ public class Creature : BaseObject
         //Skills
         Skills = gameObject.GetOrAddComponent<SkillComponent>();
         Skills.SetInfo(this, CreatureData);
-
         //Stat
         Hp = CreatureData.MaxHp;
         MaxHp = new CreatureStat(CreatureData.MaxHp);
@@ -119,6 +120,8 @@ public class Creature : BaseObject
         ThornsDamageRate = new CreatureStat(0);
         MoveSpeed = new CreatureStat(CreatureData.MoveSpeed);
         AttackSpeedRate = new CreatureStat(1);
+        Speed = CreatureData.speed;
+        movementRange = CreatureData.movementRange;
 
         //State
         CreatureState = ECreatureState.Idle;

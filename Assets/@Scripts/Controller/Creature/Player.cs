@@ -226,7 +226,6 @@ public class Player : Creature
             transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
         }
 
-        Debug.Log(CreatureState);
     }
 
     private void HandleOnJoystickStateChanged(EJoystickState joystickState)

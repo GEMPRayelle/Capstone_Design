@@ -1,23 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Tilemaps;
 using static Define;
 
 public class MouseController : InitBase
 {
-    #region addressable
-    public GameObject cursor; //타일 위에 마우스가 가리키는 커서 아이콘
-    public GameObject characterPrefab; //플레이어 프리팹
-    public float speed; //플레이어 이동 속도
-    public int movementRange = 3; // 캐릭터의 이동 가능 범위 (타일 수 기준)
-    #endregion
-
     private List<OverlayTile> path; //타일의 이동 경로 정보 리스트
     private List<OverlayTile> rangeFinderTiles;
-    private Creature _creature; //현재 생성된 캐릭터 정보
+    private Player _creature; //현재 생성된 캐릭터 정보
     private PathFinder _pathFinder; //경로 탐색기
     private ArrowTranslator arrowTranslator; // 경로 방향 화살표 계산기
     private bool isMoving; // 캐릭터가 이동 중인지 여부
+    private GameObject cursor;
 
     public override bool Init()
     {
@@ -31,19 +28,20 @@ public class MouseController : InitBase
         rangeFinderTiles = new List<OverlayTile>();
         isMoving = false;
 
+        cursor = Managers.Resource.Instantiate("Cursor");
         return true;
     }
 
     void LateUpdate()
     {
         RaycastHit2D? hit = GetFocusedOnTile();//마우스가 가리키는 타일 감지
-
         //타일이 감지 됐다면
         if (hit.HasValue)
         {
             //매 프레임마다 마우스 위치 확인 및 처리하는 작업
             OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>(); //타일의 정보를 가져옴
             cursor.transform.position = tile.transform.position; //커서의 위치를 해당 타일로 이동
+            Debug.Log(cursor.transform.position);
             cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder
                 = tile.transform.GetComponent<SpriteRenderer>().sortingOrder; //커서의 렌더링 순서 조절
 
@@ -78,10 +76,16 @@ public class MouseController : InitBase
                 //캐릭터가 생성되지 않았다면
                 if (_creature == null)
                 {
+                    int heroTemplateID = HERO_WIZARD_ID;
                     //_creature = Instantiate(characterPrefab).GetComponent<CharacterInfo>(); // 캐릭터 생성
-                    _creature = Managers.Object.Spawn<Creature>(Vector3.zero, 0); //Addressable에 등록된 characterPrefab으로 수정, Hero여도 상관없음
+                    _creature = Managers.Object.Spawn<Player>(tile.transform.position, heroTemplateID); //Addressable에 등록된 characterPrefab으로 수정, Hero여도 상관없음
+                    _creature.CreatureState = Define.ECreatureState.Idle;
+                    _creature.PlayerState = Define.EPlayerState.Servant;
                     PositionCharacterOnLine(tile); // 캐릭터 위치 설정
                     GetInRangeTiles(); // 이동 가능한 타일 계산 및 표시
+                    CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
+                    camera.Servant = _creature;
+                    camera.Target = _creature;
                 }
                 // 이미 캐릭터가 있다면
                 else
@@ -103,7 +107,7 @@ public class MouseController : InitBase
     private void MoveAlongPath()
     {
         //프레임 기반으로 이동하도록 계산
-        var step = speed * Time.deltaTime;
+        var step = _creature.Speed * Time.deltaTime;
 
         float zIndex = path[0].transform.position.z;//렌더링 순서용 타일 z값 저장
                                                     //캐릭터를 다음 타일 방향으로 이동
@@ -133,7 +137,7 @@ public class MouseController : InitBase
         //캐릭터 위치 설정 (약간 뒤로 띄움)
         _creature.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
         //렌더링 순서 설정
-        _creature.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
+        //_creature.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
         //캐릭터가 서 있는 타일 저장
         _creature.currentStandingTile = tile;
     }
@@ -145,17 +149,19 @@ public class MouseController : InitBase
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         //2D 좌표로 변환
         Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
-
         //해당 위치에 있는 모든 콜라이더 감지
         RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos2D, Vector2.zero);
-
         //마우스가 가리키고 있는 위치에 감지된 오브젝트가 
         if (hits.Length > 0)
         {
-            //z값 기준으로 가장 위에 있는 타일 반환
-            return hits.OrderByDescending(i => i.collider.transform.position.z).First();
+                //z값 기준으로 가장 위에 있는 타일 반환
+                return hits.OrderByDescending(i => i.collider.transform.position.z).First();
         }
 
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Debug.Log($"Hit {i}: {hits[i].collider.name}");
+        }
         //아무것도 감지 되지 않으면 null리턴
         return null;
     }
@@ -170,7 +176,7 @@ public class MouseController : InitBase
                 _creature.currentStandingTile.gridLocation.x, 
                 _creature.currentStandingTile.gridLocation.y
             ),
-            movementRange);
+            _creature.movementRange);
 
         // 계산된 타일들을 시각적으로 표시
         foreach (var item in rangeFinderTiles)

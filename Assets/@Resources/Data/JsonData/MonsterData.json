@@ -21,7 +21,9 @@
       "DefaultSkillId": 10001,
       "EnvSkillId": 0,
       "SkillAId": 0,
-      "SkillBId": 0
+      "SkillBId": 0,
+      "speed": 1.0,
+      "movementRange": 1
     },
     {
       "DropItemId": 400000,
@@ -44,7 +46,9 @@
       "DefaultSkillId": 10001,
       "EnvSkillId": 0,
       "SkillAId": 0,
-      "SkillBId": 0
+      "SkillBId": 0,
+      "speed": 1.0,
+      "movementRange": 1
     },
     {
       "DropItemId": 400000,
@@ -67,7 +71,9 @@
       "DefaultSkillId": 10001,
       "EnvSkillId": 0,
       "SkillAId": 0,
-      "SkillBId": 0
+      "SkillBId": 0,
+      "speed": 1.0,
+      "movementRange": 1
     },
     {
       "DropItemId": 400000,
@@ -90,7 +96,9 @@
       "DefaultSkillId": 10001,
       "EnvSkillId": 0,
       "SkillAId": 0,
-      "SkillBId": 0
+      "SkillBId": 0,
+      "speed": 1.0,
+      "movementRange": 1
     },
     {
       "DropItemId": 400000,
@@ -113,7 +121,9 @@
       "DefaultSkillId": 10003,
       "EnvSkillId": 0,
       "SkillAId": 0,
-      "SkillBId": 0
+      "SkillBId": 0,
+      "speed": 1.0,
+      "movementRange": 1
     },
     {
       "DropItemId": 400000,
@@ -136,7 +146,9 @@
       "DefaultSkillId": 10001,
       "EnvSkillId": 0,
       "SkillAId": 10004,
-      "SkillBId": 0
+      "SkillBId": 0,
+      "speed": 1.0,
+      "movementRange": 1
     }
   ]
 }

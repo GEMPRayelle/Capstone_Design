@@ -20,7 +20,9 @@
       "DefaultSkillId": 10001,
       "EnvSkillId": 0,
       "SkillAId": 0,
-      "SkillBId": 0
+      "SkillBId": 0,
+      "speed": 5.0,
+      "movementRange": 3
     },
     {
       "DataId": 201001,
@@ -42,7 +44,9 @@
       "DefaultSkillId": 10001,
       "EnvSkillId": 0,
       "SkillAId": 0,
-      "SkillBId": 0
+      "SkillBId": 0,
+      "speed": 1.0,
+      "movementRange": 3
     },
     {
       "DataId": 201002,
@@ -64,7 +68,9 @@
       "DefaultSkillId": 10002,
       "EnvSkillId": 0,
       "SkillAId": 10008,
-      "SkillBId": 10011
+      "SkillBId": 10011,
+      "speed": 1.0,
+      "movementRange": 3
     },
     {
       "DataId": 201003,
@@ -86,7 +92,9 @@
       "DefaultSkillId": 10001,
       "EnvSkillId": 0,
       "SkillAId": 10018,
-      "SkillBId": 10019
+      "SkillBId": 10019,
+      "speed": 1.0,
+      "movementRange": 3
     },
     {
       "DataId": 201004,
@@ -108,7 +116,9 @@
       "DefaultSkillId": 10001,
       "EnvSkillId": 0,
       "SkillAId": 0,
-      "SkillBId": 0
+      "SkillBId": 0,
+      "speed": 1.0,
+      "movementRange": 3
     },
     {
       "DataId": 201020,
@@ -130,7 +140,9 @@
       "DefaultSkillId": 10001,
       "EnvSkillId": 0,
       "SkillAId": 10020,
-      "SkillBId": 0
+      "SkillBId": 0,
+      "speed": 1.0,
+      "movementRange": 3
     }
   ]
 }

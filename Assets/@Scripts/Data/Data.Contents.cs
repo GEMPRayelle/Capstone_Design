@@ -30,6 +30,8 @@ namespace Data
         public int EnvSkillId;
         public int SkillAId;
         public int SkillBId;
+        public float speed;
+        public int movementRange;
     }
     #endregion
 

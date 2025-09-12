@@ -42,7 +42,8 @@ public static class Define
         Monster,
         Projectile, //발사체
         Effect,
-        ItemHolder
+        ItemHolder,
+        Tile
     }
 
     public enum ECreatureType 

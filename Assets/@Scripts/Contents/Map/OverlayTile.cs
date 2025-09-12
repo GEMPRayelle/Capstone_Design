@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Define;
 
-public class OverlayTile :  InitBase
+public class OverlayTile : InitBase
 {
     public int G; //start to current distance
     public int H; //current to end distance (
@@ -18,7 +18,7 @@ public class OverlayTile :  InitBase
 
     public override bool Init()
     {
-        if (base.Init() == false) 
+        if (base.Init() == false)
             return false;
 
         return true;
