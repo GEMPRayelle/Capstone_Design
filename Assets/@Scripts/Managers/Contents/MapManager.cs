@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static Define;
 
 public class MapManager
 {
@@ -18,13 +20,24 @@ public class MapManager
 
     public Dictionary<Vector2Int, OverlayTile> mapDict; //타일 위치와 OverlayTile을 매핑해서 저장
 
+    ECellCollisionType[,] _collision; //충돌 정보를 구분하여 처리할 2차원 배열
+
+    //맵에서 갈 수 있는 영역, x,y를 벗어난 위치로는 갈 수 없음
+    private int _MinX;
+    private int _MaxX;
+    private int _MinY;
+    private int _MaxY;
+
     public void LoadMap(string mapName)
     {
+        DestroyMap(); //다른 맵으로 넘어갈때 기존 맵 삭제
+
         //맵 생성
-        GameObject map = Managers.Resource.Instantiate("BaseMap");
+        GameObject map = Managers.Resource.Instantiate(mapName);
         map.transform.position = Vector3.zero;
         map.name = $"@Map_{mapName}";
 
+        #region Refactor
         //자식 오브젝트들 중 TileMap컴포넌트를 모두 가져오고
         //렌더링 순서 기준으로 정렬
 
@@ -83,6 +96,13 @@ public class MapManager
                 }
             }
         }
+        #endregion
+
+        Map = map;
+        MapName = mapName;
+        CellGrid = map.GetComponent<Grid>();
+
+        ParseCollisionData(map, mapName);
     }
 
     public void DestroyMap()
@@ -91,6 +111,50 @@ public class MapManager
 
         if (Map != null)
             Managers.Resource.Destroy(Map);
+    }
+    
+    //collision txt데이터를 파싱해서 그 정보를 찾아 2차원 배열에 기입할 함수
+    void ParseCollisionData(GameObject map, string mapName, string tilemap = "Tilemap_Collision")
+    {
+        //collision이라고 되어있는 자식들을 찾음
+        GameObject collision = Util.FindChild(map, tilemap, true);
+        //Collision 타일들이 실제로 보이면 안되기에 비활성화
+        if (collision != null) 
+            collision.SetActive(false);
+
+        //Collision 관련 파일을 읽어옴
+        TextAsset txt = Managers.Resource.Load<TextAsset>($"{mapName}Collision");
+        StringReader reader = new StringReader(txt.text);
+
+        //데이터 파일들을 파싱
+        _MinX = int.Parse(reader.ReadLine());
+        _MaxX = int.Parse(reader.ReadLine());
+        _MinY = int.Parse(reader.ReadLine());
+        _MaxY = int.Parse(reader.ReadLine());
+
+        int xCount = _MaxX - _MinX + 1;
+        int yCount = _MaxY - _MinY + 1;
+        _collision = new ECellCollisionType[xCount, yCount];
+
+        for (int y = 0; y < yCount; y++)
+        {
+            string line = reader.ReadLine();
+            for (int x = 0; x < xCount; x++)
+            {
+                switch (line[x])
+                {
+                    case Define.MAP_TOOL_WALL:
+                        _collision[x, y] = ECellCollisionType.Wall;
+                        break;
+                    case Define.MAP_TOOL_NONE:
+                        _collision[x, y] = ECellCollisionType.None;
+                        break;
+                    case Define.MAP_TOOL_SEMI_WALL:
+                        _collision[x, y] |= ECellCollisionType.SemiWall;
+                        break;
+                }
+            }
+        }
     }
 
     //주어진 타일을 기준으로 상하좌우 인접한 타일들을 찾아 반환하는 함수

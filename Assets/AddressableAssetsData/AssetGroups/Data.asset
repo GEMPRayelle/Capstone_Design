@@ -33,6 +33,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 28491723c07d1fb408410a05e9289d3f
+    m_Address: DevMapCollision
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 28aa7a48ba9979a4fb8227c6eda0efcd
     m_Address: SkillData
     m_ReadOnly: 0

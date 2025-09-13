@@ -12,7 +12,7 @@ public class DevScene : BaseScene
         SceneType = Define.EScene.DevScene;
         
         //DevScene에서 맵 로딩
-        Managers.Map.LoadMap("BaseMap");
+        Managers.Map.LoadMap("DevMap");
 
         #region Player
         {
@@ -22,17 +22,9 @@ public class DevScene : BaseScene
             //int heroTemplateID = HERO_VAMPIRE_ID;
 
             //ObjectManager를 통한 플레이어 스폰
-            //Player servant = Managers.Object.Spawn<Player>(Vector3.right, HERO_LION_ID);
-            //Player servant = Managers.Object.Spawn<Player>(Vector3.right, HERO_WIZARD_ID);
-            //servant.CreatureState = Define.ECreatureState.Idle;
-            //servant.PlayerState = Define.EPlayerState.Servant;
-
-            
-
-            Player master = Managers.Object.Spawn<Player>(Vector3.left, heroTemplateID);
+            Player master = Managers.Object.Spawn<Player>(new Vector3(4,0,0), heroTemplateID);
             master.CreatureState = Define.ECreatureState.Idle;
             master.PlayerState = Define.EPlayerState.Master;
-
 
             Managers.Game.PlayerState = Define.EPlayerState.Servant;
 

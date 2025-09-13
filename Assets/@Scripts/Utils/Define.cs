@@ -169,6 +169,12 @@ public static class Define
         RightFinished = 12  // 마지막 타일에서 오른쪽 방향
     }
 
+    public enum ECellCollisionType
+    {
+        None, //갈 수 있는 곳
+        SemiWall, //카메라만 갈 수 있는 곳
+        Wall, //지나갈 수 없는 곳
+    }
 
     public static class SortingLayers
     {
@@ -217,4 +223,8 @@ public static class Define
     public const int MONSTER_WOOD_COMMON_ID = 202004;
     public const int MONSTER_GOBLIN_ARCHER_ID = 202005;
     public const int MONSTER_BEAR_ID = 202006;
+
+    public const char MAP_TOOL_WALL = '0';//벽이라서 갈 수 없음
+    public const char MAP_TOOL_NONE = '1';//모두가 가능
+    public const char MAP_TOOL_SEMI_WALL = '2';//카메라만 가능
 }
