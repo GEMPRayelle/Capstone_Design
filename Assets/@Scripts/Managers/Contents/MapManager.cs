@@ -37,72 +37,60 @@ public class MapManager
         map.transform.position = Vector3.zero;
         map.name = $"@Map_{mapName}";
 
-        #region Refactor
-        //자식 오브젝트들 중 TileMap컴포넌트를 모두 가져오고
-        //렌더링 순서 기준으로 정렬
-
-        //TODO 맵 로딩시 할 작업들
-        //var tileMaps = Map.transform.GetComponentsInChildren<Tilemap>().
-        //    OrderByDescending(x => x.GetComponent<TilemapRenderer>().sortingOrder);
-
         MouseController = Managers.Resource.Instantiate("MouseController");
-        Transform forest = map.gameObject.GetComponentInChildren<Transform>();
-        var tileMaps = forest.GetComponentsInChildren<Tilemap>()
-            .Where(x => x.name == "Terrain_tile")
-            .OrderByDescending(x => x.GetComponent<TilemapRenderer>().sortingOrder);
+
         //타일 위치와 OverlayTile을 저장할 딕셔너리 초기화
         mapDict = new Dictionary<Vector2Int, OverlayTile>();
-
-        // tile root 생성
-        GameObject tileRoot = Managers.Resource.Instantiate("@TileRoot");
-
-        //TileMap의 모든 셀을 순회
-        foreach (var tm in tileMaps)
-        {
-            //TileMap의 셀 범위 가져오기
-            BoundsInt bounds = tm.cellBounds;
-
-            //z축부터 역순으로 순회 (렌더링 순서 고려)
-            for (int z = bounds.max.z - 1; z >= bounds.min.z; z--)
-            {
-                for (int y = bounds.min.y; y < bounds.max.y; y++)
-                {
-                    for (int x = bounds.min.x; x < bounds.max.x; x++)
-                    {
-                        //해당 위치에 타일이 존재하는지 확인
-                        if (tm.HasTile(new Vector3Int(x, y, z)))
-                        {
-                            //해당 위치에 OverlayTile이 없으면 생성
-                            if (!mapDict.ContainsKey(new Vector2Int(x, y)))
-                            {
-                                //타일의 월드 좌표 중심 위치 계산
-                                var cellWorldPosition = tm.GetCellCenterWorld(new Vector3Int(x, y, z + 1));
-
-                                //OverlayTile 프리팹을 생성하고 부모 컨테이너에 배치
-                                var overlayTile = Managers.Object.SpawnTileObject("OverlayTile", tileRoot.transform);
-
-                                //OverlayTile 위치 설정 (Z값 + 1로 살짝 띄워서 렌더링 우선순위 확보)
-                                overlayTile.transform.position = new Vector3(cellWorldPosition.x, cellWorldPosition.y, cellWorldPosition.z + 1);
-                                //OverlayTile의 렌더링 순서를 타일맵과 동일하게 설정, 테스트를 위해 2로 임의로 설정
-                                overlayTile.GetComponent<SpriteRenderer>().sortingOrder = 2; // tm.GetComponent<TilemapRenderer>().sortingOrder;
-                                //OverlayTile의 그리드 위치 정보 저장
-                                overlayTile.gameObject.GetComponent<OverlayTile>().gridLocation = new Vector3Int(x, y, z);
-
-                                //딕셔너리에 위치와 OverlayTile을 매핑해 저장
-                                mapDict.Add(new Vector2Int(x, y), overlayTile.gameObject.GetComponent<OverlayTile>());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        #endregion
 
         Map = map;
         MapName = mapName;
         CellGrid = map.GetComponent<Grid>();
 
         ParseCollisionData(map, mapName);
+
+        // _collision 배열을 순회하면서 OverlayTile 생성
+        int xCount = _MaxX - _MinX + 1;
+        int yCount = _MaxY - _MinY + 1;
+
+        for (int y = 0; y < yCount; y++)
+        {
+            for (int x = 0; x < xCount; x++)
+            {
+                //해당 위치에 타일이 존재하는지 확인 (None == 벽이 None)
+                if (_collision[x, y] == ECellCollisionType.None)
+                {
+                    // 배열 인덱스를 Grid 좌표로 변환
+                    // y는 읽을 때 역순 변환 필요(역순으로 저장되서)
+                    int GridX = _MinX + x;
+                    int GridY = _MaxY - y; // y축 역순 변환
+                    Vector2Int GridPos = new Vector2Int(GridX, GridY);
+
+                    //해당 위치에 OverlayTile이 없으면 생성
+                    if (!mapDict.ContainsKey(GridPos))
+                    {
+                        //OverlayTile 프리팹을 생성하고 부모 컨테이너에 배치
+                        var overlayTile = Managers.Object.SpawnTileObject("OverlayTile", Managers.Object.OverlayTileRoot);
+                        OverlayTile tile = overlayTile.GetComponent<OverlayTile>();
+                        Managers.Object.OverlayTiles.Add(tile);
+
+                        // Grid 좌표를 실제 월드 좌표로 변환
+                        Vector3 worldPosition = CellGrid.GetCellCenterWorld(new Vector3Int(GridX, GridY, 0));
+
+                        //OverlayTile 위치 설정 (Grid좌표에서 변환된 월드 좌표 사용)
+                        overlayTile.transform.position = new Vector3(worldPosition.x, worldPosition.y, 0);
+
+                        //OverlayTile의 렌더링 순서 설정, 테스트 위해 맨 위로
+                        overlayTile.GetComponent<SpriteRenderer>().sortingOrder = 11;
+
+                        //OverlayTile의 그리드 위치 정보 저장 (그리드 좌표)
+                        overlayTile.gameObject.GetComponent<OverlayTile>().gridLocation = new Vector3Int(GridX, GridY, 0);
+
+                        //딕셔너리에 그리드 좌표와 OverlayTile을 매핑해 저장
+                        mapDict.Add(GridPos, tile);
+                    }
+                }
+            }
+        }
     }
 
     public void DestroyMap()

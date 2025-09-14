@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
+using UnityEngine.WSA;
 using static Define;
 
 public class MouseController : InitBase
@@ -40,10 +41,14 @@ public class MouseController : InitBase
         {
             //매 프레임마다 마우스 위치 확인 및 처리하는 작업
             OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>(); //타일의 정보를 가져옴
+
+            if (tile == null)
+                return;
+
+            //if (isMoving == false)
             cursor.transform.position = tile.transform.position; //커서의 위치를 해당 타일로 이동
-            Debug.Log(cursor.transform.position);
-            cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder
-                = tile.transform.GetComponent<SpriteRenderer>().sortingOrder; //커서의 렌더링 순서 조절
+
+            cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder = tile.transform.GetComponent<SpriteRenderer>().sortingOrder + 1; //커서의 렌더링 순서 조절
 
             //이동 범위내 타일을 가리키고 있고 캐릭터가 이동 중이 아니라면
             if (rangeFinderTiles.Contains(tile) && !isMoving)

@@ -16,6 +16,7 @@ public class ObjectManager
     public HashSet<AttackEffect> attackEffects { get; } = new HashSet<AttackEffect>();
     public HashSet<EffectBase> Effects { get; } = new HashSet<EffectBase>();
     public HashSet<ItemHolder> ItemHolders { get; } = new HashSet<ItemHolder>();
+    public HashSet<OverlayTile> OverlayTiles { get; } = new HashSet<OverlayTile>();
 
     #region Roots
     public Transform PlayerRoot { get { return GetRootTransform("@Players"); } }
@@ -23,6 +24,7 @@ public class ObjectManager
     public Transform ProjectileRoot { get { return GetRootTransform("@Projectiles"); } }
     public Transform EffectRoot { get { return GetRootTransform("@Effects"); } }
     public Transform ItemHolderRoot { get { return GetRootTransform("@ItemHolders"); } }
+    public Transform OverlayTileRoot { get { return GetRootTransform("@OverlayTiles"); } }
 
     //각각의 오브젝트들을 모을 Root 오브젝트를 생성
     public Transform GetRootTransform(string name)
