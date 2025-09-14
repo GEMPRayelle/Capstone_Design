@@ -29,10 +29,6 @@ public class MonsterSpawner : BaseObject
         if (player != null)
             target = player.transform.GetChild(0).GetComponent<Rigidbody2D>();
 
-
-        Managers.Game.OnPlayerStateChanged -= HandleOnPlayerStateChanged;
-        Managers.Game.OnPlayerStateChanged += HandleOnPlayerStateChanged;
-
         _spawnPadding = Camera.main.orthographicSize / 2.0f;
         _spawnCoroutine = StartCoroutine(SpawnObjects());
 
@@ -76,22 +72,6 @@ public class MonsterSpawner : BaseObject
                 _spawnObjects.Add(monster);
 
             elapsed = 0.0f;
-        }
-    }
-
-    private void HandleOnPlayerStateChanged(EPlayerState playerstate)
-    {
-        StopSpawn();
-
-        switch (playerstate)
-        {
-            case EPlayerState.None:
-                break;
-            case EPlayerState.Master:
-                break;
-            case EPlayerState.Servant:
-                StartSpawn();
-                break;
         }
     }
 

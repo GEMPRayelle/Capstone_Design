@@ -48,7 +48,6 @@ public class UI_TagBtn : UI_Base
     #region Event Func
     public void OnClick(PointerEventData eventData)
     {
-        Managers.Game.InverserPlayerState();
         Managers.Game.InitGauge();
         gameObject.SetActive(false);
     }

@@ -18,7 +18,6 @@ public class Creature : BaseObject
     public EffectComponent Effects { get; set; }//이펙트(상태 이상효과) 목록
 
     public int movementRange = 3; // 캐릭터의 이동 가능 범위 (타일 수 기준)
-    protected EPlayerState activePlayerState { get; private set; } = EPlayerState.None; // 현재 활성화된 플레이어 스테이트(마스터, 서번트)에 대한 정보. 가져오기만 하면 됨
 
     protected ECreatureState _creatureState = ECreatureState.None;
     public virtual ECreatureState CreatureState
@@ -78,9 +77,6 @@ public class Creature : BaseObject
 
         ObjectType = EObjectType.Creature;
         CreatureState = ECreatureState.Idle;
-
-        Managers.Game.OnPlayerStateChanged -= HandleOnPlayerStateChanged;
-        Managers.Game.OnPlayerStateChanged += HandleOnPlayerStateChanged;
 
         return true;
     }
@@ -157,34 +153,6 @@ public class Creature : BaseObject
             default:
                 break; 
         }
-    }
-
-    // PlayerState 변환 시 작동하는 함수
-    private void HandleOnPlayerStateChanged(EPlayerState playerstate) 
-    {
-        switch (playerstate)
-        {
-            case EPlayerState.None:
-                break;
-            case EPlayerState.Master:
-                activePlayerState = EPlayerState.Master;
-                ChangedMaster();
-                break;
-            case EPlayerState.Servant:
-                activePlayerState = EPlayerState.Servant;
-                ChangedServent();
-                break;
-        }
-    }
-
-    protected virtual void ChangedMaster() // 마스터로 변경됬을 때 공통 로직 구현
-    {
-
-    }
-
-    protected virtual void ChangedServent() // 서번트로 변경 됬을 때 공통 로직 구현
-    {
-
     }
 
     #region Battle

@@ -123,18 +123,6 @@ public class Monster : Creature
     }
 
     protected override void UpdateDead() { }
-
-    protected override void ChangedMaster() // 서번트->마스터 변경 시 로직
-    {
-        base.ChangedMaster(); // Creature가 해야되는 공통 로직 호출
-        CreatureState = ECreatureState.Idle;
-    }
-
-    protected override void ChangedServent() // 마스터->서번트 변경 시 로직
-    {
-        base.ChangedServent(); // Creature가 해야되는 공통 로직 호출
-        CreatureState = ECreatureState.Move;
-    }
     #endregion
 
     #region Battle

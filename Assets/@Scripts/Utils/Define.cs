@@ -66,13 +66,6 @@ public static class Define
         Dead
     }
 
-    public enum EPlayerState
-    {
-        None,
-        Master,
-        Servant
-    }
-
     public enum EJoystickState
     {
         PointerDown,

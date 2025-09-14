@@ -12,7 +12,6 @@ public class Player : Creature
     public bool isNeedArrange { get; set; }//정리가 필요한지
 
     Vector2 _moveDir = Vector2.zero;
-    public EPlayerState PlayerState; //Master, Servant 상태를 관리
 
     public override ECreatureState CreatureState
     {
@@ -56,7 +55,6 @@ public class Player : Creature
             return false;
 
         CreatureType = ECreatureType.Player;
-        PlayerState = EPlayerState.None;
 
         _battleBarUI = GetComponentInChildren<UI_BattleBarWorldSpace>();
 
@@ -118,12 +116,6 @@ public class Player : Creature
             return;
         }
 
-        if (PlayerState == EPlayerState.Master) // 마스터는 적 체크 필요 x
-            return;
-
-        if (activePlayerState != PlayerState) // 현재 활성화된 playerState와 다르면 행동 X
-            return;
-
         //2. 몬스터 탐색 및 사냥
         //BaseObject를 반환하기 때문에 Creature로 다시 캐스팅
         Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.monsters) as Creature;
@@ -145,16 +137,8 @@ public class Player : Creature
             return;
         }
 
-        if (PlayerState == EPlayerState.Master) // 마스터는 적 체크 필요 x
-        {
-            if (_moveDir == Vector2.zero) // 조이스틱으로 움직이지않으면 
-                CreatureState = ECreatureState.Idle; // Idle 상태
-
-            return;
-        }
-
-        if (activePlayerState != PlayerState) // 현재 활성화된 playerState와 다르면 행동 X
-            return;
+        if (_moveDir == Vector2.zero) // 조이스틱으로 움직이지않으면 
+            CreatureState = ECreatureState.Idle; // Idle 상태
 
         //1. 주면에 몬스터가 있다면
         Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.monsters) as Creature;
@@ -216,23 +200,14 @@ public class Player : Creature
 
     private void Update()
     {
-        if (activePlayerState != PlayerState) // 현재 active된 PlayerState와 다르면 무시
-        {
-            return;
-        }
-
         if (CreatureState == ECreatureState.Move)
         {
             transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
         }
-
     }
 
     private void HandleOnJoystickStateChanged(EJoystickState joystickState)
     {
-        if (activePlayerState != PlayerState) // 현재 활성화된 PlayerState랑 다르다면 무시
-            return;
-
         switch (joystickState)
         {
             case EJoystickState.PointerDown:
@@ -251,9 +226,6 @@ public class Player : Creature
 
     private void HandleOnMoveDirChanged(Vector2 dir)
     {
-        if (activePlayerState != PlayerState) // 현재 활성화된 PlayerState랑 다르다면 무시
-            return;
-
         _moveDir = dir;
         // Debug.Log(dir);
 
@@ -263,34 +235,4 @@ public class Player : Creature
         //    Pivot.eulerAngles = new Vector3(0,0,angle);
         //}
     }
-
-    protected override void ChangedMaster() // 서번트->마스터 변경 시 로직
-    {
-        base.ChangedMaster(); // Creature가 해야되는 공통 로직 호출
-        if (PlayerState == EPlayerState.Servant)
-        {
-            CreatureState = ECreatureState.Idle;
-        }
-
-        else
-        {
-
-        }
-
-    }
-
-    protected override void ChangedServent() // 마스터->서번트 변경 시 로직
-    {
-        base.ChangedServent(); // Creature가 해야되는 공통 로직 호출
-        if (PlayerState == EPlayerState.Master)
-        {
-            CreatureState = ECreatureState.Idle;
-        }
-
-        else
-        {
-
-        }
-    }
-
 }

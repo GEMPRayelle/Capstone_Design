@@ -85,11 +85,9 @@ public class MouseController : InitBase
                     //_creature = Instantiate(characterPrefab).GetComponent<CharacterInfo>(); // 캐릭터 생성
                     _creature = Managers.Object.Spawn<Player>(tile.transform.position, heroTemplateID); //Addressable에 등록된 characterPrefab으로 수정, Hero여도 상관없음
                     _creature.CreatureState = Define.ECreatureState.Idle;
-                    _creature.PlayerState = Define.EPlayerState.Servant;
                     PositionCharacterOnLine(tile); // 캐릭터 위치 설정
                     GetInRangeTiles(); // 이동 가능한 타일 계산 및 표시
                     CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
-                    camera.Servant = _creature;
                     camera.Target = _creature;
                 }
                 // 이미 캐릭터가 있다면

@@ -24,15 +24,9 @@ public class DevScene : BaseScene
             //ObjectManager를 통한 플레이어 스폰
             Player master = Managers.Object.Spawn<Player>(new Vector3(4,0,0), heroTemplateID);
             master.CreatureState = Define.ECreatureState.Idle;
-            master.PlayerState = Define.EPlayerState.Master;
-
-            Managers.Game.PlayerState = Define.EPlayerState.Servant;
 
             //카메라 설정
             CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
-            camera.Master = master;
-
-            
         }
         #endregion
 
