@@ -44,8 +44,8 @@ public class DevScene : BaseScene
             //조이스틱 UI 생성
             //Managers.UI.ShowBaseUI<UI_Joystick>();
             // Tag 버튼 UI 생성
-            UI_TagBtn tagBtn = Managers.UI.ShowBaseUI<UI_TagBtn>();
-            tagBtn.gameObject.SetActive(false);
+            //UI_TagBtn tagBtn = Managers.UI.ShowBaseUI<UI_TagBtn>();
+            //tagBtn.gameObject.SetActive(false);
 
             Managers.UI.ShowBaseUI<UI_TagGauge>();
         }

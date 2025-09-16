@@ -171,7 +171,6 @@ public static class Define
 
     public static class SortingLayers
     {
-        public const int UI_TAGBTN = 600;
         public const int UI_JOYSTICK = 500;
         public const int UI_TagGauge = 400;
         public const int UI_HpBar = 400;
