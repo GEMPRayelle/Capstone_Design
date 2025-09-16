@@ -15,16 +15,21 @@ public class PathFinder
         //이미 탐색한 타일들 목록
         HashSet<OverlayTile> closedList = new HashSet<OverlayTile>();
 
-        if (inRangeTiles.Count > 0)
+
+        // 범위 내 클릭
+        if (inRangeTiles.Count > 0 && inRangeTiles.Contains(end) == true)
         {
             foreach (var item in inRangeTiles)
             {
                 searchableTiles.Add(item.grid2DLocation, Managers.Map.mapDict[item.grid2DLocation]);
             }
         }
-        else
+
+        // 범위 밖 클릭
+        if (inRangeTiles.Contains(end) == false && inRangeTiles.Count > 0)
         {
-            searchableTiles = Managers.Map.mapDict;
+            // MouseController에서 처리
+            return new List<OverlayTile>();
         }
 
         //시작 타일을 후보 목록에 추가

@@ -45,38 +45,64 @@ public class MouseController : InitBase
             if (tile == null)
                 return;
 
-            //if (isMoving == false)
-            cursor.transform.position = tile.transform.position; //커서의 위치를 해당 타일로 이동
+            if (isMoving == false)
+                cursor.transform.position = tile.transform.position; //커서의 위치를 해당 타일로 이동
 
             cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder = tile.transform.GetComponent<SpriteRenderer>().sortingOrder + 1; //커서의 렌더링 순서 조절
 
             //이동 범위내 타일을 가리키고 있고 캐릭터가 이동 중이 아니라면
-            if (rangeFinderTiles.Contains(tile) && !isMoving)
+            if (!isMoving && _creature != null)
             {
-                // 현재 위치에서 클릭한 타일까지 경로 계산
-                path = _pathFinder.FindPath(_creature.currentStandingTile, tile, rangeFinderTiles);
-
                 // 기존 화살표 제거
                 foreach (var item in rangeFinderTiles)
                 {
                     Managers.Map.mapDict[item.grid2DLocation].SetSprite(ArrowDirection.None);
                 }
 
-                // 경로 상의 타일에 방향 화살표 설정
-                for (int i = 0; i < path.Count; i++)
+                if (rangeFinderTiles.Contains(tile))
                 {
-                    var previousTile = i > 0 ? path[i - 1] : _creature.currentStandingTile;
-                    var futureTile = i < path.Count - 1 ? path[i + 1] : null;
+                    // 현재 위치에서 클릭한 타일까지 경로 계산
+                    path = _pathFinder.FindPath(_creature.currentStandingTile, tile, rangeFinderTiles);
 
-                    var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
-                    path[i].SetSprite(arrow);
+                    // 경로 상의 타일에 방향 화살표 설정
+                    for (int i = 0; i < path.Count; i++)
+                    {
+                        var previousTile = i > 0 ? path[i - 1] : _creature.currentStandingTile;
+                        var futureTile = i < path.Count - 1 ? path[i + 1] : null;
+
+                        var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
+                        path[i].SetSprite(arrow);
+                    }
                 }
+
+                else
+                {
+                    // 범위 밖 클릭 시 가장 가까운 범위 내 타일까지만 경로 표시
+                    OverlayTile closestRangeTile = GetClosestTileInRange(tile);
+                    if (closestRangeTile != null)
+                    {
+                        // 가장 가까운 범위 내 타일까지의 경로 계산
+                        path = _pathFinder.FindPath(_creature.currentStandingTile, closestRangeTile, rangeFinderTiles);
+
+                        // 경로 상의 타일에 방향 화살표 설정
+                        for (int i = 0; i < path.Count; i++)
+                        {
+                            var previousTile = i > 0 ? path[i - 1] : _creature.currentStandingTile;
+                            var futureTile = i < path.Count - 1 ? path[i + 1] : null;
+
+                            var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
+                            path[i].SetSprite(arrow);
+                        }
+                    }
+                }
+                
             }
+
 
             //마우스 왼쪽 클릭시
             if (Input.GetMouseButtonDown(0))
             {
-                tile.ShowTile(); // 타일 시각적으로 표시
+                // tile.ShowTile(); // 타일 시각적으로 표시
 
                 //캐릭터가 생성되지 않았다면
                 if (_creature == null)
@@ -90,21 +116,53 @@ public class MouseController : InitBase
                     CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
                     camera.Target = _creature;
                 }
+
                 // 이미 캐릭터가 있다면
                 else
                 {
                     isMoving = true; // 이동 시작
                     tile.HideTile(); // 클릭한 타일 숨김 처리
                 }
+
+                
+
             }
         }
 
         // 경로가 존재하고 이동 중이라면 캐릭터 이동 처리
         if (path.Count > 0 && isMoving)
         {
+            foreach (var tile in rangeFinderTiles)
+            {
+                tile.HideTile();
+            }
             MoveAlongPath();
+            
         }
     }
+
+    // 범위 밖 타일에서 가장 가까운 범위 내 타일을 찾는 함수
+    private OverlayTile GetClosestTileInRange(OverlayTile targetTile)
+    {
+        if (rangeFinderTiles == null || rangeFinderTiles.Count == 0)
+            return null;
+
+        OverlayTile closestTile = null;
+        float minDistance = float.MaxValue;
+
+        foreach (var rangeTile in rangeFinderTiles)
+        {
+            float distance = Vector2.Distance(targetTile.transform.position, rangeTile.transform.position);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestTile = rangeTile;
+            }
+        }
+
+        return closestTile;
+    }
+
 
     //캐릭터를 경로 따라 이동시키는 함수
     private void MoveAlongPath()
@@ -128,8 +186,16 @@ public class MouseController : InitBase
         // 경로가 끝났다면
         if (path.Count == 0)
         {
+            // 기존 화살표 제거
+            foreach (var item in rangeFinderTiles)
+            {
+                Managers.Map.mapDict[item.grid2DLocation].SetSprite(ArrowDirection.None);
+            }
+            
             GetInRangeTiles(); // 새로운 이동 범위 계산
             isMoving = false; // 이동 종료
+                              
+            
         }
 
     }
@@ -159,11 +225,6 @@ public class MouseController : InitBase
         {
                 //z값 기준으로 가장 위에 있는 타일 반환
                 return hits.OrderByDescending(i => i.collider.transform.position.z).First();
-        }
-
-        for (int i = 0; i < hits.Length; i++)
-        {
-            Debug.Log($"Hit {i}: {hits[i].collider.name}");
         }
         //아무것도 감지 되지 않으면 null리턴
         return null;

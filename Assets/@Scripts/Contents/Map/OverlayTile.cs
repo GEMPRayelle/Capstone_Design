@@ -21,17 +21,11 @@ public class OverlayTile : InitBase
         if (base.Init() == false)
             return false;
 
+        HideTile();
+
         return true;
     }
 
-    private void Update()
-    {
-        // 마우스 왼쪽 클릭 시 타일을 숨김 (테스트용 또는 디버깅용 기능)
-        if (Input.GetMouseButtonDown(0))
-        {
-            HideTile();
-        }
-    }
 
     public void HideTile()
     {
