@@ -172,7 +172,6 @@ public static class Define
     public static class SortingLayers
     {
         public const int UI_JOYSTICK = 500;
-        public const int UI_TagGauge = 400;
         public const int UI_HpBar = 400;
         public const int CREATURE = 350;
         public const int PROJECTILE = 310;
@@ -204,7 +203,6 @@ public static class Define
     public const float PLAYER_SEARCH_DISTANCE = 4.0f;
     public const float MONSTER_SEARCH_DISTANCE = 8.0f;
     public const float ITEM_DETECTION_DISTANCE = 10.0f;
-    public const float MAX_GAUGE = 500.0f;
     public const int HERO_WIZARD_ID = 201000;
     public const int HERO_KNIGHT_ID = 201001;
     public const int HERO_LION_ID = 201003;

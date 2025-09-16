@@ -69,7 +69,6 @@ public class ItemHolder : BaseObject
         if (player != null)
         {
             istracking = true;
-            Managers.Game.Gauge += exp;
             DWMovetoTarget(player, TransitionDuration, TransitionEase);
         }
     }

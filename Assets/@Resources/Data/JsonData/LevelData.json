@@ -3,7 +3,6 @@
     {
       "DataId": 900000,
       "Level": 1,
-      "MaxGauge": 500,
       "MaxMonsterNum": 100,
       "MonsterId": 202005
     }

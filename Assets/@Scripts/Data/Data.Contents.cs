@@ -284,7 +284,6 @@ namespace Data
     {
         public int DataId;
         public int Level;
-        public int MaxGauge;
         public int MaxMonsterNum;
         public int MonsterId; // TODO 스폰될 몬스터들 List로 작성?
     }

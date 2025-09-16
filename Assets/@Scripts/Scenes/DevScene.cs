@@ -47,7 +47,7 @@ public class DevScene : BaseScene
             //UI_TagBtn tagBtn = Managers.UI.ShowBaseUI<UI_TagBtn>();
             //tagBtn.gameObject.SetActive(false);
 
-            Managers.UI.ShowBaseUI<UI_TagGauge>();
+            //Managers.UI.ShowBaseUI<UI_TagGauge>();
         }
         #endregion
 
