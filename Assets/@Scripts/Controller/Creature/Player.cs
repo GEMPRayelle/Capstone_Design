@@ -136,9 +136,10 @@ public class Player : Creature
             CreatureState = ECreatureState.Move;
             return;
         }
-
-        if (_moveDir == Vector2.zero) // 조이스틱으로 움직이지않으면 
-            CreatureState = ECreatureState.Idle; // Idle 상태
+        
+        //TODO 나중에 조이스틱으로 움직이려고 할때 수정이 필요함 (Grid 이동때문에 임시 주석처리)
+        //if (_moveDir == Vector2.zero) // 조이스틱으로 움직이지않으면 
+        //    CreatureState = ECreatureState.Idle; // Idle 상태
 
         //1. 주면에 몬스터가 있다면
         Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.monsters) as Creature;
@@ -150,10 +151,7 @@ public class Player : Creature
             PlayerMoveState = EPlayerMoveState.TargetMonster;
             return;
         }
-        else
-        {
-            disappearMonster();
-        }
+        else { }
     }
 
     protected override void UpdateSkill()
@@ -182,29 +180,8 @@ public class Player : Creature
     {
         base.UpdateDead();
     }
-
-    // 근처 몬스터 없을 때 실행되는 함수
-    private void disappearMonster()
-    {
-        // 이동 입력에 따라 state를 idle이나 move로 변경
-        if (_moveDir == Vector2.zero)
-        {
-            CreatureState = ECreatureState.Idle;
-        }
-        else
-        {
-            CreatureState = ECreatureState.Move;
-        }
-    }
     #endregion
 
-    private void Update()
-    {
-        if (CreatureState == ECreatureState.Move)
-        {
-            transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
-        }
-    }
 
     private void HandleOnJoystickStateChanged(EJoystickState joystickState)
     {

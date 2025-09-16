@@ -95,7 +95,6 @@ public class MouseController : InitBase
                         }
                     }
                 }
-                
             }
 
 
@@ -122,10 +121,8 @@ public class MouseController : InitBase
                 {
                     isMoving = true; // 이동 시작
                     tile.HideTile(); // 클릭한 타일 숨김 처리
+                    _creature.CreatureState = ECreatureState.Move;
                 }
-
-                
-
             }
         }
 
@@ -137,7 +134,6 @@ public class MouseController : InitBase
                 tile.HideTile();
             }
             MoveAlongPath();
-            
         }
     }
 
@@ -167,6 +163,10 @@ public class MouseController : InitBase
     //캐릭터를 경로 따라 이동시키는 함수
     private void MoveAlongPath()
     {
+        var current = _creature.SkeletonAnim.AnimationState.GetCurrent(0);
+        Debug.Log($"Current Anim: {current.Animation.Name}, loop:{current.Loop}, trackTime: {current.TrackTime}");
+        _creature.CreatureState = ECreatureState.Move;
+
         //프레임 기반으로 이동하도록 계산
         var step = _creature.Speed * Time.deltaTime;
 
@@ -194,10 +194,8 @@ public class MouseController : InitBase
             
             GetInRangeTiles(); // 새로운 이동 범위 계산
             isMoving = false; // 이동 종료
-                              
-            
+            _creature.CreatureState = ECreatureState.Idle;                     
         }
-
     }
 
     //캐릭터를 타일에 정확한 위치에 보내도록 보정시키는 함수
