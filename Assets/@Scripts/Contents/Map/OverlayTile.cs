@@ -51,7 +51,7 @@ public class OverlayTile : InitBase
             GetComponentsInChildren<SpriteRenderer>()[1].sprite = arrows[(int)d];
 
             //화살표의 렌더링 순서를 타일과 동일하게 설정
-            GetComponentsInChildren<SpriteRenderer>()[1].sortingOrder = gameObject.GetComponent<SpriteRenderer>().sortingOrder;
+            GetComponentsInChildren<SpriteRenderer>()[1].sortingOrder = gameObject.GetComponent<SpriteRenderer>().sortingOrder + 1;
         }
     }
 

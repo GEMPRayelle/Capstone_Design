@@ -36,8 +36,8 @@ public class MouseController : InitBase
     void LateUpdate()
     {
         RaycastHit2D? hit = GetFocusedOnTile();//마우스가 가리키는 타일 감지
-        //타일이 감지 됐다면
-        if (hit.HasValue)
+        //타일이 감지 됐다면, 이동중이 아닐때만 감지
+        if (hit.HasValue && isMoving == false)
         {
             //매 프레임마다 마우스 위치 확인 및 처리하는 작업
             OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>(); //타일의 정보를 가져옴
@@ -48,7 +48,8 @@ public class MouseController : InitBase
             if (isMoving == false)
                 cursor.transform.position = tile.transform.position; //커서의 위치를 해당 타일로 이동
 
-            cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder = tile.transform.GetComponent<SpriteRenderer>().sortingOrder + 1; //커서의 렌더링 순서 조절
+            cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder
+                = tile.transform.GetComponent<SpriteRenderer>().sortingOrder + 1; //커서의 렌더링 순서 조절
 
             //이동 범위내 타일을 가리키고 있고 캐릭터가 이동 중이 아니라면
             if (!isMoving && _creature != null)
@@ -134,6 +135,17 @@ public class MouseController : InitBase
                 tile.HideTile();
             }
             MoveAlongPath();
+        }
+
+        // 경로가 없거나, 이동중이 아닌경우
+        else if ((path.Count == 0 || isMoving == false) && _creature != null)
+        {
+            _creature.CreatureState = ECreatureState.Idle;
+            foreach (var tile in rangeFinderTiles)
+            {
+                tile.ShowTile();
+            }
+            isMoving = false;
         }
     }
 
