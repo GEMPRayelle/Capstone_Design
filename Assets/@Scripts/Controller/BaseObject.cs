@@ -160,4 +160,59 @@ public class BaseObject : InitBase
         Debug.Log("OnAnimEventHandler");
     }
     #endregion
+
+    #region Map
+    public bool LerpCellPosCompleted { get; protected set; }
+    Vector3Int _cellPos;
+    public Vector3Int CellPos //Grid상에서 오브젝트 위치
+    {
+        get { return _cellPos; }
+        protected set
+        {
+            _cellPos = value;
+        }
+    }
+
+    public void SetCellPos(Vector3Int cellPos, bool forceMove = false)
+    {
+        CellPos = cellPos;
+        LerpCellPosCompleted = false;
+
+        //true일경우 cell위치와 transform위치랑 완벽하게 일치하게 됨
+        if (forceMove)//forceMove가 true라면
+        {
+            //바로 그 위치로 이동함
+            transform.position = Managers.Map.Cell2World(CellPos);
+            //보간처리를 무시하고 바로 이동하게함
+            LerpCellPosCompleted = true;
+        }
+    }
+
+    //정확하게 Cell위치에 있지 않은 물체를 자연스럽게 이동시킴
+    public void LerpToCellPos(float moveSpeed)
+    {
+        //true라면 이동이 끝난 상태라 Lerp를 할 필요 없음
+        if (LerpCellPosCompleted)
+            return;
+
+        //World좌표와 Grid좌표 사이를 보간해야함
+        Vector3 destPos = Managers.Map.Cell2World(CellPos);
+        Vector3 dir = destPos - transform.position;
+
+        if (dir.x < 0)
+            LookLeft = true;
+        else
+            LookLeft = false;
+        if (dir.magnitude < 0.01f)
+        {
+            transform.position = destPos;
+            LerpCellPosCompleted = true;
+            return;
+        }
+
+        //실제 이동
+        float moveDist = Mathf.Min(dir.magnitude, moveSpeed * Time.deltaTime);
+        transform.position += dir.normalized * moveDist;
+    }
+    #endregion
 }

@@ -40,6 +40,7 @@ public static class Define
         Creature,//생명체
         Env,//주변과 상호작용할 오브젝트
         Monster,
+        Npc,
         Projectile, //발사체
         Effect,
         ItemHolder,

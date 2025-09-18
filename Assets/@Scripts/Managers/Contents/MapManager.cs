@@ -1,3 +1,4 @@
+using NUnit;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -47,6 +48,8 @@ public class MapManager
         CellGrid = map.GetComponent<Grid>();
 
         ParseCollisionData(map, mapName);
+
+        SpawnObjectByTileData(map, mapName);
 
         // _collision 배열을 순회하면서 OverlayTile 생성
         int xCount = _MaxX - _MinX + 1;
@@ -140,6 +143,47 @@ public class MapManager
                     case Define.MAP_TOOL_SEMI_WALL:
                         _collision[x, y] |= ECellCollisionType.SemiWall;
                         break;
+                }
+            }
+        }
+    }
+
+    void SpawnObjectByTileData(GameObject map, string mapName, string tileMap = "Tilemap_Object")
+    {
+        Tilemap tm = Util.FindChild<Tilemap>(map, tileMap, true);
+
+        if (tm != null)
+            tm.gameObject.SetActive(false);
+
+        for (int y = tm.cellBounds.yMax; y >= tm.cellBounds.yMin; y--)
+        {
+            for (int x = tm.cellBounds.xMin; x <= tm.cellBounds.xMax; x++)
+            {
+                //맵을 전부 순회해서 CustomTile이 있는지 탐색
+                Vector3Int cellPos = new Vector3Int(x, y, 0);
+                CustomTile tile = tm.GetTile(cellPos) as CustomTile;
+                if (tile == null)
+                    continue;
+
+                //존재한다면 오브젝트 타입에 따라 각 로직 실행
+                if (tile.ObjectType == Define.EObjectType.Env)
+                {
+                    //Vector3 worldPos = Cell2World(cellPos);
+                    //Env env = Managers.Object.Spawn<Env>(worldPos, tile.DataId);
+                    //env.SetCellPos(cellPos, true);
+                }
+                else
+                {
+                    if (tile.ObjectType == Define.EObjectType.Monster)
+                    {
+                        Vector3 worldPos = Cell2World(cellPos);
+                        Monster monster = Managers.Object.Spawn<Monster>(worldPos, tile.DataId);
+                        monster.SetCellPos(cellPos, true);
+                    }
+                    else if (tile.ObjectType == Define.EObjectType.Npc)
+                    {
+
+                    }
                 }
             }
         }

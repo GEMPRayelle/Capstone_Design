@@ -82,7 +82,8 @@ public class MapEditor : MonoBehaviour
                 continue;
             
             //Asset을 만들어서 Scriptable Object에 정보를 기입함
-            CustomTile customTile = ScriptableObject.CreateInstance<CustomTile>();
+            //생성한 에셋이 Tile이 되어 팔레트에다가 올려놓고 맵툴로서 오브젝트를 찍어놓는 역할을 함
+            CustomTile customTile = ScriptableObject.CreateInstance<CustomTile>(); //CustomTile 타입으로 에셋을 만들어줌
             customTile.Name = data.DescriptionTextID;
             string spriteName = data.IconImage;
             spriteName = spriteName.Replace(".sprite", "");
