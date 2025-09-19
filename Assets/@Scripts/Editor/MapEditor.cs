@@ -2,14 +2,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using static Define;
-using VFolders.Libs;
-
-
-
-
-
 
 #if UNITY_EDITOR
 using Newtonsoft.Json;
@@ -94,6 +87,36 @@ public class MapEditor : MonoBehaviour
             customTile.ObjectType = EObjectType.Monster;
             string name = $"{data.DataId}_{data.DescriptionTextID}";
             string path = "Assets/@Resources/TileMaps/01_asset/Dev/Monster"; //새로 만들 에셋 경로
+            path = Path.Combine(path, $"{name}.Asset");
+
+            if (path == "")
+                continue;
+
+            if (File.Exists(path))
+                continue;
+
+            AssetDatabase.CreateAsset(customTile, path);
+        }
+        #endregion
+
+        #region Player
+        Dictionary<int, Data.HeroData> HeroDic = LoadJson<Data.HeroDataLoader, int, Data.HeroData>("HeroData").MakeDict();
+        foreach (var data in HeroDic.Values)
+        {
+            if (data.DataId < 201000)
+                continue;
+
+            CustomTile customTile = ScriptableObject.CreateInstance<CustomTile>();
+            customTile.Name = data.DescriptionTextID;
+            string spriteName = data.IconImage;
+            spriteName = spriteName.Replace(".sprite", "");
+
+            Sprite spr = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Players/{spriteName}/{spriteName}.png");
+            customTile.sprite = spr;
+            customTile.DataId = data.DataId;
+            customTile.ObjectType = EObjectType.Player;
+            string name = $"{data.DataId}_{data.DescriptionTextID}";
+            string path = "Assets/@Resources/TileMaps/01_asset/Dev/Players"; //새로 만들 에셋 경로
             path = Path.Combine(path, $"{name}.Asset");
 
             if (path == "")

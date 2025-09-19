@@ -74,28 +74,21 @@ public class ObjectManager
         //오브젝트를 아래에서 타입에 따라 구분
         BaseObject obj = go.GetComponent<BaseObject>();
 
-        //Creature 타입의 오브젝트라면
-        if (obj.ObjectType == EObjectType.Creature)
+        //플레이어 타입의 오브젝트라면
+        if (obj.ObjectType == EObjectType.Player)
         {
-            //TODO
-            Creature creature = go.GetComponent<Creature>();
-            switch (creature.ObjectType) 
-            {
-                case EObjectType.Player:
-                    obj.transform.parent = PlayerRoot;
-                    Player player = creature as Player;
-                    players.Add(player);
-                    player.SetInfo(templateId);
-                    break;
-                case EObjectType.Monster:
-                    obj.transform.parent = MonsterRoot;
-                    Monster monster = creature as Monster;
-                    monsters.Add(monster);
-                    monster.SetInfo(templateId);
-                    break;
-            }
-
-            //Creature에 기본값을 세팅
+            obj.transform.parent = PlayerRoot;
+            Player player = go.GetComponent<Player>();
+            players.Add(player);
+            player.SetInfo(templateId);
+        }
+        //몬스터 타입의 오브젝트라면
+        else if (obj.ObjectType == EObjectType.Monster)
+        {
+            obj.transform.parent = MonsterRoot;
+            Monster monster = go.GetComponent<Monster>();
+            monsters.Add(monster);
+            monster.SetInfo(templateId);
         }
         else if (obj.ObjectType == EObjectType.Projectile)
         {

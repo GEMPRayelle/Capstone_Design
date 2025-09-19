@@ -16,14 +16,14 @@ public class DevScene : BaseScene
 
         #region Player
         {
-            int heroTemplateID = HERO_KNIGHT_ID;
+            //int heroTemplateID = HERO_KNIGHT_ID;
             //int heroTemplateID = HERO_WIZARD_ID;
             //int heroTemplateID = HERO_LION_ID;
             //int heroTemplateID = HERO_VAMPIRE_ID;
 
             //ObjectManager를 통한 플레이어 스폰
-            Player master = Managers.Object.Spawn<Player>(new Vector3(4,0,0), heroTemplateID);
-            master.CreatureState = Define.ECreatureState.Idle;
+            //Player master = Managers.Object.Spawn<Player>(new Vector3(4,0,0), heroTemplateID);
+            //master.CreatureState = Define.ECreatureState.Idle;
 
             //카메라 설정
             CameraController camera = Camera.main.GetOrAddComponent<CameraController>();

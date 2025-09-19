@@ -180,6 +180,12 @@ public class MapManager
                         Monster monster = Managers.Object.Spawn<Monster>(worldPos, tile.DataId);
                         monster.SetCellPos(cellPos, true);
                     }
+                    else if(tile.ObjectType == Define.EObjectType.Player)
+                    {
+                        Vector3 worldPos = Cell2World(cellPos);
+                        Player player = Managers.Object.Spawn<Player>(worldPos, tile.DataId);
+                        player.SetCellPos(cellPos, true);
+                    }
                     else if (tile.ObjectType == Define.EObjectType.Npc)
                     {
 

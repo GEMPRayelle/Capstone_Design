@@ -45,6 +45,9 @@ public class ResourceManager
         if (pooling)
             return Managers.Pool.Pop(prefab);
 
+        if (prefab == null)
+            Debug.Log($"{prefab}이 없음");
+
         GameObject go = Object.Instantiate(prefab, parent);
         go.name = prefab.name;
 
