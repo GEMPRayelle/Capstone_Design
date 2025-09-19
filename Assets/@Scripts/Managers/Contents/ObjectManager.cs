@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -7,16 +8,23 @@ using static Define;
 //오브젝트들의 스폰과 디스폰을 관리할 클래스
 public class ObjectManager
 {
-    public Player Players { get; private set; }
-
-    public HashSet<Player> players { get; } = new HashSet<Player>();
-    public HashSet<Monster> monsters { get; } = new HashSet<Monster>();
+    public HashSet<Player> Players { get; } = new HashSet<Player>();
+    public HashSet<Monster> Monsters { get; } = new HashSet<Monster>();
     public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
 
     public HashSet<AttackEffect> attackEffects { get; } = new HashSet<AttackEffect>();
     public HashSet<EffectBase> Effects { get; } = new HashSet<EffectBase>();
     public HashSet<ItemHolder> ItemHolders { get; } = new HashSet<ItemHolder>();
     public HashSet<OverlayTile> OverlayTiles { get; } = new HashSet<OverlayTile>();
+
+    public List<Player> LivingPlayerList
+    {
+        get { return Players.Where(player => player.IsAlive).ToList(); }
+    }
+    public List<Monster> LivingMonsterList
+    {
+        get { return Monsters.Where(monster => monster.IsAlive).ToList(); }
+    }
 
     #region Roots
     public Transform PlayerRoot { get { return GetRootTransform("@Players"); } }
@@ -79,7 +87,7 @@ public class ObjectManager
         {
             obj.transform.parent = PlayerRoot;
             Player player = go.GetComponent<Player>();
-            players.Add(player);
+            Players.Add(player);
             player.SetInfo(templateId);
         }
         //몬스터 타입의 오브젝트라면
@@ -87,7 +95,7 @@ public class ObjectManager
         {
             obj.transform.parent = MonsterRoot;
             Monster monster = go.GetComponent<Monster>();
-            monsters.Add(monster);
+            Monsters.Add(monster);
             monster.SetInfo(templateId);
         }
         else if (obj.ObjectType == EObjectType.Projectile)
@@ -136,11 +144,11 @@ public class ObjectManager
             {
                 case EObjectType.Player:
                     Player player = creature as Player;
-                    players.Remove(player);
+                    Players.Remove(player);
                     break;
                 case EObjectType.Monster:
                     Monster monster = creature as Monster;
-                    monsters.Remove(monster);
+                    Monsters.Remove(monster);
                     break;
             }
         }

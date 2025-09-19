@@ -118,7 +118,7 @@ public class Player : Creature
 
         //2. 몬스터 탐색 및 사냥
         //BaseObject를 반환하기 때문에 Creature로 다시 캐스팅
-        Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.monsters) as Creature;
+        Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.Monsters) as Creature;
         if (creature != null)
         {
             Target = creature;
@@ -142,7 +142,7 @@ public class Player : Creature
         //    CreatureState = ECreatureState.Idle; // Idle 상태
 
         //1. 주면에 몬스터가 있다면
-        Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.monsters) as Creature;
+        Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.Monsters) as Creature;
 
         if (creature != null) 
         {

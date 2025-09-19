@@ -50,6 +50,7 @@ MonoBehaviour:
     - d48b493a4dd268d41a0908011be226f1
     - 378b7d9bd6dfb5e45943d291d39b2999
     - 0395aa1883f3b4949a0addbbb050a0a9
+    - eb4b8747c32f15c41a7e795bf88874a8
     values:
     - colorIndex: 2
       iconNameOrGuid: 
@@ -108,9 +109,9 @@ MonoBehaviour:
     - colorIndex: 1
       iconNameOrGuid: 
     - colorIndex: 6
-      iconNameOrGuid: cs Script Icon
+      iconNameOrGuid: ComputeShader Icon
     - colorIndex: 3
-      iconNameOrGuid: 
+      iconNameOrGuid: SceneAsset Icon
     - colorIndex: 0
       iconNameOrGuid: Prefab Icon
     - colorIndex: 0
@@ -118,8 +119,10 @@ MonoBehaviour:
     - colorIndex: 0
       iconNameOrGuid: Font Icon
     - colorIndex: 0
-      iconNameOrGuid: AudioSource Icon
+      iconNameOrGuid: AudioClip Icon
     - colorIndex: 10
       iconNameOrGuid: 
     - colorIndex: 0
-      iconNameOrGuid: ComputeShader Icon
+      iconNameOrGuid: cs Script Icon
+    - colorIndex: 0
+      iconNameOrGuid: TerrainData Icon

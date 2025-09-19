@@ -23,10 +23,12 @@ public class Managers : Singleton<Managers>
     private GameManager _game = new GameManager();
     private ObjectManager _object = new ObjectManager();
     private MapManager _map = new MapManager();
+    private TurnManager _turn = new TurnManager();
 
     public static GameManager Game { get { return Instance?._game; } }
     public static ObjectManager Object { get { return Instance?._object; } }
     public static MapManager Map { get { return Instance?._map; } }
+    public static TurnManager Turn { get { return Instance?._turn; } }
     #endregion
 
 }

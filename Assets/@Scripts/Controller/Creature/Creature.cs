@@ -33,6 +33,11 @@ public class Creature : BaseObject
         }
     }
 
+    public bool IsAlive
+    {
+        get { return _creatureState != ECreatureState.Dead; }
+    }
+
     protected float AttackDistance
     {
         get
@@ -215,6 +220,21 @@ public class Creature : BaseObject
         }
 
         return target;
+    }
+
+    public List<SkillBase> GetUsableSkillList()
+    {
+        List<SkillBase> canUsableSkillList = new List<SkillBase>();
+        foreach(SkillBase skill in Skills.SkillList)
+        {
+            //if (skill.IsReadytoUse)
+            //{
+            //    canUsableSkillList.Add(skill);
+            //}
+        }
+
+        canUsableSkillList.Add(Skills.DefaultSkill); 
+        return canUsableSkillList;
     }
     #endregion
 
