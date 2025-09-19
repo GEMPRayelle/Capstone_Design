@@ -92,12 +92,12 @@ public abstract class SkillBase : InitBase
         excludeMask.AddLayer(Define.ELayer.Obstacle);
 
         //Exception
-        switch (owner.CreatureType)
+        switch (owner.ObjectType)
         {
-            case Define.ECreatureType.Player:
+            case Define.EObjectType.Player:
                 excludeMask.AddLayer(Define.ELayer.Player);//자기 자신과는 충돌하면 안됨
                 break;
-            case Define.ECreatureType.Monster:
+            case Define.EObjectType.Monster:
                 excludeMask.AddLayer(Define.ELayer.Monster);
                 break;
         }

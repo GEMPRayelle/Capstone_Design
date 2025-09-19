@@ -54,7 +54,7 @@ public class Player : Creature
         if (base.Init() == false)
             return false;
 
-        CreatureType = ECreatureType.Player;
+        ObjectType = EObjectType.Player;
 
         _battleBarUI = GetComponentInChildren<UI_BattleBarWorldSpace>();
 

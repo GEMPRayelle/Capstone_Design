@@ -38,6 +38,7 @@ public static class Define
     {
         None,
         Creature,//생명체
+        Player,
         Env,//주변과 상호작용할 오브젝트
         Monster,
         Npc,
@@ -46,15 +47,6 @@ public static class Define
         ItemHolder,
         Tile
     }
-
-    public enum ECreatureType 
-    {
-        None,
-        Player,
-        Monster,
-        Npc
-    }
-
 
     public enum ECreatureState
     {

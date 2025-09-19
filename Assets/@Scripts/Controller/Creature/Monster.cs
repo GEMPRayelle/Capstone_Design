@@ -47,7 +47,7 @@ public class Monster : Creature
         if (base.Init() == false)
             return false;
 
-        CreatureType = ECreatureType.Monster;
+        ObjectType = EObjectType.Monster;
 
         Speed = 2.5f;
         rigid = GetComponent<Rigidbody2D>();

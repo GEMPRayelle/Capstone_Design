@@ -12,7 +12,6 @@ public class Creature : BaseObject
     public BaseObject Target { get; protected set; } //찾아가려는 타겟
     public SkillComponent Skills { get; protected set; } //현재 가지고있는 스킬
     public float Speed { get; protected set; } = 1.0f;
-    public ECreatureType CreatureType { get; protected set; } = ECreatureType.None;
     public Data.CreatureData CreatureData { get; private set; }
     public OverlayTile currentStandingTile;//현재 서 있는 타일 정보
     public EffectComponent Effects { get; set; }//이펙트(상태 이상효과) 목록
@@ -87,7 +86,7 @@ public class Creature : BaseObject
         DataTemplateID = templateID;
 
         //데이터를 긁어오지 못했을경우 예외처리없이 크래시처리
-        if (CreatureType == ECreatureType.Player)
+        if (ObjectType == EObjectType.Player)
             CreatureData = Managers.Data.HeroDic[templateID];
         else
             CreatureData = Managers.Data.MonsterDic[templateID];

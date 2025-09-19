@@ -79,15 +79,15 @@ public class ObjectManager
         {
             //TODO
             Creature creature = go.GetComponent<Creature>();
-            switch (creature.CreatureType) 
+            switch (creature.ObjectType) 
             {
-                case ECreatureType.Player:
+                case EObjectType.Player:
                     obj.transform.parent = PlayerRoot;
                     Player player = creature as Player;
                     players.Add(player);
                     player.SetInfo(templateId);
                     break;
-                case ECreatureType.Monster:
+                case EObjectType.Monster:
                     obj.transform.parent = MonsterRoot;
                     Monster monster = creature as Monster;
                     monsters.Add(monster);
@@ -139,13 +139,13 @@ public class ObjectManager
         if (obj.ObjectType == EObjectType.Creature)
         {
             Creature creature = obj.GetComponent<Creature>();
-            switch (creature.CreatureType)
+            switch (creature.ObjectType)
             {
-                case ECreatureType.Player:
+                case EObjectType.Player:
                     Player player = creature as Player;
                     players.Remove(player);
                     break;
-                case ECreatureType.Monster:
+                case EObjectType.Monster:
                     Monster monster = creature as Monster;
                     monsters.Remove(monster);
                     break;
