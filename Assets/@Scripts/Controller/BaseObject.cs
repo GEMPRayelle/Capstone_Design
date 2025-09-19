@@ -173,7 +173,7 @@ public class BaseObject : InitBase
         }
     }
 
-    public void SetCellPos(Vector3Int cellPos, bool forceMove = false)
+    public void SetCellPos(Vector3Int cellPos, Grid grid, bool forceMove = false)
     {
         CellPos = cellPos;
         LerpCellPosCompleted = false;
@@ -182,7 +182,7 @@ public class BaseObject : InitBase
         if (forceMove)//forceMove가 true라면
         {
             //바로 그 위치로 이동함
-            transform.position = Managers.Map.Cell2World(CellPos);
+            transform.position = grid.GetCellCenterWorld(CellPos);
             //보간처리를 무시하고 바로 이동하게함
             LerpCellPosCompleted = true;
         }

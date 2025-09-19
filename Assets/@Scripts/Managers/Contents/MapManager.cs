@@ -162,9 +162,11 @@ public class MapManager
                 //맵을 전부 순회해서 CustomTile이 있는지 탐색
                 Vector3Int cellPos = new Vector3Int(x, y, 0);
                 CustomTile tile = tm.GetTile(cellPos) as CustomTile;
+
                 if (tile == null)
                     continue;
 
+                Grid grid = tm.GetComponent<Grid>();
                 //존재한다면 오브젝트 타입에 따라 각 로직 실행
                 if (tile.ObjectType == Define.EObjectType.Env)
                 {
@@ -176,15 +178,15 @@ public class MapManager
                 {
                     if (tile.ObjectType == Define.EObjectType.Monster)
                     {
-                        Vector3 worldPos = Cell2World(cellPos);
+                        Vector3 worldPos = grid.GetCellCenterWorld(cellPos);
                         Monster monster = Managers.Object.Spawn<Monster>(worldPos, tile.DataId);
-                        monster.SetCellPos(cellPos, true);
+                        monster.SetCellPos(cellPos, grid, true);
                     }
                     else if(tile.ObjectType == Define.EObjectType.Player)
                     {
-                        Vector3 worldPos = Cell2World(cellPos);
+                        Vector3 worldPos = grid.GetCellCenterWorld(cellPos);
                         Player player = Managers.Object.Spawn<Player>(worldPos, tile.DataId);
-                        player.SetCellPos(cellPos, true);
+                        player.SetCellPos(cellPos, grid, true);
                     }
                     else if (tile.ObjectType == Define.EObjectType.Npc)
                     {
