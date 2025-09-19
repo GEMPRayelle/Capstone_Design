@@ -74,9 +74,6 @@ public class Creature : BaseObject
         if (base.Init() == false)
             return false;
 
-        ObjectType = EObjectType.Creature;
-        CreatureState = ECreatureState.Idle;
-
         return true;
     }
 
