@@ -65,12 +65,7 @@ public class Monster : Creature
     {
         base.SetInfo(templateID);
 
-        CreatureState = ECreatureState.Move;
-    }
-
-    public void Update()
-    {
-
+        CreatureState = ECreatureState.Idle;
     }
 
     #region AI
@@ -81,27 +76,7 @@ public class Monster : Creature
 
     protected override void UpdateMove()
     {
-        if (DetectPlayer(MONSTER_SEARCH_DISTANCE, Target) == true) // 실제 근처 플레이어 체크 함수
-        {
-            // 적 발견 시 공격 상태로 전환
-            CreatureState = ECreatureState.Skill;
-
-        }
-
-        else // 근처에 적이 없다면
-        {
-            Vector2 dirVec = (Vector2)Target.transform.position - rigid.position;
-            Vector2 nextVec = dirVec.normalized * Speed * Time.deltaTime;
-
-            rigid.MovePosition(rigid.position + nextVec);
-            rigid.linearVelocity = Vector2.zero;
-
-            if (dirVec.x < 0.1)
-                LookLeft = true;
-            else if (dirVec.x > 0.1)
-                LookLeft = false;
-        };
-
+        
     }
 
     protected override void UpdateAttack()
@@ -112,36 +87,12 @@ public class Monster : Creature
     protected override void UpdateSkill()
     {
         base.UpdateSkill();
-
-        if (DetectPlayer(MONSTER_SEARCH_DISTANCE, Target) == false)
-        {
-            //근처에 플레이어가 없으면 원상태로 복귀
-            CreatureState = ECreatureState.Move;
-            return;
-        }
-        //그게 아니라면 스킬 상태를 유지
     }
 
     protected override void UpdateDead() { }
     #endregion
 
     #region Battle
-    // 근처에 플레이어 있다면 true 아니면 false 리턴
-    private bool DetectPlayer(float detectionRadius, BaseObject target)
-    {
-        if (target.IsValid() == false)
-            return false;
-
-        float distanceSqr = (Target.transform.position - transform.position).sqrMagnitude; // 거리 계산
-
-        if (distanceSqr >= detectionRadius) // 거리가 일정 범위 이상이면 무시
-            return false;
-
-
-        return true;
-
-    }
-
     public override void OnDamaged(BaseObject attacker, SkillBase skill)
     {
         base.OnDamaged(attacker, skill);
