@@ -52,7 +52,7 @@ public class MouseController : InitBase
                 = tile.transform.GetComponent<SpriteRenderer>().sortingOrder + 1; //커서의 렌더링 순서 조절
 
             //이동 범위내 타일을 가리키고 있고 캐릭터가 이동 중이 아니라면
-            if (!isMoving && _creature != null)
+            if (!isMoving && tile.isBlocked == false)
             {
                 // 기존 화살표 제거
                 foreach (var item in rangeFinderTiles)
@@ -98,27 +98,46 @@ public class MouseController : InitBase
                 }
             }
 
+            else if (tile.isBlocked == true)
+            {
+                // 기존 화살표 제거
+                foreach (var item in rangeFinderTiles)
+                {
+                    Managers.Map.mapDict[item.grid2DLocation].SetSprite(ArrowDirection.None);
+                }
+            }
+
 
             //마우스 왼쪽 클릭시
             if (Input.GetMouseButtonDown(0))
             {
-                // tile.ShowTile(); // 타일 시각적으로 표시
-
-                //캐릭터가 생성되지 않았다면
-                if (_creature == null)
+                bool changePlayer = false;
+                foreach (Player player in Managers.Object.Players)
                 {
-                    int heroTemplateID = HERO_WIZARD_ID;
-                    //_creature = Instantiate(characterPrefab).GetComponent<CharacterInfo>(); // 캐릭터 생성
-                    _creature = Managers.Object.Spawn<Player>(tile.transform.position, heroTemplateID); //Addressable에 등록된 characterPrefab으로 수정, Hero여도 상관없음
-                    _creature.CreatureState = Define.ECreatureState.Idle;
-                    PositionCharacterOnLine(tile); // 캐릭터 위치 설정
-                    GetInRangeTiles(); // 이동 가능한 타일 계산 및 표시
-                    CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
-                    camera.Target = _creature;
+                    // 플레이어 hit됬는지 검사
+                    if (player.currentStandingTile == tile)
+                    {
+                        // 바꾸기 전 플레이어가 있다면
+                        if (_creature != null)
+                        {
+                            // 바꾸기 전 플레이어 근처 타일 비활성화
+                            foreach (var rangetile in rangeFinderTiles)
+                            {
+                                rangetile.HideTile();
+                                rangetile.SetSprite(ArrowDirection.None);
+                            }
+                        }
+                        changePlayer = true;
+                        _creature = player;
+                        _creature.CreatureState = Define.ECreatureState.Idle;
+                        GetInRangeTiles(); // 이동 가능한 타일 계산 및 표시
+                        CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
+                        camera.Target = _creature;
+                    }
                 }
 
-                // 이미 캐릭터가 있다면
-                else
+                // 감지된 캐릭터가 없다면
+                if (changePlayer == false && _creature != null)
                 {
                     isMoving = true; // 이동 시작
                     tile.HideTile(); // 클릭한 타일 숨김 처리
@@ -176,8 +195,7 @@ public class MouseController : InitBase
     private void MoveAlongPath()
     {
         var current = _creature.SkeletonAnim.AnimationState.GetCurrent(0);
-        Debug.Log($"Current Anim: {current.Animation.Name}, loop:{current.Loop}, trackTime: {current.TrackTime}");
-        _creature.CreatureState = ECreatureState.Move;
+        //Debug.Log($"Current Anim: {current.Animation.Name}, loop:{current.Loop}, trackTime: {current.TrackTime}");
 
         //프레임 기반으로 이동하도록 계산
         var step = _creature.Speed * Time.deltaTime;
@@ -218,7 +236,13 @@ public class MouseController : InitBase
         //렌더링 순서 설정
         //_creature.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
         //캐릭터가 서 있는 타일 저장
+
+        // 전에 서있던 타일에 blocked 해체
+        _creature.currentStandingTile.isBlocked = false;
+        // 새로 이동한 타일 설정
         _creature.currentStandingTile = tile;
+        // 새로 이동한 타일 blocked 설정
+        _creature.currentStandingTile.isBlocked = true;
     }
 
     //마우스가 가리키는 타일을 감지하는 함수
@@ -255,7 +279,12 @@ public class MouseController : InitBase
         // 계산된 타일들을 시각적으로 표시
         foreach (var item in rangeFinderTiles)
         {
-            item.ShowTile();
+            var path = _pathFinder.FindPath(_creature.currentStandingTile, item, rangeFinderTiles);
+
+            if (path.Count == 0)
+                item.HideTile();
+            else
+                item.ShowTile(); 
         }
     }
 }

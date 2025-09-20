@@ -80,6 +80,61 @@ public class PathFinder
         return new List<OverlayTile>();
     }
 
+    //public bool CanGo(OverlayTile start, OverlayTile end)
+    //{
+    //    //탐색할 후보 타일들 목록
+    //    List<OverlayTile> openList = new List<OverlayTile>();
+    //    //이미 탐색한 타일들 목록
+    //    HashSet<OverlayTile> closedList = new HashSet<OverlayTile>();
+
+    //    //시작 타일을 후보 목록에 추가
+    //    openList.Add(start);
+
+    //    //후보 타일이 타일이 남아있는 동안 계속 반복
+    //    while (openList.Count > 0)
+    //    {
+    //        //F가 가장 낮은 타일 선택
+    //        OverlayTile currentOverlayTile = openList.OrderBy(x => x.F).First();
+
+    //        openList.Remove(currentOverlayTile); //후보 목록에서 제거후
+    //        closedList.Add(currentOverlayTile); //탐색 완료 목록에 추가함
+
+    //        //목적지에 도달했으면
+    //        if (currentOverlayTile == end)
+    //        {
+    //            //경로 리턴
+    //            return true;
+    //        }
+
+    //        //인접 타일 탐색
+    //        foreach (var tile in GetNeightbourOverlayTiles(currentOverlayTile))
+    //        {
+    //            //이동 불가능한 타일이거나 이미 탐색했거나 z축 차이가 너무 크면 무시함
+    //            if (tile.isBlocked || closedList.Contains(tile) ||
+    //                Mathf.Abs(currentOverlayTile.transform.position.z - tile.transform.position.z) > 1)
+    //            {
+    //                continue;
+    //            }
+
+    //            //시작점에서 현재 타일까지의 거리
+    //            tile.G = GetManhattenDistance(start, tile);
+    //            //현태 타일에서 목적지까지의 거리
+    //            tile.H = GetManhattenDistance(end, tile);
+    //            //경로 추적을 위한 이전 타일 설정
+    //            tile.previousTile = currentOverlayTile;
+
+    //            //아직 후보 목록에 없으면 추가
+    //            if (!openList.Contains(tile))
+    //            {
+    //                openList.Add(tile);
+    //            }
+    //        }
+    //    }
+
+    //    //경로를 찾지 못했으면 빈 리스트를 리턴시킴
+    //    return false;
+    //}
+
     //end부터 start까지 다시 거슬러 올라가며 경로를 구성하는 함수
     private List<OverlayTile> GetFinishedList(OverlayTile start, OverlayTile end)
     {

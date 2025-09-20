@@ -2,6 +2,7 @@ using NUnit;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using static Define;
@@ -49,8 +50,6 @@ public class MapManager
 
         ParseCollisionData(map, mapName);
 
-        SpawnObjectByTileData(map, mapName);
-
         // _collision 배열을 순회하면서 OverlayTile 생성
         int xCount = _MaxX - _MinX + 1;
         int yCount = _MaxY - _MinY + 1;
@@ -94,6 +93,8 @@ public class MapManager
                 }
             }
         }
+
+        SpawnObjectByTileData(map, mapName);
     }
 
     public void DestroyMap()
@@ -180,12 +181,16 @@ public class MapManager
                     {
                         Vector3 worldPos = grid.GetCellCenterWorld(cellPos);
                         Monster monster = Managers.Object.Spawn<Monster>(worldPos, tile.DataId);
+                        mapDict.TryGetValue(new Vector2Int(cellPos.x,cellPos.y), out monster.currentStandingTile);
+                        monster.currentStandingTile.isBlocked = true;
                         monster.SetCellPos(cellPos, grid, true);
                     }
                     else if(tile.ObjectType == Define.EObjectType.Player)
                     {
                         Vector3 worldPos = grid.GetCellCenterWorld(cellPos);
                         Player player = Managers.Object.Spawn<Player>(worldPos, tile.DataId);
+                        mapDict.TryGetValue(new Vector2Int(cellPos.x, cellPos.y), out player.currentStandingTile);
+                        player.currentStandingTile.isBlocked = true;
                         player.SetCellPos(cellPos, grid, true);
                     }
                     else if (tile.ObjectType == Define.EObjectType.Npc)
@@ -209,7 +214,7 @@ public class MapManager
         if (mapDict.ContainsKey(TileToCheck)) // 해당 위치에 타일이 존재하는지 확인
         {
             // 높이 차이가 1 이하일 경우만 추가 (지형 이동 가능 조건)
-            if (Mathf.Abs(mapDict[TileToCheck].transform.position.z - mapDict[originTile].transform.position.z) <= 1)
+            if (Mathf.Abs(mapDict[TileToCheck].transform.position.z - mapDict[originTile].transform.position.z) <= 1 && mapDict[TileToCheck].isBlocked == false)
                 surroundingTiles.Add(mapDict[TileToCheck]);
         }
 
@@ -217,7 +222,7 @@ public class MapManager
         TileToCheck = new Vector2Int(originTile.x - 1, originTile.y);
         if (mapDict.ContainsKey(TileToCheck))
         {
-            if (Mathf.Abs(mapDict[TileToCheck].transform.position.z - mapDict[originTile].transform.position.z) <= 1)
+            if (Mathf.Abs(mapDict[TileToCheck].transform.position.z - mapDict[originTile].transform.position.z) <= 1 && mapDict[TileToCheck].isBlocked == false)
                 surroundingTiles.Add(mapDict[TileToCheck]);
         }
 
@@ -225,7 +230,7 @@ public class MapManager
         TileToCheck = new Vector2Int(originTile.x, originTile.y + 1);
         if (mapDict.ContainsKey(TileToCheck))
         {
-            if (Mathf.Abs(mapDict[TileToCheck].transform.position.z - mapDict[originTile].transform.position.z) <= 1)
+            if (Mathf.Abs(mapDict[TileToCheck].transform.position.z - mapDict[originTile].transform.position.z) <= 1 && mapDict[TileToCheck].isBlocked == false)
                 surroundingTiles.Add(mapDict[TileToCheck]);
         }
 
@@ -233,7 +238,7 @@ public class MapManager
         TileToCheck = new Vector2Int(originTile.x, originTile.y - 1);
         if (mapDict.ContainsKey(TileToCheck))
         {
-            if (Mathf.Abs(mapDict[TileToCheck].transform.position.z - mapDict[originTile].transform.position.z) <= 1)
+            if (Mathf.Abs(mapDict[TileToCheck].transform.position.z - mapDict[originTile].transform.position.z) <= 1 && mapDict[TileToCheck].isBlocked == false)
                 surroundingTiles.Add(mapDict[TileToCheck]);
         }
 

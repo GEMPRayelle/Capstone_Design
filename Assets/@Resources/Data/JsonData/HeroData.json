@@ -45,7 +45,7 @@
       "EnvSkillId": 0,
       "SkillAId": 0,
       "SkillBId": 0,
-      "speed": 1.0,
+      "speed": 5.0,
       "movementRange": 3
     },
     {
@@ -69,7 +69,7 @@
       "EnvSkillId": 0,
       "SkillAId": 10008,
       "SkillBId": 10011,
-      "speed": 1.0,
+      "speed": 5.0,
       "movementRange": 3
     },
     {
@@ -93,7 +93,7 @@
       "EnvSkillId": 0,
       "SkillAId": 10018,
       "SkillBId": 10019,
-      "speed": 1.0,
+      "speed": 5.0,
       "movementRange": 3
     },
     {
@@ -117,7 +117,7 @@
       "EnvSkillId": 0,
       "SkillAId": 0,
       "SkillBId": 0,
-      "speed": 1.0,
+      "speed": 5.0,
       "movementRange": 3
     },
     {
@@ -141,7 +141,7 @@
       "EnvSkillId": 0,
       "SkillAId": 10020,
       "SkillBId": 0,
-      "speed": 1.0,
+      "speed": 5.0,
       "movementRange": 3
     }
   ]
