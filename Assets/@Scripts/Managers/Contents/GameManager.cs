@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using static Define;
 
-public class GameManager : MonoBehaviour
+public class GameManager
 {
     #region Player
     private Vector2 _moveDir; //플레이어가 이동하려는 방향
