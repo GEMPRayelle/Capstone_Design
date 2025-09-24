@@ -39,6 +39,11 @@ public class OverlayTile : InitBase
         gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
     }
 
+    public void highlightTile()
+    {
+        gameObject.GetComponent<SpriteRenderer>().color = new Color(0, 0, 1, 1);
+    }
+
     public void SetSprite(ArrowDirection d)
     {
         if (d == ArrowDirection.None)

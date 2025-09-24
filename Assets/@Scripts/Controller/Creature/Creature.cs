@@ -11,12 +11,12 @@ public class Creature : BaseObject
 {
     public BaseObject Target { get; protected set; } //찾아가려는 타겟
     public SkillComponent Skills { get; protected set; } //현재 가지고있는 스킬
-    public float Speed { get; protected set; } = 1.0f;
+    
     public Data.CreatureData CreatureData { get; private set; }
     public OverlayTile currentStandingTile;//현재 서 있는 타일 정보
     public EffectComponent Effects { get; set; }//이펙트(상태 이상효과) 목록
 
-    public int movementRange = 3; // 캐릭터의 이동 가능 범위 (타일 수 기준)
+    
 
     protected ECreatureState _creatureState = ECreatureState.None;
     public virtual ECreatureState CreatureState
@@ -63,6 +63,7 @@ public class Creature : BaseObject
 
     #region Stat Property
     public float Hp { get; set; }
+    public float Speed { get; protected set; } = 1.0f;
     public CreatureStat MaxHp;
     public CreatureStat Atk;
     public CreatureStat CriRate;
@@ -72,6 +73,8 @@ public class Creature : BaseObject
     public CreatureStat ThornsDamageRate; //쏜즈
     public CreatureStat MoveSpeed;
     public CreatureStat AttackSpeedRate;
+    public int MovementRange = 3; // 캐릭터의 이동 가능 범위 (타일 수 기준)
+    public int SkillRange = 3;
     #endregion
 
     public override bool Init()
@@ -118,7 +121,9 @@ public class Creature : BaseObject
         MoveSpeed = new CreatureStat(CreatureData.MoveSpeed);
         AttackSpeedRate = new CreatureStat(1);
         Speed = CreatureData.speed;
-        movementRange = CreatureData.movementRange;
+        MovementRange = CreatureData.MovementRange;
+        SkillRange = CreatureData.SkillRange;
+        
 
         //State
         CreatureState = ECreatureState.Idle;

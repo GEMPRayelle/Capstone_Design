@@ -10,16 +10,30 @@ using static Define;
 public class MouseController : InitBase
 {
     private List<OverlayTile> path; //타일의 이동 경로 정보 리스트
-    private List<OverlayTile> rangeFinderTiles;
+    private List<OverlayTile> rangeFinderTiles; // 캐릭터 이동 범위
+    private List<OverlayTile> SkillRangeTiles; // 캐릭터 공격 범위
     private Player _creature; //현재 생성된 캐릭터 정보
+    private Player _copy; // 캐릭터의 실루엣 당담
     private PathFinder _pathFinder; //경로 탐색기
     private ArrowTranslator arrowTranslator; // 경로 방향 화살표 계산기
     private bool isMoving; // 캐릭터가 이동 중인지 여부
-    private GameObject cursor;
+    private GameObject cursor; // 커서
+
+    // Ray 쏴서 결과값 받을 구조체
+    public struct RaycastResult
+    {
+        public OverlayTile tile; // 타일
+        public Player player; // 플레이어
+        public RaycastHit2D hit;
+
+        public bool HasTile => tile != null;
+        public bool HasPlayer => player != null;
+    }
+
 
     public override bool Init()
     {
-        if (base.Init() == false) 
+        if (base.Init() == false)
             return false;
 
         _pathFinder = new PathFinder();
@@ -27,20 +41,22 @@ public class MouseController : InitBase
 
         path = new List<OverlayTile>();
         rangeFinderTiles = new List<OverlayTile>();
+        SkillRangeTiles = new List<OverlayTile>();
         isMoving = false;
 
         cursor = Managers.Resource.Instantiate("Cursor");
         return true;
     }
 
+
     void LateUpdate()
     {
-        RaycastHit2D? hit = GetFocusedOnTile();//마우스가 가리키는 타일 감지
+        RaycastResult hit = GetFocusedObjects();//마우스가 가리키는 타일 감지
         //타일이 감지 됐다면, 이동중이 아닐때만 감지
-        if (hit.HasValue && isMoving == false)
+        if (hit.HasTile == true && isMoving == false)
         {
             //매 프레임마다 마우스 위치 확인 및 처리하는 작업
-            OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>(); //타일의 정보를 가져옴
+            OverlayTile tile = hit.tile; //타일의 정보를 가져옴
 
             if (tile == null)
                 return;
@@ -74,6 +90,9 @@ public class MouseController : InitBase
                         var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
                         path[i].SetSprite(arrow);
                     }
+
+                    // Skill Range Highlights
+                    GetSkillRangeTiles(tile);
                 }
 
                 else
@@ -95,15 +114,31 @@ public class MouseController : InitBase
                             path[i].SetSprite(arrow);
                         }
                     }
+                    // Skill Range Highlights
+                    GetSkillRangeTiles(closestRangeTile);
                 }
+
+
             }
 
+            // 현재 가리키는 타일이 플레이어 캐릭터가 있다면
             else if (tile.isBlocked == true)
             {
-                // 기존 화살표 제거
+                // 화살표 제거 (길찾기 방향 표시 X)
                 foreach (var item in rangeFinderTiles)
                 {
                     Managers.Map.mapDict[item.grid2DLocation].SetSprite(ArrowDirection.None);
+                }
+                // 실루엣 안보이게 처리
+                if (_copy != null)
+                    _copy.gameObject.SetActive(false);
+                // Skill Range 하이라이트 전 타일 원래대로 되돌리기
+                foreach (var skillTile in SkillRangeTiles)
+                {
+                    if (skillTile.isBlocked == true || rangeFinderTiles.Contains(skillTile) == false)
+                        skillTile.HideTile();
+                    else
+                        skillTile.ShowTile();
                 }
             }
 
@@ -112,29 +147,31 @@ public class MouseController : InitBase
             if (Input.GetMouseButtonDown(0))
             {
                 bool changePlayer = false;
-                foreach (Player player in Managers.Object.Players)
+                // 플레이어 hit됬는지 검사
+                if (hit.HasPlayer == true)
                 {
-                    // 플레이어 hit됬는지 검사
-                    if (player.currentStandingTile == tile)
+                    // 바꾸기 전 플레이어가 있다면
+                    if (_creature != null)
                     {
-                        // 바꾸기 전 플레이어가 있다면
-                        if (_creature != null)
+                        if (_copy != null)
+                            Managers.Object.Despawn<Player>(_copy); // 실루엣 전용 플레이어 삭제
+
+                        // 바꾸기 전 플레이어 근처 타일 비활성화
+                        foreach (var rangetile in rangeFinderTiles)
                         {
-                            // 바꾸기 전 플레이어 근처 타일 비활성화
-                            foreach (var rangetile in rangeFinderTiles)
-                            {
-                                rangetile.HideTile();
-                                rangetile.SetSprite(ArrowDirection.None);
-                            }
+                            rangetile.HideTile();
+                            rangetile.SetSprite(ArrowDirection.None);
                         }
-                        changePlayer = true;
-                        _creature = player;
-                        _creature.CreatureState = Define.ECreatureState.Idle;
-                        GetInRangeTiles(); // 이동 가능한 타일 계산 및 표시
-                        CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
-                        camera.Target = _creature;
                     }
+                    changePlayer = true;
+                    _creature = hit.player;
+                    _creature.CreatureState = Define.ECreatureState.Idle;
+                    GetInRangeTiles(); // 이동 가능한 타일 계산 및 표시
+                    _copy = InstantiateCopyPlayer(tile, _creature); // 실루엣 전용 플레이어 재생성
+                    CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
+                    camera.Target = _creature;
                 }
+
 
                 // 감지된 캐릭터가 없다면
                 if (changePlayer == false && _creature != null)
@@ -149,10 +186,18 @@ public class MouseController : InitBase
         // 경로가 존재하고 이동 중이라면 캐릭터 이동 처리
         if (path.Count > 0 && isMoving)
         {
+            // 이동할땐 캐릭터 이동 범위 타일 숨기기
             foreach (var tile in rangeFinderTiles)
             {
                 tile.HideTile();
             }
+
+            // 캐릭터 스킬 범위 타일도 숨기기
+            foreach (var tile in SkillRangeTiles)
+            {
+                tile.HideTile();
+            }
+
             MoveAlongPath();
         }
 
@@ -160,10 +205,10 @@ public class MouseController : InitBase
         else if ((path.Count == 0 || isMoving == false) && _creature != null)
         {
             _creature.CreatureState = ECreatureState.Idle;
-            foreach (var tile in rangeFinderTiles)
-            {
-                tile.ShowTile();
-            }
+            //foreach (var tile in rangeFinderTiles) 왜 넣었었지?
+            //{
+            //    tile.ShowTile();
+            //}
             isMoving = false;
         }
     }
@@ -221,10 +266,10 @@ public class MouseController : InitBase
             {
                 Managers.Map.mapDict[item.grid2DLocation].SetSprite(ArrowDirection.None);
             }
-            
+
             GetInRangeTiles(); // 새로운 이동 범위 계산
             isMoving = false; // 이동 종료
-            _creature.CreatureState = ECreatureState.Idle;                     
+            _creature.CreatureState = ECreatureState.Idle;
         }
     }
 
@@ -246,8 +291,9 @@ public class MouseController : InitBase
     }
 
     //마우스가 가리키는 타일을 감지하는 함수
-    private static RaycastHit2D? GetFocusedOnTile()
+    private static RaycastResult GetFocusedObjects()
     {
+        RaycastResult result = new RaycastResult();
         //마우스 위치를 월드 좌표로 변환
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         //2D 좌표로 변환
@@ -257,11 +303,41 @@ public class MouseController : InitBase
         //마우스가 가리키고 있는 위치에 감지된 오브젝트가 
         if (hits.Length > 0)
         {
-                //z값 기준으로 가장 위에 있는 타일 반환
-                return hits.OrderByDescending(i => i.collider.transform.position.z).First();
+            // z값 기준으로 정렬 (가장 위에 있는 것부터)
+            var sortedHits = hits.OrderByDescending(i => i.collider.transform.position.z).ToArray();
+
+            // 위에 있는 것부터 하나씩 검색
+            foreach (var hit in sortedHits)
+            {
+                // Player 컴포넌트 확인
+                if (result.player == null)
+                {
+                    Player player = hit.collider.GetComponent<Player>();
+                    if (player != null)
+                    {
+                        result.player = player;
+                        result.hit = hit;
+                    }
+                }
+
+                // OverlayTile 컴포넌트 확인
+                if (result.tile == null)
+                {
+                    OverlayTile tile = hit.collider.GetComponent<OverlayTile>();
+                    if (tile != null)
+                    {
+                        result.tile = tile;
+                        if (result.player == null) // Player가 없다면 hit 정보 저장
+                            result.hit = hit;
+                    }
+                }
+
+                // 둘 다 찾았다면 break
+                if (result.HasPlayer && result.HasTile)
+                    break;
+            }
         }
-        //아무것도 감지 되지 않으면 null리턴
-        return null;
+        return result;
     }
 
     //캐릭터 기준으로 이동 가능한 타일 계산 및 표시
@@ -271,10 +347,10 @@ public class MouseController : InitBase
         rangeFinderTiles = Managers.Map.GetTilesInRange(
             new Vector2Int
             (
-                _creature.currentStandingTile.gridLocation.x, 
+                _creature.currentStandingTile.gridLocation.x,
                 _creature.currentStandingTile.gridLocation.y
             ),
-            _creature.movementRange);
+            _creature.MovementRange);
 
         // 계산된 타일들을 시각적으로 표시
         foreach (var item in rangeFinderTiles)
@@ -283,8 +359,57 @@ public class MouseController : InitBase
 
             if (path.Count == 0)
                 item.HideTile();
-            else
-                item.ShowTile(); 
+            else if (path.Count > 0)
+                item.ShowTile();
         }
+    }
+
+    public void GetSkillRangeTiles(OverlayTile tile)
+    {
+        // Skill Range 하이라이트 전 타일 원래대로 되돌리기
+        foreach (var skillTile in SkillRangeTiles)
+        {
+            if (skillTile.isBlocked == true || rangeFinderTiles.Contains(skillTile) == false)
+                skillTile.HideTile();
+            else
+                skillTile.ShowTile();
+        }
+
+        // copy 있는지 확인
+        if (_copy == null) 
+            return;
+
+        // copy가 있다면 위치와 init할거 하기
+        _copy.transform.position = tile.transform.position;
+        _copy.currentStandingTile = tile;
+        _copy.CreatureState = ECreatureState.Skill;
+        _copy.gameObject.SetActive(true);
+
+        // 캐릭터 실루엣 위치를 기준으로 이동 가능한 타일 계산
+        SkillRangeTiles = Managers.Map.GetTilesInRange(
+            new Vector2Int
+            (
+                _copy.currentStandingTile.gridLocation.x,
+                _copy.currentStandingTile.gridLocation.y
+            ),
+            _copy.SkillRange);
+
+        // 계산된 타일들을 시각적으로 표시
+        foreach (var item in SkillRangeTiles)
+        {
+            item.highlightTile();
+        }
+    }
+
+    // 플레이어 실루엣 생성
+    public Player InstantiateCopyPlayer(OverlayTile tile, Player original) // tile위치에 original을 생성
+    {
+        Player player = Managers.Object.Spawn<Player>(tile.transform.position,original.DataTemplateID);
+        player.currentStandingTile = tile;
+        // TODO 실루엣 처리
+        player.GetComponent<CircleCollider2D>().enabled = false;
+        player.CreatureState = ECreatureState.Skill;
+
+        return player;
     }
 }

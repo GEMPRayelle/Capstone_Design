@@ -31,7 +31,8 @@ namespace Data
         public int SkillAId;
         public int SkillBId;
         public float speed;
-        public int movementRange;
+        public int MovementRange;
+        public int SkillRange;
     }
     #endregion
 
