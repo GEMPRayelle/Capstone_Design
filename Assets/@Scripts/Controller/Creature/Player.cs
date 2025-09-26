@@ -11,6 +11,20 @@ public class Player : Creature
 {
     public bool isNeedArrange { get; set; }//정리가 필요한지
 
+    // Order인지 공격형(Offensive)인지
+    EPlayerType _playerType = EPlayerType.None;
+    public EPlayerType PlayerType
+    {
+        get { return _playerType; } 
+        set
+        {
+            if (_playerType != value)
+            {
+                _playerType = value;
+            }
+        }
+    }
+    
     Vector2 _moveDir = Vector2.zero;
 
     public override ECreatureState CreatureState

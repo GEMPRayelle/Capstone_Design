@@ -192,6 +192,8 @@ public class MapManager
                         mapDict.TryGetValue(new Vector2Int(cellPos.x, cellPos.y), out player.currentStandingTile);
                         player.currentStandingTile.isBlocked = true;
                         player.SetCellPos(cellPos, grid, true);
+                        player.PlayerType = EPlayerType.Order; // Order 생성
+
                     }
                     else if (tile.ObjectType == Define.EObjectType.Npc)
                     {

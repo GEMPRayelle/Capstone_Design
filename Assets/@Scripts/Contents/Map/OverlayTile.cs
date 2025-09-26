@@ -9,6 +9,7 @@ public class OverlayTile : InitBase
     public int F { get { return G + H; } } //최종 스코어
 
     public bool isBlocked; //지나가지 못하는 블럭
+
     public OverlayTile previousTile; //이전에 지나간 타일
     public Vector3Int gridLocation; //3d 상에서 그리드 위치
     public Vector2Int grid2DLocation { get { return new Vector2Int(gridLocation.x, gridLocation.y); } } //2D좌표로 변환 (경로 탐색에 사용)
@@ -39,9 +40,14 @@ public class OverlayTile : InitBase
         gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
     }
 
-    public void highlightTile()
+    public void HighlightTileBlue()
     {
         gameObject.GetComponent<SpriteRenderer>().color = new Color(0, 0, 1, 1);
+    }
+
+    public void HighlightTileRed()
+    {
+        gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0, 1);
     }
 
     public void SetSprite(ArrowDirection d)

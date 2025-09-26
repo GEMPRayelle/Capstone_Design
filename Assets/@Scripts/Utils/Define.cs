@@ -76,6 +76,13 @@ public static class Define
         ForcePath//전체를 탐색하더라도 찾아가게함
     }
 
+    public enum EPlayerType
+    {
+        None,
+        Order,
+        Offensive,
+    }
+
     public enum ELayer
     {
         Default = 0,
