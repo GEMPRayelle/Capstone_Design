@@ -289,6 +289,50 @@ public class MapManager
         // 최종적으로 수집된 타일들을 중복 제거 후 반환
         return inRangeTiles.Distinct().ToList();
     }
+
+    /// <summary>
+    /// 지정된 위치를 중심으로 하는 N×N 그리드의 타일들을 반환하는 함수
+    /// </summary>
+    /// <param name="location">중심이 될 위치</param>
+    /// <param name="gridSize">그리드 크기 (3 이상의 홀수만 허용)</param>
+    /// <returns>N×N 그리드 범위 내의 타일 리스트</returns>
+    public List<OverlayTile> GetTilesInRangeNxN(Vector2Int location, int gridSize)
+    {
+        // 유효성 검사: 3 이상의 홀수만 허용
+        if (gridSize < 3 || gridSize % 2 == 0)
+        {
+            Debug.LogError($"GetTilesInGrid: gridSize는 3 이상의 홀수여야 합니다. 입력된 값: {gridSize}");
+            return new List<OverlayTile>();
+        }
+
+        var gridTiles = new List<OverlayTile>();
+
+        // 중심으로부터의 반경 계산 (예: 3x3이면 반경 1, 5x5면 반경 2)
+        int radius = gridSize / 2;
+
+        // 그리드 범위 계산
+        int startX = location.x - radius;
+        int endX = location.x + radius;
+        int startY = location.y - radius;
+        int endY = location.y + radius;
+
+        // N×N 그리드 범위의 모든 타일을 확인
+        for (int y = startY; y <= endY; y++)
+        {
+            for (int x = startX; x <= endX; x++)
+            {
+                Vector2Int tilePos = new Vector2Int(x, y);
+
+                // 해당 위치에 타일이 존재하는지 확인
+                if (mapDict.ContainsKey(tilePos))
+                {
+                    gridTiles.Add(mapDict[tilePos]);
+                }
+            }
+        }
+
+        return gridTiles;
+    }
     public void ClearObjects() { _cells.Clear(); }
     #endregion
 }

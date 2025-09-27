@@ -661,8 +661,8 @@ public class MouseController : InitBase
     {
         if (_creature.PlayerType == EPlayerType.Order)
         {
-            rangeFinderTiles = Managers.Map.GetTilesInRange(
-                new Vector2Int(_creature.currentStandingTile.gridLocation.x, _creature.currentStandingTile.gridLocation.y), 2);
+            rangeFinderTiles = Managers.Map.GetTilesInRangeNxN( // GetTilesInRangeNxN에서 range는 3이상 홀수가 되어야 함!!! 
+                new Vector2Int(_creature.currentStandingTile.gridLocation.x, _creature.currentStandingTile.gridLocation.y), 3);
 
             // 계산된 타일들을 시각적으로 표시
             foreach (var tile in rangeFinderTiles)
