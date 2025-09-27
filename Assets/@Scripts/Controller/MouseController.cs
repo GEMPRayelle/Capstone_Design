@@ -22,7 +22,7 @@ public class MouseController : InitBase
     private ArrowTranslator arrowTranslator; // 경로 방향 화살표 계산기
     private bool isMoving; // 캐릭터가 이동 중인지 여부
     private GameObject cursor; // 커서
-    private bool isClickedOrder; // Order 캐릭터가 클릭됬는지 여부
+    private bool isClickedOrder; // Order 캐릭터가 다른 캐릭터 스폰시킬때 클릭된지에 대한 여부
 
     // Ray 쏴서 결과값 받을 구조체
     public struct RaycastResult
@@ -52,7 +52,7 @@ public class MouseController : InitBase
         isClickedOrder = false;
 
         cursor = Managers.Resource.Instantiate("Cursor");
-        spawnablePlayerID.Add(HERO_WIZARD_ID); 
+        spawnablePlayerID.Add(HERO_WIZARD_ID);
         spawnablePlayerID.Add(HERO_LION_ID);
         return true;
     }
@@ -82,7 +82,7 @@ public class MouseController : InitBase
                 if (_creature == null)
                     return;
 
-                if (_creature.PlayerType == EPlayerType.Offensive)
+                if ((_creature.PlayerType == EPlayerType.Offensive) || (_creature.PlayerType == EPlayerType.Order && isClickedOrder == false)) // 공격형 이동할때 or 오더가 스폰을 끝내고 움직일때 로직
                 {
                     // 기존 화살표 제거
                     foreach (var item in rangeFinderTiles)
@@ -94,7 +94,6 @@ public class MouseController : InitBase
                     {
                         // 현재 위치에서 클릭한 타일까지 경로 계산
                         path = _pathFinder.FindPath(_creature.currentStandingTile, tile, rangeFinderTiles);
-
                         // 경로 상의 타일에 방향 화살표 설정
                         for (int i = 0; i < path.Count; i++)
                         {
@@ -107,8 +106,6 @@ public class MouseController : InitBase
 
                         // Skill Range Highlights
                         GetSkillRangeTiles(tile);
-
-
                     }
 
                     else
@@ -135,7 +132,7 @@ public class MouseController : InitBase
                     }
                 }
 
-                else if (_creature.PlayerType == EPlayerType.Order && isClickedOrder == true)
+                else if (_creature.PlayerType == EPlayerType.Order && isClickedOrder == true) // 오더가 스폰중일때 소환시킬 Playable 캐릭터 실루엣 생성
                 {
                     if (rangeFinderTiles.Contains(tile))
                     {
@@ -149,6 +146,7 @@ public class MouseController : InitBase
                         _copy.gameObject.SetActive(true);
                     }
                 }
+
 
             }
 
@@ -177,15 +175,16 @@ public class MouseController : InitBase
             //마우스 왼쪽 클릭시
             if (Input.GetMouseButtonDown(0))
             {
-                bool changePlayer = false;
+                bool changePlayer = false; // 조종할 플레이어가 변경될 때 바꼈는지 판별하는 bool
                 // 플레이어 hit됬는지 검사
                 if (hit.HasPlayer == true && hit.player.PlayerType == EPlayerType.Offensive) // Offensive일 경우
                 {
-                    if (isClickedOrder == true)
+                    if (isClickedOrder == true) // order 클릭중일땐 클릭해도 효과 X
                         return;
                     // 바꾸기 전 플레이어가 있다면
                     if (_creature != null)
                     {
+                        changePlayer = true;
                         if (_copy != null)
                             Managers.Object.Despawn<Player>(_copy); // 실루엣 전용 플레이어 삭제
 
@@ -196,7 +195,7 @@ public class MouseController : InitBase
                             rangetile.SetSprite(ArrowDirection.None);
                         }
                     }
-                    changePlayer = true;
+
                     _creature = hit.player;
                     _creature.CreatureState = Define.ECreatureState.Idle;
                     _copy = InstantiateCopyPlayer(tile, _creature); // 실루엣 전용 플레이어 재생성
@@ -208,54 +207,94 @@ public class MouseController : InitBase
 
                 else if (hit.HasPlayer == true && hit.player.PlayerType == EPlayerType.Order) // Order일 경우
                 {
-                    if (spawnablePlayerID.Count == 0 || isClickedOrder == true) // 이미 order조종중이거나 소환할 player 캐릭터가 없다면
+                    if (isClickedOrder == true) // 이미 order조종중이라면
                     {
                         return;
                     }
 
-                    if (_copy != null)
-                        Managers.Object.Despawn<Player>(_copy); // 실루엣 전용 플레이어 삭제
+                    else if (isClickedOrder == false && spawnablePlayerID.Count == 0) // 소환다하고 order를 클릭한다면 
+                    {
+                        // 이동 로직
 
-                    _creature = hit.player;
-                    _creature.CreatureState = ECreatureState.Idle;
+                        // 바꾸기 전 플레이어가 있다면
+                        if (_creature != null)
+                        {
+                            changePlayer = true;
+                            if (_copy != null)
+                                Managers.Object.Despawn<Player>(_copy); // 실루엣 전용 플레이어 삭제
 
-                    _copy = InstantiateCopyPlayer(tile); // 실루엣 캐릭터 생성
-                    HighlightSpawnTile();
-                    isClickedOrder = true;
-                    CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
-                    camera.Target = _creature;
+                            // 바꾸기 전 플레이어 근처 타일 비활성화
+                            foreach (var rangetile in rangeFinderTiles)
+                            {
+                                rangetile.HideTile();
+                                rangetile.SetSprite(ArrowDirection.None);
+                            }
+                        }
+
+                        _creature = hit.player;
+                        _creature.CreatureState = Define.ECreatureState.Idle;
+                        _copy = InstantiateCopyPlayer(tile, _creature); // 실루엣 전용 플레이어 재생성
+                        GetInRangeTiles(); // 이동 가능한 타일 계산 및 표시
+                        CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
+                        camera.Target = _creature;
+                    }
+
+                    else if (isClickedOrder == false && spawnablePlayerID.Count > 0) // 스폰할 캐릭터가 남았고 order를 클릭했다면
+                    {
+                        if (_copy != null)
+                            Managers.Object.Despawn<Player>(_copy); // 실루엣 전용 플레이어 삭제
+
+                        _creature = hit.player;
+                        _creature.CreatureState = ECreatureState.Idle;
+
+                        _copy = InstantiateCopyPlayer(tile); // 실루엣 캐릭터 생성
+                        HighlightSpawnTile();
+                        isClickedOrder = true;
+                        CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
+                        camera.Target = _creature;
+                    }
+
+
 
                 }
 
                 else if (_creature != null && hit.HasPlayer == false && _creature.PlayerType == EPlayerType.Order) // Order을 클릭해놓고 빈 타일을 누른 경우(스폰할 경우)
                 {
-                    Debug.Log(rangeFinderTiles.Contains(tile));
-                    if (rangeFinderTiles.Contains(tile) == false || tile.isBlocked == true) // 범위 밖 타일에서 생성, blocking tile에서 생성은 X
-                        return;
-
-                    if (spawnablePlayerID.Count <= 0) // 생성할 spawnablePlayer가 없다면 생성 X
-                        return;
-
-                    InstantiatePlayerByOrder(_creature, tile); // 캐릭터 생성
-
-                    if (_copy != null)
-                        Managers.Object.Despawn<Player>(_copy); // 실루엣 전용 플레이어 삭제
-
-                    _copy = InstantiateCopyPlayer(tile); // 새로운 실루엣 캐릭터 생성
-
-
-
-                    if (spawnablePlayerID.Count == 0) // 이제 다 소환했을 때 처리
+                    if (isClickedOrder == true)
                     {
-                        isClickedOrder = false;
-                        foreach (var item in rangeFinderTiles)
+                        if (rangeFinderTiles.Contains(tile) == false || tile.isBlocked == true) // 범위 밖 타일에서 생성, blocking tile에서 생성은 X
+                            return;
+
+                        if (spawnablePlayerID.Count <= 0) // 생성할 spawnablePlayer가 없다면 생성 X
+                            return;
+
+                        InstantiatePlayerByOrder(_creature, tile); // 캐릭터 생성
+
+                        if (_copy != null)
+                            Managers.Object.Despawn<Player>(_copy); // 실루엣 전용 플레이어 삭제
+
+                        _copy = InstantiateCopyPlayer(tile); // 새로운 실루엣 캐릭터 생성
+
+
+
+                        if (spawnablePlayerID.Count == 0) // 이제 다 소환했을 때 처리
                         {
-                            item.HideTile();
+                            isClickedOrder = false; // 소환시 클릭은 해제
+                            foreach (var item in rangeFinderTiles) // 소환 하이라이트 타일 숨기기
+                            {
+                                item.HideTile();
+                            }
+                            _creature = null; // 조종하던 order 풀기
                         }
                     }
+                    else
+                    {
+
+                    }
+
                 }
 
-                // 감지된 캐릭터가 없다면
+                // 감지된 캐릭터가 없다면 && 조종할 플레이어를 변경한 경우가 아니면
                 if (changePlayer == false && _creature != null)
                 {
                     isMoving = true; // 이동 시작
@@ -458,7 +497,7 @@ public class MouseController : InitBase
         }
 
         // copy 있는지 확인
-        if (_copy == null) 
+        if (_copy == null)
             return;
 
         // copy가 있다면 위치와 init할거 하기
@@ -486,7 +525,7 @@ public class MouseController : InitBase
     // 플레이어 실루엣 생성
     private Player InstantiateCopyPlayer(OverlayTile tile, Player original) // tile위치에 original을 생성
     {
-        Player player = Managers.Object.Spawn<Player>(tile.transform.position,original.DataTemplateID);
+        Player player = Managers.Object.Spawn<Player>(tile.transform.position, original.DataTemplateID);
         player.currentStandingTile = tile;
         // TODO 실루엣 처리
         player.GetComponent<CircleCollider2D>().enabled = false;
@@ -516,9 +555,6 @@ public class MouseController : InitBase
     {
         Player player = Managers.Object.Spawn<Player>(tile.transform.position, spawnablePlayerID.First());
         player.currentStandingTile = tile;
-        Managers.Object.Players.Add(player);
-        player.SetInfo(spawnablePlayerID.First());
-        player.transform.parent = Managers.Object.PlayerRoot;
         player.PlayerType = EPlayerType.Offensive; // TODO : 나중에 데이터 시트에 추가해서 SetInfo에서 설정되도록
         player.currentStandingTile.isBlocked = true;
         // TODO : 턴 매니저의 List에도 Add
