@@ -75,6 +75,13 @@ public static class Define
         ForceMove,//강제 이동
         ForcePath//전체를 탐색하더라도 찾아가게함
     }
+    public enum EPlayerControlState
+    {
+        None,
+        ControllingOffensive,
+        ControllingOrderForMove,
+        ControllingOrderForSpawn
+    }
 
     public enum EPlayerType
     {
