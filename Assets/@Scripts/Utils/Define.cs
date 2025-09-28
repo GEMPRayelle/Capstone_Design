@@ -86,8 +86,10 @@ public static class Define
     public enum EPlayerType
     {
         None,
-        Order,
+        Order, //오더
         Offensive,
+        GoingFirst, //선공, 자신의 턴이 종료될 시 행동
+        GoingSecond, //후공, 적의 턴이 종료될 시 행동
     }
 
     public enum ELayer
@@ -174,6 +176,12 @@ public static class Define
         None, //갈 수 있는 곳
         SemiWall, //카메라만 갈 수 있는 곳
         Wall, //지나갈 수 없는 곳
+    }
+
+    public enum TurnSorting
+    {
+        ConstAttribute, //고정 속성
+        CTB, //Charge Turn Battle
     }
 
     public static class SortingLayers
