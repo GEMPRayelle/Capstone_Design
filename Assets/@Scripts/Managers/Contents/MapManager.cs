@@ -2,7 +2,7 @@ using NUnit;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using static Define;
@@ -185,6 +185,7 @@ public class MapManager
                         monster.currentStandingTile.isBlocked = true;
                         monster.SetCellPos(cellPos, grid, true);
                     }
+
                     else if(tile.ObjectType == Define.EObjectType.Player)
                     {
                         Vector3 worldPos = grid.GetCellCenterWorld(cellPos);
@@ -193,6 +194,8 @@ public class MapManager
                         player.currentStandingTile.isBlocked = true;
                         player.SetCellPos(cellPos, grid, true);
                         player.PlayerType = EPlayerType.Order; // Order 생성
+                        CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
+                        camera.Target = player;
 
                     }
                     else if (tile.ObjectType == Define.EObjectType.Npc)
