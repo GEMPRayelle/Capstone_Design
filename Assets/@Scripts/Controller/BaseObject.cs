@@ -1,9 +1,7 @@
 using Spine;
 using Spine.Unity;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 using static Define;
 
 //Scene의 배치될 모든 오브젝트들의 조상 클래스
@@ -16,6 +14,8 @@ public class BaseObject : InitBase
     public CircleCollider2D Collider { get; private set; }
     //public Animation Anim { get; private set; }
     public SkeletonAnimation SkeletonAnim { get; private set; }
+    public MeshRenderer meshRenderer { get; private set; }
+    public Material materialInstance { get; private set; }
     public Rigidbody2D RigidBody { get; protected set; }
 
     //다른 오브젝트들도 고유 DataID가 있을 경우를 고려
@@ -47,6 +47,9 @@ public class BaseObject : InitBase
         Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
         //Anim = GetComponent<Animation>();
         SkeletonAnim = GetComponent<SkeletonAnimation>();
+        meshRenderer = GetComponent<MeshRenderer>();
+        materialInstance = Instantiate(meshRenderer.sharedMaterial);
+        meshRenderer.material = materialInstance;
 
         return true;
     }
@@ -94,6 +97,22 @@ public class BaseObject : InitBase
             LookLeft = true;
         else
             LookLeft = false;
+    }
+
+    public void SetOutline(bool isCheck)
+    {
+        if (materialInstance == null) return;
+
+        if (isCheck)
+        {
+            materialInstance.EnableKeyword(OUTLINE_KEYWORD);
+            materialInstance.SetFloat("_OutlineWidth", 3.0f);
+        }
+        else
+        {
+            materialInstance.DisableKeyword(OUTLINE_KEYWORD);
+            materialInstance.SetFloat("_OutlineWidth", 0.0f);
+        }
     }
     #endregion
 

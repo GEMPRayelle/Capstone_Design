@@ -232,4 +232,6 @@ public static class Define
     public const char MAP_TOOL_WALL = '0';//벽이라서 갈 수 없음
     public const char MAP_TOOL_NONE = '1';//모두가 가능
     public const char MAP_TOOL_SEMI_WALL = '2';//카메라만 가능
+
+    public const string OUTLINE_KEYWORD = "_USE8NEIGHBOURHOOD_ON";
 }
