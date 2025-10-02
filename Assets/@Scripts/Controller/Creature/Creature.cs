@@ -16,7 +16,7 @@ public class Creature : BaseObject
     public OverlayTile currentStandingTile;//현재 서 있는 타일 정보
     public EffectComponent Effects { get; set; }//이펙트(상태 이상효과) 목록
 
-    
+    public bool IsMoved = false; // 현재 턴에 이동했는지에 대한 정보
 
     protected ECreatureState _creatureState = ECreatureState.None;
     public virtual ECreatureState CreatureState
@@ -37,6 +37,8 @@ public class Creature : BaseObject
     {
         get { return _creatureState != ECreatureState.Dead; }
     }
+
+    
 
     protected float AttackDistance
     {

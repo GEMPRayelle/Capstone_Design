@@ -161,7 +161,16 @@ public class TurnManager
         //        activeCharacter.AttachEffect(tileEffect);
         //}
     }
+     public void OnCreatureMoveFinish(GameObject receivedObject)
+    {
+        Player player = receivedObject.GetComponent<Player>();
+        if (player != null)
+        {
+            player.IsMoved = true;
+        }
 
+        Debug.Log("Turn Manager's OnMoveFinish");
+    }
 }
 
 //턴 순서를 미리 보기 위한 객체 클래스
@@ -176,3 +185,4 @@ public class TurnOrderPreviewObject
         PreviewInitiativeValue = previewInitiativeValue;
     }
 }
+

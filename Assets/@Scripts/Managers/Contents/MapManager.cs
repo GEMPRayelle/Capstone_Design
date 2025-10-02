@@ -33,7 +33,6 @@ public class MapManager
     public void LoadMap(string mapName)
     {
         DestroyMap(); //다른 맵으로 넘어갈때 기존 맵 삭제
-
         //맵 생성
         GameObject map = Managers.Resource.Instantiate(mapName);
         map.transform.position = Vector3.zero;
@@ -95,6 +94,7 @@ public class MapManager
         }
 
         SpawnObjectByTileData(map, mapName);
+        Managers.Object.InstantiateListener();
     }
 
     public void DestroyMap()

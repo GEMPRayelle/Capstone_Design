@@ -30,8 +30,8 @@ public class GameEventListener : MonoBehaviour
 
 public abstract class GameEventListener<T> : MonoBehaviour
 {
-    public abstract GameEvent<T> Event { get; }
-    public abstract UnityEvent<T> Response { get; }
+    public abstract GameEvent<T> Event { get; set; }
+    public abstract UnityEvent<T> Response { get; set; }
 
     private GameEventListenerInternal<T> listener = new GameEventListenerInternal<T>();
 
@@ -40,6 +40,11 @@ public abstract class GameEventListener<T> : MonoBehaviour
         if (Event != null)
         {
             listener.RegisterEvent(Event, Response);
+            Debug.Log($"RegisterEvent called for {Event.name}");
+        }
+        else
+        {
+            Debug.LogError($"Event is NULL on {gameObject.name}!");
         }
     }
 

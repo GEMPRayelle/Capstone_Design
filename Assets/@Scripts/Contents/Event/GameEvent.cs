@@ -31,14 +31,14 @@ public class GameEvent : ScriptableObject
 
     public void UnregisterListener(GameEventListenerInternal listener)
     {
-        if (_eventListeners.Contains(listener))
-            _eventListeners.Add(listener);
+        if (_eventListeners.Contains(listener))  // 있으면 제거
+            _eventListeners.Remove(listener);
     }
 
     public void RegisterListener(GameEventListenerInternal listener)
     {
-        if (_eventListeners.Contains(listener))
-            _eventListeners.Remove(listener);
+        if (!_eventListeners.Contains(listener))  // 없으면 추가
+            _eventListeners.Add(listener);
     }
 }
 
@@ -69,13 +69,13 @@ public class GameEvent<T> : ScriptableObject
 
     public void UnregisterListener(GameEventListenerInternal<T> listener)
     {
-        if (_eventListeners.Contains(listener))
-            _eventListeners.Add(listener);
+        if (_eventListeners.Contains(listener))  // 있으면 제거
+            _eventListeners.Remove(listener);
     }
 
     public void RegisterListener(GameEventListenerInternal<T> listener)
     {
-        if (_eventListeners.Contains(listener))
-            _eventListeners.Remove(listener);
+        if (!_eventListeners.Contains(listener))  // 없으면 추가
+            _eventListeners.Add(listener);
     }
 }

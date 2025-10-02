@@ -44,10 +44,19 @@ public class GameEventListenerInternal
             // 특정 이벤트 이름은 로그 제외
             if (gameEvent.name != "CorsorEvent" && gameEvent.name != "FocusedOnNewTile")
             {
-                // 디버그 로그: 어떤 오브젝트의 어떤 메서드가 호출되는지 출력
-                Debug.Log("Received: " + gameEvent.name + ". \r\n Calling: " +
-                    response.GetPersistentTarget(0) + " -> " +
-                    response.GetPersistentMethodName(0));
+                int persistentCount = response.GetPersistentEventCount(); // 이건 정적으로 추가한 함수 개수만 가져옴
+                                                                          // 그래서 우리 코드는 런타임에 동적으로 함수를 등록해서 0으로 가져와짐
+
+                if (persistentCount > 0)
+                {
+                    Debug.Log("Received: " + gameEvent.name + ". \r\n Calling: " +
+                        response.GetPersistentTarget(0) + " -> " +
+                        response.GetPersistentMethodName(0));
+                }
+                else
+                {
+                    Debug.Log("Received: " + gameEvent.name + " (runtime listener)");
+                }
             }
 
             // UnityEvent 실행
@@ -104,10 +113,21 @@ public class GameEventListenerInternal<T>
             // 특정 이벤트 이름은 로그 제외
             if (gameEvent.name != "FocusOnTile")
             {
-                // 디버그 로그: 어떤 오브젝트의 어떤 메서드가 호출되는지 출력
-                Debug.Log("Received: " + gameEvent.name + ". \r\n Calling: " +
-                    response.GetPersistentTarget(0) + " -> " +
-                    response.GetPersistentMethodName(0));
+                // Persistent listener 개수 확인
+                int persistentCount = response.GetPersistentEventCount(); // 이건 정적으로 추가한 함수 개수만 가져옴
+                                                                          // 그래서 우리 코드는 런타임에 동적으로 함수를 등록해서 0으로 가져와짐
+
+                if (persistentCount > 0)
+                {
+                    Debug.Log("Received: " + gameEvent.name + ". \r\n Calling: " +
+                        response.GetPersistentTarget(0) + " -> " +
+                        response.GetPersistentMethodName(0));
+                }
+                else
+                {
+                    // 런타임 리스너는 정보를 출력할 수 없음
+                    Debug.Log("Received: " + gameEvent.name + " (runtime listener)");
+                }
             }
 
             // UnityEvent<T> 실행

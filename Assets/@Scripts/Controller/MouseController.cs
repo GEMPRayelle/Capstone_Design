@@ -473,6 +473,19 @@ public class MouseController : InitBase
         return closestTile;
     }
 
+    private void RaiseMoveFinishEvent()
+    {
+        GameEventGameObject moveFinishEvent = Managers.Resource.Load<GameEventGameObject>("moveFinish");
+        if (moveFinishEvent != null)
+        {
+            moveFinishEvent.Raise(_creature.gameObject);
+           
+        }
+        else
+        {
+            Debug.LogWarning("moveFinish GameEventGameObject not found!");
+        }
+    }
 
     //캐릭터를 경로 따라 이동시키는 함수
     private void MoveAlongPath()
@@ -501,9 +514,10 @@ public class MouseController : InitBase
         {
             // 기존 화살표 제거
             ClearArrows();
-            GetInRangeTiles(); // 새로운 이동 범위 계산
+            GetInRangeTiles();
             isMoving = false; // 이동 종료
             _creature.CreatureState = ECreatureState.Idle;
+            RaiseMoveFinishEvent();
         }
     }
 
@@ -626,6 +640,7 @@ public class MouseController : InitBase
         player.currentStandingTile = tile;
         // TODO 실루엣 처리
         player.GetComponent<CircleCollider2D>().enabled = false;
+        Destroy(player.GetComponent<Rigidbody2D>());
         player.CreatureState = ECreatureState.Skill;
         return player;
     }
@@ -639,6 +654,7 @@ public class MouseController : InitBase
         player.currentStandingTile = tile;
         // TODO 실루엣 처리
         player.GetComponent<CircleCollider2D>().enabled = false;
+        Destroy(player.GetComponent<Rigidbody2D>());
         player.CreatureState = ECreatureState.Skill;
         player.gameObject.SetActive(false);
         return player;
@@ -652,7 +668,7 @@ public class MouseController : InitBase
         player.PlayerType = EPlayerType.Offensive; // TODO : 나중에 데이터 시트에 추가해서 SetInfo에서 설정되도록
         player.currentStandingTile.isBlocked = true;
         player.currentStandingTile.HideTile();
-        // TODO : 턴 매니저의 List에도 Add
+        Managers.Turn.activePlayerList.Add(player);
         spawnablePlayerID.RemoveAt(0);
     }
 
