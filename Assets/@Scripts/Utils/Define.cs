@@ -184,6 +184,14 @@ public static class Define
         CTB, //Charge Turn Battle
     }
 
+    public enum TurnPhase //턴 단계 구분
+    {
+        PlayerMovement, //캐릭터 이동
+        PlayerAction, //턴 종료 버튼 누를 시 공격/스킬 처리
+        EnemyTurn, //적 턴 진행
+    }
+
+
     public static class SortingLayers
     {
         public const int UI_JOYSTICK = 500;

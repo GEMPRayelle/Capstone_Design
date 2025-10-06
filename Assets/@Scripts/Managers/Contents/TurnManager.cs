@@ -43,9 +43,8 @@ public class BattleInfo
 public class TurnManager 
 {
     public TurnSorting turnSorting; //턴 정렬 방식
+    public TurnPhase CurrentPhase { get; private set; } //플레이어의 턴 상태 관리
 
-    private int _currentTurn;
-    public int CurrentTurn => _currentTurn;
     private List<BattleInfo> _battleInfoOrderList = new List<BattleInfo>(); //각 캐릭터 별로 BattleInfo를 저장
 
     //이벤트
@@ -59,6 +58,9 @@ public class TurnManager
     //턴 순서 미리 보기 리스트
     public List<TurnOrderPreviewObject> turnOrderPreview;
     public List<TurnOrderPreviewObject> currentTurnOrderPreview;
+
+    //추가 턴을 받는 캐릭터들
+    public Queue<Creature> extraTurnPlayerQueue = new Queue<Creature>();
 
     //현재 턴을 진행중인 Creature
     public Creature activeCharacter;
@@ -131,6 +133,71 @@ public class TurnManager
 
     }
 
+    //턴 종료 버튼 클릭시 일괄적으로 플레이어 턴 종료
+    public void OnPlayerTurnEnd()
+    {
+        if (CurrentPhase != TurnPhase.PlayerMovement || !IsAllPlayerMoved())
+            return;
+
+        CurrentPhase = TurnPhase.PlayerAction;
+
+        foreach (var player in activePlayerList)
+        {
+            if (player.IsAlive)
+            {
+                //NormalAttack or Skill
+                player.CreatureState = ECreatureState.Skill;
+            }
+        }
+
+        //StartEnemyTurn();
+    }
+
+    //턴 종료시 추가 턴 처리
+    public void StartExtraTurn() 
+    {
+        while (extraTurnPlayerQueue.Count > 0) 
+        {
+            //추가 턴을 진행할 Creature를 큐에서 가져옴
+            Creature extraTurnCreature = extraTurnPlayerQueue.Dequeue();
+
+            activeCharacter = extraTurnCreature;
+            CurrentPhase = TurnPhase.PlayerMovement;
+
+            //UI 및 이벤트 처리
+
+            //캐릭터가 Auto Action을 수행하거나 수동 입력을 기다림
+        }
+    }
+
+    //추가 턴 종료
+    public void EndExtraTurn()
+    {
+        FinalEndCharacterTurn();
+
+        if (extraTurnPlayerQueue.Count > 0)
+        {
+            //추가 턴을 진행할 캐릭터가 더 있을때
+            StartExtraTurn();
+        }
+        else
+        {
+            EndTurn();
+        }
+    }
+
+    //다음 턴 준비
+    private void PrepareNextPlayerTurn()
+    {
+        //모든 캐릭터의 이동 상태 초기화후 턴 넘김
+        foreach (var player in activePlayerList)
+        {
+            player.IsMoved = false;
+        }
+
+        CurrentPhase = TurnPhase.PlayerMovement;
+    }
+
     //턴 순서 정렬
     private void SortingTurn(bool updateListSize = false)
     {
@@ -170,6 +237,20 @@ public class TurnManager
     // 살아있는 캐릭터가 있는지 확인
     private bool HasAliveCharacters() =>
         turnOrderPreview.Any(x => x.character.IsAlive);
+
+    //모든 캐릭터가 이동을 완료했는지 체크
+    private bool IsAllPlayerMoved()
+    {
+        //TODO -> 이 함수 기반으로 턴 종료 버튼 Active 여부 체크
+        return activePlayerList.All(p => p.IsMoved);
+    }
+
+    private void GrantExtraTurn(Creature creature)
+    {
+        if (creature.IsAlive)
+            extraTurnPlayerQueue.Enqueue(creature);
+        
+    }
 
     //턴 종료시 타일 효과 적용 및 이니셔티브 갱신
     private void FinalEndCharacterTurn()
