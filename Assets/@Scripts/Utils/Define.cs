@@ -192,6 +192,12 @@ public static class Define
         EnemyTurn, //적 턴 진행
     }
 
+    public enum TileType
+    {
+        Traversable, //일반적인 이동 가능 타일
+        NonTraversable, //벽, 장애물 등 이동 불가
+        Effect, //효과가 붙어있는 타일
+    }
 
     public static class SortingLayers
     {
