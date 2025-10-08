@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using static Define;
 
@@ -150,7 +151,31 @@ public class TurnManager
             }
         }
 
-        //StartEnemyTurn();
+        // Need delay?
+        StartEnemyTurn();
+    }
+
+    //아직 행동하지 않은 Monster(한 마리) 턴 시작
+    public void StartEnemyTurn()
+    {
+        if (IsAllMonsterMoved() == true) // 모든 적 행동 끝날 시
+        {
+            // 다시 플레이어 턴 시작 
+        }
+
+        else // 아직 행동이 남은 적이 있다면
+        {
+            // 살아있고 아직 이동하지 않은 첫 번째 몬스터 찾기
+            Monster currentMonster = activeMonsterList
+                .FirstOrDefault(m => m.IsAlive && m.IsMoved == false) as Monster;
+
+            if (currentMonster != null)
+            {
+                activeCharacter = currentMonster;
+                // AI 행동 로직 시작 함수
+            }
+        }
+           
     }
 
     //턴 종료시 추가 턴 처리
@@ -245,6 +270,13 @@ public class TurnManager
         return activePlayerList.All(p => p.IsMoved);
     }
 
+    // 모든 몬스터가 이동했는지 체크
+    private bool IsAllMonsterMoved()
+    {
+        return activeMonsterList.All(i => i.IsMoved);
+    }
+
+
     private void GrantExtraTurn(Creature creature)
     {
         if (creature.IsAlive)
@@ -263,7 +295,23 @@ public class TurnManager
         //        activeCharacter.AttachEffect(tileEffect);
         //}
     }
-     public void OnCreatureMoveFinish(GameObject receivedObject)
+
+    // 모든 플레이어 행동(이동) 끝났을 때 실행되는 함수
+    private void RaiseAllPlayerMoveFinishEvent()
+    {
+        GameEvent AllmoveFinishEvent = Managers.Resource.Load<GameEvent>("AllmoveFinish"); // SO 생성
+        if (AllmoveFinishEvent != null)
+        {
+            AllmoveFinishEvent.Raise(); // Raise = Inovke, Turn Manager -> 턴 종료 UI
+        }
+        else
+        {
+            Debug.LogWarning("AllmoveFinish GameEvent not found!");
+        }
+    }
+
+    // 플레이어 이동 끝나고 실행되는 함수
+    public void OnCreatureMoveFinish(GameObject receivedObject)
     {
         Player player = receivedObject.GetComponent<Player>();
         if (player != null)
@@ -272,8 +320,15 @@ public class TurnManager
         }
 
         Debug.Log("Turn Manager's OnMoveFinish");
+
+        if (IsAllPlayerMoved() == true)
+        {
+            RaiseAllPlayerMoveFinishEvent();
+        }
     }
 }
+
+
 
 //턴 순서를 미리 보기 위한 객체 클래스
 public class TurnOrderPreviewObject

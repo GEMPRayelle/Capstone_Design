@@ -13,9 +13,15 @@ public class ListenerEditor : MonoBehaviour
     // 2. 이 함수 컨트롤 + 쉬프트 + T 나 Tools에서 실행
     // 3. Assets/@Resources/Prefabs/Listeners에 ex) TestSO_Listener 파일이 만들어짊
     // 4. 해당 리스너를 Addressable에 등록
-    // 5. 리스너 베이스가 된 SO(.asset)파일도 Addressable에 등록 후 사용
-    
-    // TODO : Generic으로 다 처리하게 만드는게 좋아보임 ex) GameEvent<T>와 GameEventListener<T>를 활용해서 다른 타입들 모두 처리
+    // 5. 리스너 베이스가 된 SO(.asset)파일도 Addressable에 등록
+    // 6. ObjectManager에 GetAllListenerNames함수의 string 배열에 추가한 리스너 이름 추가(Addressable에 등록된 이름과 같아야함)
+    // 7. ObjectManager에 SetListenerResponse함수에서 타입별로 실행되는 Set~~ListenerResponse함수 들 중 내가 추가한 타입에 맞는 함수에 가서 
+    // 7 계속. switch문에 내가 string 배열에 추가한 이름을 case로 둬서 이벤트 실행 시 알람 받아 실행될 함수 등록
+    // 8. 지금까지 작업은 이벤트 Raise를 호출하면 실행될 함수는 등록된 것. 이제 이벤트 Raise를 호출할 곳에 필요한 SO만들어서 Raise 시키기. 
+    // 8. ex) MouseController에서 조종하던 캐릭터 이동이 끝나면 MoveFinish SO를 Raize시키는 함수 RaiseMoveFinishEvent() 처럼 만들어야된다는것
+
+    // 직접적인 제네릭 처리 불가 이유 : 유니티 SO는 직렬화 시스템을 사용하는데 이는 컴파일 타임에 타입이 확정 되어야함
+    // 그런데 제네릭 처리는 런타임에 타입이 확정되서 직렬화 안됨. 그래서 사용불가
 #if UNITY_EDITOR
     [MenuItem("Tools/Listener Generate %#t")] // Ctrl+Shift+T
     static void GenerateListenersForAllSO()

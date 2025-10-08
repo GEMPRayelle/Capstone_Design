@@ -232,7 +232,10 @@ public class ObjectManager
         // 리스너 이름에 따라 적절한 콜백 등록
         switch (listenerName)
         {
-
+            case "AllmoveFinish_Listener":
+                // listener.Response.AddListener(턴 종료 버튼 활성화 함수); 턴 종료 버튼 활성화 함수 등록
+                Debug.Log($"Set response for {listenerName}");
+                break;
             // 다른 기본 이벤트 리스너 추가
             default:
                 Debug.LogWarning($"No response defined for basic listener: {listenerName}");
@@ -295,6 +298,7 @@ public class ObjectManager
         {
             "moveFinish_Listener",
             // "playerSpawn_Listener"
+            "AllmoveFinish_Listener"
             // 필요한 리스너들 추가
         };
 

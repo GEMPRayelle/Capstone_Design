@@ -294,7 +294,6 @@ public class MouseController : InitBase
 
     private void HandleSpawnClick(OverlayTile tile)
     {
-        Debug.Log(rangeFinderTiles.Contains(tile));
         if (!rangeFinderTiles.Contains(tile) || tile.isBlocked || spawnablePlayerID.Count <= 0) // 범위 밖 타일에서 생성, blocking tile에서 생성은 X
             return; // 생성할 spawnablePlayer가 없다면 생성 X
 
@@ -316,6 +315,7 @@ public class MouseController : InitBase
         isClickedOrder = false; // 소환시 클릭은 해제
         HideAllRangeTiles(); // 소환 하이라이트 타일 숨기기
         _creature = null; // 조종하던 order 풀기
+        // 턴 매니저에 턴 시작 알리기
     }
 
     private EPlayerControlState GetCurrentControlState()
@@ -473,13 +473,15 @@ public class MouseController : InitBase
         return closestTile;
     }
 
+    // 이동 끝났을 때 실행되는 함수
     private void RaiseMoveFinishEvent()
     {
         GameEventGameObject moveFinishEvent = Managers.Resource.Load<GameEventGameObject>("moveFinish");
+        // SO 만들어서
         if (moveFinishEvent != null)
         {
-            moveFinishEvent.Raise(_creature.gameObject);
-           
+            moveFinishEvent.Raise(_creature.gameObject); // Raise = Invoke 시키기
+            // MouseController -> TurnManager
         }
         else
         {

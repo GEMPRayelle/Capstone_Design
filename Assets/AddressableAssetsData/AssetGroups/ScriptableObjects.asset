@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: ScriptableObjects
   m_GUID: ba93093bf5053c04e9d0983bcc042076
   m_SerializeEntries:
+  - m_GUID: 7c3c90ea28c2d984ebd249e0aa3958cb
+    m_Address: AllmoveFinish
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f86e2eca8e77bee46b00467995e800d0
     m_Address: moveFinish
     m_ReadOnly: 0
