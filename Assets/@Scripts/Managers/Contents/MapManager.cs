@@ -294,6 +294,101 @@ public class MapManager
     }
 
     /// <summary>
+    /// 주어진 타일 주변의 모든 이웃 타일을 리턴하는 함수
+    /// 
+    /// * 여러조건을 고려하여 접근 가능한 타일만 반환:
+    /// - 장애물 무시 여부
+    /// - 아군 통과 가능 여부  
+    /// - 남은 이동 범위
+    /// - 높이 차이 제한
+    /// </summary>
+    /// <returns>접근 가능한 이웃 타일들의 리스트</returns>
+    public List<OverlayTile> GetNeighbourTiles(OverlayTile targetObjectTile, 
+        List<OverlayTile> searchableTiles,
+        bool ignoreObstacle = false, 
+        bool walkThroughAllies = true, 
+        int remainRange = 10)
+    {
+        //탐색할 타일 범위 설정용 딕셔너리
+        Dictionary<Vector2Int, OverlayTile> tileToSearch = new Dictionary<Vector2Int, OverlayTile>();
+
+        if(searchableTiles.Count > 0)
+        {
+            //특정 범위만 검색하는 경우 (이동 범위 내에서)
+            foreach (var tile in searchableTiles)
+            {
+                tileToSearch.Add(tile.grid2DLocation, tile);
+            }
+        }
+        else
+        {
+            //전체 맵을 검색하는 경우
+            tileToSearch = mapDict;
+        }
+
+        List<OverlayTile> neighbours = new List<OverlayTile>();
+
+        if (targetObjectTile != null) 
+        {
+            //상하좌우로 이웃 타일 검색
+            foreach (var direction in Util.GetDirection())
+            {
+                Vector2Int locationToCheck = targetObjectTile.grid2DLocation + direction;
+
+                //각 방향의 타일이 접근 가능한지 검증
+                
+            }
+        }
+
+        return neighbours;
+    }
+
+    //Neighbour 타일이 접근 가능한지 검증하는 함수
+    private void ValidateNeighbour(OverlayTile currentOverlayTile, 
+        bool ignoreObstacles,
+        bool walkThroughAllies,
+        Dictionary<Vector2Int, OverlayTile> tilesToSearch,
+        List<OverlayTile> neighbours,
+        Vector2Int locationToCheck,
+        int remainingRange)
+    {
+        bool canAccessLocation = false;
+
+        //검사할 위치에 타일이 존재하는지
+        if (tilesToSearch.ContainsKey(locationToCheck))
+        {
+            OverlayTile tile = tilesToSearch[locationToCheck];
+
+            bool isBlocked = tile.isBlocked;
+            bool isActiveCharacter = //tile.activeCharacter != null  &&
+                Managers.Turn.activeCharacter != null;
+            bool canWalkThroughAllies = walkThroughAllies;
+
+            //접근 가능 조건 판단
+            if (ignoreObstacles ||                  // 장애물 무시 모드이거나
+                (!ignoreObstacles && !isBlocked) || // 장애물이 없거나
+                canWalkThroughAllies)               // 아군 통과 가능한 경우
+            {
+                //이동 cost 검사(남은 이동 cost 코스트로 갈 수 있는가?)
+                //TODO 
+                //if ( <= remainingRange || ignoreObstacles)
+                //{
+                //    canAccessLocation = true;
+                //}
+            }
+
+            //최종 접근 가능한 판단 및 높이(z) 제한 검사
+            if (canAccessLocation)
+            {
+                //인공적인 점프 높이 제한 : 1칸 높이 차이까지만 이동 가능
+                //캐릭터가 너무 높은 절벽을 오르내리지 못하도록 제한
+                if (Mathf.Abs(currentOverlayTile.gridLocation.z - tile.gridLocation.z) <= 1)
+                    neighbours.Add(tilesToSearch[locationToCheck]);
+            }
+        }
+    }
+
+    /// <summary>
     /// 지정된 위치를 중심으로 하는 N×N 그리드의 타일들을 반환하는 함수
     /// </summary>
     /// <param name="location">중심이 될 위치</param>

@@ -106,14 +106,14 @@ public class PathFinder
     }
 
     //거리 계산 함수 (휴리스틱 계산)
-    private int GetManhattenDistance(OverlayTile start, OverlayTile tile)
+    public int GetManhattenDistance(OverlayTile start, OverlayTile tile)
     {
         //맨해튼 거리 사용 (Grid기반 맵에서 가장 일반적인 휴리스틱 방식, 대각선 이동이 없을때 유리)
         return Mathf.Abs(start.gridLocation.x - tile.gridLocation.x) + Mathf.Abs(start.gridLocation.y - tile.gridLocation.y);
     }
 
     //타일로부터 인접한 타일을 리턴하는 함수
-    private List<OverlayTile> GetNeightbourOverlayTiles(OverlayTile currentOverlayTile)
+    public List<OverlayTile> GetNeightbourOverlayTiles(OverlayTile currentOverlayTile)
     {
         //전체 타일 맵 <Vec2Int, OverlayTile>로 세팅된 딕셔너리
         var map = Managers.Map.mapDict;

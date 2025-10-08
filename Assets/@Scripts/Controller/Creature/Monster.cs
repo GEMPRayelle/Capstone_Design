@@ -10,9 +10,6 @@ using static Define;
 public class Monster : Creature
 {
     public Data.MonsterData MonsterData { get { return (Data.MonsterData)CreatureData; } }
-    public Rigidbody2D rigid;
-    private float nearestDistanceSqr;
-
 
     public override ECreatureState CreatureState
     {
@@ -50,7 +47,6 @@ public class Monster : Creature
         ObjectType = EObjectType.Monster;
 
         Speed = 2.5f;
-        rigid = GetComponent<Rigidbody2D>();
         GameObject player = GameObject.Find("@Players");
 
         if (player != null)

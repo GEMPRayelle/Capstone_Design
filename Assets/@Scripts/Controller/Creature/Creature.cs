@@ -3,9 +3,9 @@ using Spine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using static Define;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class Creature : BaseObject
 {
@@ -15,8 +15,9 @@ public class Creature : BaseObject
     public Data.CreatureData CreatureData { get; private set; }
     public OverlayTile currentStandingTile;//현재 서 있는 타일 정보
     public EffectComponent Effects { get; set; }//이펙트(상태 이상효과) 목록
-
     public bool IsMoved = false; // 현재 턴에 이동했는지에 대한 정보
+
+    private PathFinder _pathFinder { get; set; }
 
     protected ECreatureState _creatureState = ECreatureState.None;
     public virtual ECreatureState CreatureState
@@ -33,12 +34,7 @@ public class Creature : BaseObject
         }
     }
 
-    public bool IsAlive
-    {
-        get { return _creatureState != ECreatureState.Dead; }
-    }
-
-    
+    public bool IsAlive { get { return _creatureState != ECreatureState.Dead; } }
 
     protected float AttackDistance
     {
@@ -196,6 +192,125 @@ public class Creature : BaseObject
     public override void OnDead(BaseObject attacker, SkillBase skill)
     {
         base.OnDead(attacker, skill);
+    }
+
+    /// <summary>
+    /// 현재 위치에서 가장 가까운 적 캐릭터를 찾는 함수
+    /// </summary>
+    /// <param name="position">위치 기준</param>
+    /// <returns></returns>
+    private BaseObject FindClosestObject(OverlayTile position)
+    {
+        Creature target = null;
+        var closestDistance = 1000; //충분히 큰 초기값
+
+        foreach (var player in Managers.Turn.activePlayerList)
+        {
+            if (player.IsAlive) //살아있는 플레이어 캐릭터만 고려
+            {
+                var currentDistance = _pathFinder.GetManhattenDistance(position, player.currentStandingTile);
+
+                if (currentDistance <= closestDistance)
+                {
+                    closestDistance = currentDistance;
+                    target = player;
+                }
+            }
+        }
+
+        return target;
+    }
+
+    /// <summary>
+    /// 죽이기 가장 쉬운 캐릭터를 찾는 함수 (for Strategy AI)
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
+    private BaseObject FindClosestObjectToDeath(OverlayTile position)
+    {
+        Creature target = null;
+        int lowestHealth = -1;
+        var isObjectInRange = true; //범위 내에 적이 있는지 확인
+
+        foreach (var player in Managers.Turn.activePlayerList)
+        {
+            if (player.IsAlive && player.currentStandingTile)
+            {
+                var currentDistance = _pathFinder.GetManhattenDistance(position, player.currentStandingTile);
+                var currentHealth = player.Hp;
+
+                // 공격 범위 내에 있는 경우 우선 고려
+                //TODO AttackDistance는 데이터시트에 있는 값이 아님
+                if (currentDistance <= player.AttackDistance && 
+                    ((lowestHealth == -1) || (currentHealth <= lowestHealth || isObjectInRange)))
+                {
+                    lowestHealth = (int)currentHealth;
+                    target = player;
+                    isObjectInRange = false;
+                }
+                // 범위 내에 적이 없다면 전체에서 가장 약한 적 선택
+                else if (isObjectInRange && ((lowestHealth == -1) || (currentHealth <= lowestHealth)))
+                {
+                    lowestHealth = (int)currentHealth;
+                    target = player;
+                }
+            }
+        }
+
+        return target;
+    }
+
+    /// <summary>
+    /// 대상 타일 주변에서 가장 가까운 인접 타일을 찾는 함수
+    /// , 직접 그 타일로 이동이 불가능할때 사용해야함
+    /// </summary>
+    /// <param name="targetObjectTile"></param>
+    /// <returns></returns>
+    private OverlayTile GetClosestNeighbour(OverlayTile targetObjectTile)
+    {
+        //대상 타일의 모든 인접 타일 가져옴
+        var targetNeightbour = Managers.Map.GetNeighbourTiles(targetObjectTile, new List<OverlayTile>());
+        var targetTile = targetNeightbour[0];
+        var targetDistance = _pathFinder.GetManhattenDistance(targetTile, currentStandingTile);
+
+        //가장 가까운 인접 타일 탐색
+        foreach (var item in targetNeightbour)
+        {
+            var distance = _pathFinder.GetManhattenDistance(item, currentStandingTile);
+
+            if (distance < targetDistance)
+            {
+                targetTile = item;
+                targetDistance = distance;
+            }
+        }
+
+        return targetTile;
+    }
+
+    /// <summary>
+    /// 주어진 타일들 내에 있는 모든 적 캐릭터를 찾음
+    /// 주로 범위 공격 능력의 피해 대상을 찾는데 사용
+    /// </summary>
+    /// <param name="tiles">검색할 타일 리스트</param>
+    /// <returns>해당 타일들에 있는 적 캐릭터 리스트</returns>
+    private List<Creature> FindAllCharactersInTiles(List<OverlayTile> tiles)
+    {
+        var playersInRange = new List<Creature>();
+
+        foreach (var tile in tiles)
+        {
+            // 타일에 캐릭터가 있고, 적팀이며, 살아있는지 확인
+            // TODO: 아군에게 도움이 되는 능력도 고려하도록 개선 필요
+            //if (tile.activeCharacter &&
+            //    tile.activeCharacter.teamID != teamID &&
+            //    tile.activeCharacter.isAlive)
+            //{
+            //    playersInRange.Add(tile.activeCharacter);
+            //}
+        }
+
+        return playersInRange;
     }
 
     //range범위에 있는 Objs중에서 가장 가까이 있는 BaseObject를 반환

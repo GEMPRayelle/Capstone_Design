@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
-using UnityEngine.Rendering.Universal;
+using System.Collections;
+using System.Collections.Generic;
 
 public static class Util
 {
@@ -72,5 +73,12 @@ public static class Util
         return parsedColor;
     }
 
-
+    //4방향(상화좌우) 벡터를 리턴하는 함수 (4방향 벡터의 enum을 리턴함)
+    public static IEnumerable<Vector2Int> GetDirection()
+    {
+        yield return Vector2Int.up;    // (0, 1)
+        yield return Vector2Int.down;  // (0, -1)
+        yield return Vector2Int.right; // (1, 0)
+        yield return Vector2Int.left;  // (-1, 0)
+    }
 }
