@@ -161,6 +161,7 @@ public class TurnManager
         if (IsAllMonsterMoved() == true) // 모든 적 행동 끝날 시
         {
             // 다시 플레이어 턴 시작 
+            PrepareNextPlayerTurn();
         }
 
         else // 아직 행동이 남은 적이 있다면
@@ -313,13 +314,7 @@ public class TurnManager
     // 플레이어 이동 끝나고 실행되는 함수
     public void OnCreatureMoveFinish(GameObject receivedObject)
     {
-        Player player = receivedObject.GetComponent<Player>();
-        if (player != null)
-        {
-            player.IsMoved = true;
-        }
-
-        Debug.Log("Turn Manager's OnMoveFinish");
+        Debug.Log($"Turn Manager's OnMoveFinish at {receivedObject.name}");
 
         if (IsAllPlayerMoved() == true)
         {

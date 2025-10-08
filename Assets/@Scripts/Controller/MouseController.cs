@@ -123,6 +123,8 @@ public class MouseController : InitBase
     {
         switch (PlayerControlState)
         {
+            case EPlayerControlState.ControlledFinish: // 이미 이동 완료한 creature을 조종할 때 
+                break;
             case EPlayerControlState.ControllingOffensive:
             case EPlayerControlState.ControllingOrderForMove:
                 HandleMovementPreview(tile); // 공격형 이동할때 or 오더가 스폰을 끝내고 움직일때 로직
@@ -213,7 +215,7 @@ public class MouseController : InitBase
             _creature = null; // 조종하는 플레이어 조종 풀기
         }
 
-        // 감지된 캐릭터가 없다면 && 조종할 플레이어를 변경한 경우가 아니면
+        // 감지된 캐릭터가 없다면 && 조종할 플레이어를 변경한 경우가 아니면 == 이동할 경우
         if (changePlayer == false && _creature != null && CanMove())
         {
             StartMovement(hit.tile);
@@ -275,8 +277,10 @@ public class MouseController : InitBase
         _creature = newPlayer;
         _creature.CreatureState = ECreatureState.Idle;
         //_copy = InstantiateCopyPlayer(tile, _creature); // 실루엣 전용 플레이어 재생성
-        GetInRangeTiles(); // 이동 가능한 타일 계산 및 표시
+        if (_creature.IsMoved == false) // 이미 이동한 크리쳐가 아니라면
+            GetInRangeTiles(); // 이동 가능한 타일 계산 및 표시
         SetCameraTarget(_creature);
+        Debug.Log($"Current Playable Character : {_creature.name}");
     }
 
     private void SwitchToOrderForSpawn(Player orderPlayer, OverlayTile tile)
@@ -325,6 +329,9 @@ public class MouseController : InitBase
         if (_creature == null) 
             return EPlayerControlState.None;
 
+        if (_creature.IsMoved == true)
+            return EPlayerControlState.ControlledFinish;
+
         if (_creature.PlayerType == EPlayerType.Offensive)
             return EPlayerControlState.ControllingOffensive;
 
@@ -346,6 +353,9 @@ public class MouseController : InitBase
 
     private void StartMovement(OverlayTile tile)
     {
+        if (PlayerControlState == EPlayerControlState.ControlledFinish) // 이미 이동한 크리쳐라면
+            return; // 무시
+
         isMoving = true; // 이동 시작
         tile.HideTile(); // 클릭한 타일 숨김 처리
         _creature.CreatureState = ECreatureState.Move;
@@ -517,9 +527,10 @@ public class MouseController : InitBase
         {
             // 기존 화살표 제거
             ClearArrows();
-            GetInRangeTiles();
+            // GetInRangeTiles();
             isMoving = false; // 이동 종료
             _creature.CreatureState = ECreatureState.Idle;
+            _creature.IsMoved = true;
             RaiseMoveFinishEvent();
         }
     }

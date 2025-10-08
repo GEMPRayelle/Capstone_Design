@@ -80,7 +80,8 @@ public static class Define
         None,
         ControllingOffensive,
         ControllingOrderForMove,
-        ControllingOrderForSpawn
+        ControllingOrderForSpawn,
+        ControlledFinish
     }
 
     public enum EPlayerType
