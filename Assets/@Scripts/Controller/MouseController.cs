@@ -17,7 +17,7 @@ public class MouseController : InitBase
     private List<OverlayTile> SkillRangeTiles; // 캐릭터 공격 범위
     private List<int> spawnablePlayerID; // order가 스폰할 캐릭터들 ID
     private Player _creature; //현재 생성된 캐릭터 정보
-    private Player _copy; // 캐릭터의 실루엣 당담
+    private Player _copy; // order 소환할 때 캐릭터의 preview 당담
     private PathFinder _pathFinder; //경로 탐색기
     private ArrowTranslator arrowTranslator; // 경로 방향 화살표 계산기
     private bool isMoving; // 캐릭터가 이동 중인지 여부
@@ -144,7 +144,7 @@ public class MouseController : InitBase
             // 현재 위치에서 클릭한 타일까지 경로 계산
             ShowPathToTile(tile);
             // Skill Range Highlights
-            GetSkillRangeTiles(tile);
+            // GetSkillRangeTiles(tile);
         }
         else // 범위 밖 tile hover하면
         {
@@ -274,7 +274,7 @@ public class MouseController : InitBase
 
         _creature = newPlayer;
         _creature.CreatureState = ECreatureState.Idle;
-        _copy = InstantiateCopyPlayer(tile, _creature); // 실루엣 전용 플레이어 재생성
+        //_copy = InstantiateCopyPlayer(tile, _creature); // 실루엣 전용 플레이어 재생성
         GetInRangeTiles(); // 이동 가능한 타일 계산 및 표시
         SetCameraTarget(_creature);
     }
@@ -316,6 +316,8 @@ public class MouseController : InitBase
         HideAllRangeTiles(); // 소환 하이라이트 타일 숨기기
         _creature = null; // 조종하던 order 풀기
         // 턴 매니저에 턴 시작 알리기
+        if (_copy != null)
+            Managers.Object.Despawn<Player>(_copy); // 소환 끝나면 copy 사용 X
     }
 
     private EPlayerControlState GetCurrentControlState()
@@ -416,7 +418,6 @@ public class MouseController : InitBase
     {
         _copy.transform.position = tile.transform.position;
         _copy.currentStandingTile = tile;
-        _copy.CreatureState = ECreatureState.Skill;
     }
 
     private void SetCameraTarget(Player target)
@@ -615,36 +616,19 @@ public class MouseController : InitBase
         // Skill Range 하이라이트 전 타일 원래대로 되돌리기
         ResetSkillRangeTiles();
 
-        // copy 있는지 확인
-        if (_copy == null) 
-            return;
-
         // copy가 있다면 위치와 init할거 하기
         UpdateCopyPosition(tile);
-        _copy.gameObject.SetActive(true);
 
         // 캐릭터 실루엣 위치를 기준으로 이동 가능한 타일 계산
         SkillRangeTiles = Managers.Map.GetTilesInRange(
-            new Vector2Int(_copy.currentStandingTile.gridLocation.x, _copy.currentStandingTile.gridLocation.y),
-            _copy.SkillRange);
+            new Vector2Int(_creature.currentStandingTile.gridLocation.x, _creature.currentStandingTile.gridLocation.y),
+            _creature.SkillRange);
 
         // 계산된 타일들을 시각적으로 표시
         foreach (var item in SkillRangeTiles)
         {
             item.HighlightTileBlue();
         }
-    }
-
-    // 플레이어 실루엣 생성
-    private Player InstantiateCopyPlayer(OverlayTile tile, Player original) // tile위치에 original을 생성
-    {
-        Player player = Managers.Object.Spawn<Player>(tile.transform.position, original.DataTemplateID);
-        player.currentStandingTile = tile;
-        // TODO 실루엣 처리
-        player.GetComponent<CircleCollider2D>().enabled = false;
-        Destroy(player.GetComponent<Rigidbody2D>());
-        player.CreatureState = ECreatureState.Skill;
-        return player;
     }
 
     // Order의 다른 Playable 캐릭터 실루엣 생성
