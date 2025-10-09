@@ -6,7 +6,9 @@ public class PathFinder
 {
     private Dictionary<Vector2Int, OverlayTile> searchableTiles;
 
-    public List<OverlayTile> FindPath(OverlayTile start, OverlayTile end, List<OverlayTile> inRangeTiles)
+    //TODO PathFinder 함수 수정
+    public List<OverlayTile> FindPath(OverlayTile start, OverlayTile end, List<OverlayTile> inRangeTiles,
+        bool ignoreObstacles = false, bool walkTroughAllies = true)
     {
         searchableTiles = new Dictionary<Vector2Int, OverlayTile>();
 

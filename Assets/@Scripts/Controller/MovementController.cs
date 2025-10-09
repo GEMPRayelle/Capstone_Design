@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static Define;
 
 public class MovementController : InitBase
 {
@@ -14,9 +15,10 @@ public class MovementController : InitBase
     public bool moveThroughAllies = true; //아군 캐릭터가 통과해서 이동할 수 있는지 여부
 
     //Event
-    public GameEvent endTurnEvent;
-    public GameEventGameObject displayAttackRange;
-    public GameEvent actionCompleted;
+    public GameEvent endTurnEvent; // 턴 종료 시 발생시킬 게임 이벤트
+    public GameEventGameObject displayAttackRange; // 공격 범위 표시 이벤트 (GameObject 매개변수)
+    public GameEvent actionCompleted; //행동 완료 이벤트
+    //public GameEventString cancelActionEvent; //행동 취소 이벤트 (String 매개변수)
 
     public OverlayController overlayController;
     public MouseController mouseController; //이동을 위한 마우스 클릭 감지
@@ -44,6 +46,57 @@ public class MovementController : InitBase
         return true;
     }
 
+    private void Update()
+    {
+        // 캐릭터 생존 상태 확인 및 정리
+        // 활성 캐릭터가 죽었다면 이동 관련 상태를 모두 리셋
+        if (activeCharacter && !activeCharacter.IsAlive)
+        {
+            ResetMovementManager();
+        }
+
+        // 실시간 경로 계획 및 화살표 표시 시스템
+        if (_focusedTile)
+        {
+            // 조건 확인:
+            // 1. 포커스된 타일이 이동 범위 내에 있음
+            // 2. 이동 모드가 활성화됨
+            // 3. 현재 이동 중이 아님  
+            // 4. 해당 타일이 막혀있지 않음
+            if (inRangeTiles.Contains(_focusedTile) && _movementModeEnabled && !_isMoving && !_focusedTile.isBlocked)
+            {
+                // A* 알고리즘으로 최적 경로 계산
+                _path = _pathFinder.FindPath(activeCharacter.currentStandingTile, _focusedTile, inRangeTiles, false, moveThroughAllies);
+
+                // 기존 화살표들을 모두 제거 (깨끗한 화면 유지)
+                foreach (var item in inRangeTiles)
+                {
+                    item.SetArrowSprite(ArrowDirection.None);
+                }
+
+                // 새로 계산된 경로에 화살표 표시
+                for (int i = 0; i < _path.Count; i++)
+                {
+                    // 각 타일의 이전, 현재, 다음 위치를 파악
+                    var previousTile = i > 0 ? _path[i - 1] : activeCharacter.currentStandingTile;
+                    var futureTile = i < _path.Count - 1 ? _path[i + 1] : null;
+
+                    // 3개 타일의 위치 관계를 분석하여 적절한 화살표 방향 결정
+                    // 직선: →, ↑ 등의 단순 화살표
+                    // 꺾임: ↗, ↘ 등의 방향 전환 화살표
+                    var arrowDir = arrowTranslator.TranslateDirection(previousTile, _path[i], futureTile);
+                    _path[i].SetArrowSprite(arrowDir);
+                }
+            }
+        }
+
+        // 실제 캐릭터 이동 처리
+        // 경로가 있고 이동 중일 때 지속적으로 호출
+        if (_path.Count > 0 && _isMoving)
+        {
+            MoveAlongPath();
+        }
+    }
 
     #region Input Management
     /// <summary>
@@ -73,6 +126,27 @@ public class MovementController : InitBase
             // 이동 버튼 비활성화 (중복 클릭 방지)
             //if (MoveButton)
             //    MoveButton.GetComponent<Button>().interactable = false;
+        }
+    }
+
+    /// <summary>
+    /// 이동 취소 버튼이 눌렸을 때 호출되는 메서드
+    /// 현재 계획 중인 이동을 취소하고 이전 상태로 되돌림
+    /// 
+    /// 처리 과정:
+    /// 1. 취소 이벤트 발생 ("Move" 액션 취소 알림)
+    /// 2. 이동 관련 상태 모두 리셋
+    /// 3. UI 화면 정리
+    /// </summary>
+    public void CancelButtonPressed()
+    {
+        if (_movementModeEnabled)
+        {
+            // 다른 시스템에 이동 취소를 알림
+            //cancelActionEvent.Raise("Move");
+
+            // 모든 이동 관련 상태 초기화
+            ResetMovementManager();
         }
     }
     #endregion
