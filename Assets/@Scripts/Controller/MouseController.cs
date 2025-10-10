@@ -24,8 +24,6 @@ public class MouseController : InitBase
     private GameObject cursor; // 커서
     private bool isClickedOrder; // Order 캐릭터가 다른 캐릭터 스폰시킬때 클릭된지에 대한 여부
 
-    public bool moveThroughAllies = true;
-
     // Ray 쏴서 결과값 받을 구조체
     public struct RaycastResult
     {
@@ -608,8 +606,9 @@ public class MouseController : InitBase
     private void GetInRangeTiles()
     {
         // 캐릭터의 현재 위치를 기준으로 이동 가능한 타일 계산
-        rangeFinderTiles = Managers.Map.GetTilesInRange(_creature.currentStandingTile,
-            _creature.MovementRange, false, moveThroughAllies);
+        rangeFinderTiles = Managers.Map.GetTilesInRange(
+            new Vector2Int(_creature.currentStandingTile.gridLocation.x, _creature.currentStandingTile.gridLocation.y),
+            _creature.MovementRange);
 
         // 계산된 타일들을 시각적으로 표시
         foreach (var item in rangeFinderTiles)
@@ -633,8 +632,8 @@ public class MouseController : InitBase
 
         // 캐릭터 실루엣 위치를 기준으로 이동 가능한 타일 계산
         SkillRangeTiles = Managers.Map.GetTilesInRange(
-            _creature.currentStandingTile,
-            _creature.SkillRange, false, moveThroughAllies);
+            new Vector2Int(_creature.currentStandingTile.gridLocation.x, _creature.currentStandingTile.gridLocation.y),
+            _creature.SkillRange);
 
         // 계산된 타일들을 시각적으로 표시
         foreach (var item in SkillRangeTiles)
