@@ -86,22 +86,6 @@ public class Monster : Creature
     }
 
     protected override void UpdateDead() { }
-
-    public override void CharacterMoved()
-    {
-        //이동 로그 기록
-        Debug.Log(gameObject.name + ": Move To " + bestSenario.positionTile.grid2DLocation);
-
-        // 최적 시나리오에 공격이나 능력 사용이 포함되어 있다면 실행
-        if (bestSenario != null && (bestSenario.targetTile != null)) 
-            //|| bestSenario.targetAbility != null))
-        {
-            //Attack();
-        }
-        else
-            StartCoroutine(EndTurn()); // 그렇지 않으면 턴 종료
-    }
-
     #endregion
 
     #region Battle

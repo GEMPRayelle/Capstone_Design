@@ -22,7 +22,7 @@ public class Creature : BaseObject
     public GameEvent endTurn;
 
     private List<OverlayTile> path; //현재 계산된 최적의 경로
-    protected Senario bestSenario; //현재 턴에서 실행할 최적의 시나리오
+    private Senario bestSenario; //현재 턴에서 실행할 최적의 시나리오
     private PathFinder _pathFinder { get; set; } //A* 기반 경로 탐색
 
     protected ECreatureState _creatureState = ECreatureState.None;
@@ -42,7 +42,7 @@ public class Creature : BaseObject
 
     public bool IsAlive { get { return _creatureState != ECreatureState.Dead; } }
 
-    public float AttackDistance
+    protected float AttackDistance
     {
         get
         {
@@ -173,7 +173,7 @@ public class Creature : BaseObject
         StartCoroutine(CalculateBestSenario());
     }
 
-    protected IEnumerator EndTurn()
+    private IEnumerator EndTurn()
     {
         yield return new WaitForSeconds(0.25f);
 
@@ -184,8 +184,6 @@ public class Creature : BaseObject
         //턴 종료 이벤트 발생
         endTurn.Raise();
     }
-
-    public virtual void CharacterMoved() { }
     #endregion
 
     #region Battle
