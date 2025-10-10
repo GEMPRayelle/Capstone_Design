@@ -10,8 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 605346250263114129}
   - component: {fileID: 1260827430778746797}
-  - component: {fileID: 6458628103744059301}
-  - component: {fileID: 4209443005678840624}
   m_Layer: 0
   m_Name: Cursor
   m_TagString: Untagged
@@ -89,28 +87,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6458628103744059301
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4668148078049500224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 629471ce1a529ea4b9ffebdb01b6382d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4209443005678840624
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4668148078049500224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a15694beb754d6c4a96d5448f42c0823, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveThroughAllies: 1

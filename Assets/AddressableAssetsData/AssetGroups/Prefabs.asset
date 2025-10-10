@@ -51,6 +51,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7e01ef21329f76c43a620a5566e6c491
+    m_Address: MouseController
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7eee9941f5c846b46bf3f11b76ffee6a
     m_Address: OverlayTile
     m_ReadOnly: 0
