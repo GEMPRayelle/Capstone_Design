@@ -49,9 +49,9 @@ public class TurnManager
     private List<BattleInfo> _battleInfoOrderList = new List<BattleInfo>(); //각 캐릭터 별로 BattleInfo를 저장
 
     //이벤트
-    public Action<Player> startNewCreatureTurn; //새로운 캐릭터 턴 시작
-    public Action<Player> turnOrderSet; //턴 순서 설정
-    public Action<Player> turnPreviewSet; //턴 미리보기 설정
+    public GameEventGameObject startNewCharacterTurn; //새로운 캐릭터 턴 시작
+    public GameEventGameObjectList turnOrderSet; //턴 순서 설정
+    public GameEventGameObjectList turnPreviewSet; //턴 미리보기 설정
 
     public List<Creature> activePlayerList = new List<Creature>(); //Map상에서 배치된 플레이어 캐릭터들 리스트
     public List<Creature> activeMonsterList = new List<Creature>(); //Map상에서 배치된 플레이어 캐릭터들 리스트
@@ -101,13 +101,10 @@ public class TurnManager
         //살아있는 캐릭터들이 있는지 확인
         if(HasAliveCharacters())
         {
-            //현재 전투에서 활성화된 플레이어들 중 턴을 진행할 캐릭터의 턴을 시작
-            //_battleInfoDict[activePlayerList[0]].CurrentCreature.StartTurn();
-            
             //이벤트 호출
+            activeCharacter.StartTurn();
+            startNewCharacterTurn.Raise(activeCharacter.gameObject);
         }
-
-        
     }
 
     //턴 종료 후 다음 Creature의 턴 시작
@@ -121,7 +118,13 @@ public class TurnManager
             {
                 if (activeCharacter.IsAlive)
                 {
-
+                    if (activeCharacter.IsAlive)
+                    {
+                        activeCharacter.StartTurn();
+                        startNewCharacterTurn.Raise(activeCharacter.gameObject);
+                    }
+                    else
+                        EndTurn(); // 죽었으면 다음 턴으로
                 }
                 else
                 {

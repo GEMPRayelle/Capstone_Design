@@ -3,9 +3,9 @@ using Spine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static Define;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class Creature : BaseObject
 {
@@ -17,7 +17,14 @@ public class Creature : BaseObject
     public EffectComponent Effects { get; set; }//이펙트(상태 이상효과) 목록
     public bool IsMoved = false; // 현재 턴에 이동했는지에 대한 정보
 
-    private PathFinder _pathFinder { get; set; }
+    //Event
+    public GameEvent endTurn;
+    public GameEventGameObjectList moveAlongPath;
+    //public GameEventCommand castAbility; //스킬을 시전하는 이벤트
+
+    private PathFinder _pathFinder { get; set; } //A*
+    protected Senario bestSenario; //현재 턴에서 실행할 최적의 시나리오
+    protected List<OverlayTile> path; //현재 계산된 최적의 이동 경로
 
     protected ECreatureState _creatureState = ECreatureState.None;
     public virtual ECreatureState CreatureState
@@ -159,6 +166,242 @@ public class Creature : BaseObject
         }
     }
 
+    #region Turn-Based
+    /// <summary>
+    /// AI 턴 시작 시 호출되는 메서드
+    /// 가능한 모든 시나리오를 분석하여 최적의 행동을 결정
+    /// </summary>
+    public void StartTurn()
+    {
+        // 비동기적으로 최적 시나리오 계산 시작
+        StartCoroutine(CalculateBestSenario());
+        //base.StartTurn();
+    }
+
+    /// <summary>
+    /// 턴을 종료하는 코루틴
+    /// 시각적 정리와 함께 턴 종료 이벤트 발생
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator EndTurn()
+    {
+        yield return new WaitForSeconds(0.25f);
+
+        // 타일 색상 초기화
+        //OverlayController.Instance.ClearTiles();
+
+        // 턴 종료 로그
+        Debug.Log(gameObject.name + ": End Turn");
+
+        // 턴 종료 이벤트 발생
+        endTurn.Raise();
+    }
+
+    /// <summary>
+    /// 캐릭터 이동 완료 후 호출되는 콜백
+    /// 이동 후 공격이나 스킬 사용 가능 여부를 확인
+    /// </summary>
+    public void CharacterMoved()
+    {
+        // 이동 로그 기록 (그리드 좌표 포함)
+        Debug.Log(gameObject.name + ": Moved To " + bestSenario.positionTile.grid2DLocation);
+
+        // 최적 시나리오에 공격이나 능력 사용이 포함되어 있다면 실행
+        if (bestSenario != null && (bestSenario.targetTile != null || bestSenario.targetSkill != null))
+        {
+            //Attack();
+        }
+        else
+            StartCoroutine(EndTurn()); // 그렇지 않으면 턴 종료
+    }
+    #endregion
+
+    #region Senario Calc
+    private IEnumerator CalculateBestSenario()
+    {
+        //현재 이동 범위 내의 모든 타일 가져오기
+        var tileInMovementRange = Managers.Map.GetTilesInRange(new Vector2Int
+            (currentStandingTile.gridLocation.x, currentStandingTile.gridLocation.y), MovementRange);
+
+        //이동가능한 범위를 시작적으로 표시할지?
+
+        var senario = new Senario();
+
+        foreach (var tile in tileInMovementRange)
+        {
+            if (!tile.isBlocked) // 막혀있지 않은 타일만 고려
+            {
+                // 해당 타일에서의 행동 시나리오 생성
+                var tempSenario = CreateTileSenarioValue(tile);
+
+                // 타일 효과 (용암, 독 등)를 시나리오 점수에 반영
+                ApplyTileEffectsToSenarioValue(tile, tempSenario);
+
+                // 현재 최고 시나리오와 비교
+                senario = CompareSenarios(senario, tempSenario);
+
+                // 점수가 같은 경우 더 가까운 경로 선택
+                senario = CheckIfSenarioValuesAreEqual(tileInMovementRange, senario, tempSenario);
+
+                // 공격 대상이 없는 경우의 처리
+                senario = CheckSenarioValueIfNoTarget(senario, tile, tempSenario);
+            }
+        }
+
+        // 최적 시나리오가 결정되면 실행, 그렇지 않으면 턴 종료
+        if (senario.positionTile)
+        {
+            ApplyBestSenario(senario);
+        }
+        else
+        {
+            StartCoroutine(EndTurn());
+        }
+
+        yield return null;
+    }
+
+    //최적의 시나리오를 시행하는 함수
+    private void ApplyBestSenario(Senario senario)
+    {
+        bestSenario = senario;
+        var currentTile = currentStandingTile;
+
+        //현재 위치에서 목표 위치까지의 경로 계산
+        path = _pathFinder.FindPath(currentTile, bestSenario.positionTile, new List<OverlayTile>());
+
+        //이동할 필요가 없고 공격 가능한 경우 즉시 공격
+        if (path.Count == 0 && bestSenario.targetTile != null)
+        {
+            CreatureState = ECreatureState.Skill;
+        }
+        else
+        {
+            //이동이 필요한 경우 이동 시작
+            StartCoroutine(Move(path));
+        }
+    }
+
+    /// <summary>
+    /// 타일 효과(용암, 독 등)를 시나리오 점수에 반영
+    /// 부정적인 효과일수록 점수를 깎아서 해당 타일을 피하도록 함
+    /// </summary>
+    /// <param name="tile">평가할 타일</param>
+    /// <param name="tempSenario">수정할 시나리오</param>
+    private void ApplyTileEffectsToSenarioValue(OverlayTile tile, Senario tempSenario)
+    {
+        //TODO 구현이 필요함
+    }
+
+    /// <summary>
+    /// 두 시나리오를 비교하여 더 좋은 시나리오를 반환
+    /// </summary>
+    /// <param name="senario">현재 최고 시나리오</param>
+    /// <param name="tempSenario">비교할 새 시나리오</param>
+    /// <returns>더 좋은 시나리오</returns>
+    private static Senario CompareSenarios(Senario senario, Senario tempSenario)
+    {
+        if ((tempSenario != null && tempSenario.senarioValue > senario.senarioValue))
+        {
+            senario = tempSenario;
+        }
+
+        return senario;
+    }
+
+    /// <summary>
+    /// 점수가 동일한 시나리오들 중에서 더 가까운 경로를 선택
+    /// 동점일 때는 이동 거리가 짧은 것을 선호
+    /// </summary>
+    /// <param name="tileInMovementRange">이동 가능 범위</param>
+    /// <param name="senario">현재 시나리오</param>
+    /// <param name="tempSenario">비교할 시나리오</param>
+    /// <returns>더 효율적인 시나리오</returns>
+    private Senario CheckIfSenarioValuesAreEqual(List<OverlayTile> tileInMovementRange, Senario senario, Senario tempSenario)
+    {
+        if (tempSenario.positionTile != null && tempSenario.senarioValue == senario.senarioValue)
+        {
+            // 각 시나리오의 경로 길이 계산
+            var tempSenarioPathCount = _pathFinder.FindPath(currentStandingTile, tempSenario.positionTile, tileInMovementRange).Count;
+            var senarioPathCount = _pathFinder.FindPath(currentStandingTile, senario.positionTile, tileInMovementRange).Count;
+
+            // 더 짧은 경로를 선택
+            if (tempSenarioPathCount < senarioPathCount)
+                senario = tempSenario;
+        }
+
+        return senario;
+    }
+
+    /// <summary>
+    /// 공격 대상이 없는 경우의 시나리오 처리
+    /// 가장 약한 적에게 다가가는 것을 목표로 함
+    /// </summary>
+    /// <param name="senario">현재 최고 시나리오</param>
+    /// <param name="tile">평가 중인 타일</param>
+    /// <param name="tempSenario">현재 타일의 시나리오</param>
+    /// <returns>업데이트된 시나리오</returns>
+    private Senario CheckSenarioValueIfNoTarget(Senario senario, OverlayTile tile, Senario tempSenario)
+    {
+        if (tempSenario.positionTile == null && !senario.targetTile)
+        {
+            // 가장 약한 적 찾기
+            var targetCharacter = FindClosestObjectToDeath(tile);
+            if (targetCharacter)
+            {
+                // 그 적 근처의 가장 가까운 타일 찾기
+                var targetTile = GetClosestNeighbour(targetCharacter.currentStandingTile);
+
+                if (targetCharacter && targetTile)
+                {
+                    // 해당 적까지의 경로와 거리 계산
+                    var pathToCharacter = _pathFinder.FindPath(tile, targetTile, new List<OverlayTile>());
+                    var distance = pathToCharacter.Count;
+
+                    // 거리와 적 체력을 고려한 점수 계산 (음수: 가까울수록, 약할수록 좋음)
+                    var senarioValue = -distance - targetCharacter.Hp;
+
+                    //TODO : AttackDistance를 다른걸로 치환해야함
+                    if (distance >= AttackDistance)
+                    {
+                        // 타일 효과 고려
+                        //if (tile.tileData && tile.tileData.effect)
+                        //{
+                        //    var tileEffectValue = GetEffectsSenarioValue(
+                        //        new List<ScriptableEffect>() { tile.tileData.effect },
+                        //        new List<Entity>() { this });
+                        //    senarioValue -= tileEffectValue;
+                        //}
+
+                        // 유효한 이동 타일이고 더 좋은 점수라면 업데이트
+                        if (tile.grid2DLocation != currentStandingTile.grid2DLocation &&
+                            tile.grid2DLocation != targetCharacter.currentStandingTile.grid2DLocation &&
+                            (senarioValue > senario.senarioValue || !senario.positionTile))
+                            senario = new Senario(senarioValue, null, null, tile, false);
+                    }
+                }
+            }
+        }
+
+        return senario;
+    }
+
+    /// <summary>
+    /// 이동 시스템에게 경로를 따라 이동하도록 명령
+    /// </summary>
+    /// <param name="path">이동할 경로</param>
+    /// <returns></returns>
+    private IEnumerator Move(List<OverlayTile> path)
+    {
+        // 목표 위치를 시각적으로 강조할지?
+        //OverlayController.Instance.ColorSingleTile(OverlayController.Instance.MoveRangeColor, bestSenario.positionTile);
+        yield return new WaitForSeconds(0.25f);
+
+        // 이동 이벤트 발생 (GameObject 리스트로 변환)
+        moveAlongPath.Raise(path.Select(x => x.gameObject).ToList());
+    }
+    #endregion
+
     #region Battle
     public override void OnDamaged(BaseObject attacker, SkillBase skill)
     {
@@ -226,7 +469,7 @@ public class Creature : BaseObject
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
-    private BaseObject FindClosestObjectToDeath(OverlayTile position)
+    private Creature FindClosestObjectToDeath(OverlayTile position)
     {
         Creature target = null;
         int lowestHealth = -1;
@@ -360,6 +603,40 @@ public class Creature : BaseObject
     }
     #endregion
 
+    #region Ability
+    /// <summary>
+    /// 특정 타일에서 가능한 모든 행동의 시나리오를 생성
+    /// 기본 공격과 모든 사용 가능한 능력을 비교하여 최적 선택
+    /// </summary>
+    /// <param name="overlayTile">평가할 위치 타일</param>
+    /// <returns>최적의 행동 시나리오</returns>
+    private Senario CreateTileSenarioValue(OverlayTile overlayTile)
+    {
+        // 기본 공격 시나리오 생성 (성격에 따라)
+        //var attackSenario = AutoAttackBasedOnPersonality(overlayTile);
+        var attackSenario = new Senario();
+
+        //// 사용 가능한 모든 능력 검토
+        //foreach (var abilityContainer in abilitiesForUse)
+        //{
+        //    // 마나와 쿨다운 체크
+        //    if (GetStat(Stats.CurrentMana).statValue >= abilityContainer.ability.cost &&
+        //        abilityContainer.turnsSinceUsed >= abilityContainer.ability.cooldown)
+        //    {
+        //        // 능력 시나리오 생성
+        //        var tempSenario = CreateAbilitySenario(abilityContainer, overlayTile);
+
+        //        // 더 좋은 시나리오라면 교체
+        //        if (tempSenario.senarioValue > attackSenario.senarioValue)
+        //            attackSenario = tempSenario;
+        //    }
+        //}
+
+        return attackSenario;
+    }
+
+    #endregion
+
     #region AI
     public float UpdateAITick { get; protected set; } = 0.0f;
 
@@ -399,10 +676,7 @@ public class Creature : BaseObject
 
     protected virtual void UpdateIdle() { }
     protected virtual void UpdateMove() { }
-    protected virtual void UpdateAttack() 
-    {
-
-    }
+    protected virtual void UpdateAttack() { }
 
     protected virtual void UpdateSkill() 
     {
