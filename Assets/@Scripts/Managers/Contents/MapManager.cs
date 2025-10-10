@@ -13,8 +13,6 @@ public class MapManager
     public string MapName { get; private set; }
     public Grid CellGrid { get; private set; }
 
-    public GameObject MouseController { get; private set; }
-
     public Dictionary<Vector3Int, BaseObject> _cells = new Dictionary<Vector3Int, BaseObject>();
 
     public Vector3Int World2Cell(Vector3 worldPos) { return CellGrid.WorldToCell(worldPos); }
@@ -37,8 +35,6 @@ public class MapManager
         GameObject map = Managers.Resource.Instantiate(mapName);
         map.transform.position = Vector3.zero;
         map.name = $"@Map_{mapName}";
-
-        MouseController = Managers.Resource.Instantiate("MouseController");
 
         //타일 위치와 OverlayTile을 저장할 딕셔너리 초기화
         mapDict = new Dictionary<Vector2Int, OverlayTile>();
@@ -94,7 +90,8 @@ public class MapManager
         }
 
         SpawnObjectByTileData(map, mapName);
-        Managers.Object.InstantiateListener();
+        Managers.Listener.InitController();
+        Managers.Listener.InstantiateListener();
     }
 
     public void DestroyMap()

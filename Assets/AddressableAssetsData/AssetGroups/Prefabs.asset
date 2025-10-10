@@ -52,7 +52,7 @@ MonoBehaviour:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7e01ef21329f76c43a620a5566e6c491
-    m_Address: MouseController
+    m_Address: ControllerContainer
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
