@@ -252,37 +252,22 @@ public class MapManager
     }
 
     #region Helper Func
-    /// <summary>
-    /// 주어진 시작 타일에서 지정된 범위 내의 모든 이동 가능한 타일을 반환합니다.
-    /// 
-    /// 알고리즘:
-    /// 1. 시작점을 중심으로 BFS 방식으로 확산
-    /// 2. 각 단계마다 이웃 타일들을 탐색
-    /// 3. 이동 비용과 높이 차이를 계산하여 실제 이동 가능성 판단
-    /// 4. 남은 이동력이 0 이상인 타일만 결과에 포함
-    /// 
-    /// 사용 예시:
-    /// - 플레이어 캐릭터의 이동 범위 시각화
-    /// - AI의 이동 가능 위치 계산
-    /// - 스킬 범위 계산 (장애물 무시 옵션 활용)
-    /// </summary>
-    /// <param name="startingTile">탐색을 시작할 기준 타일 (캐릭터의 현재 위치)</param>
-    /// <param name="range">최대 이동 범위 (캐릭터의 이동력)</param>
-    /// <param name="ignoreObstacles">장애물을 무시할지 여부 (스킬이나 특수 능력에서 사용)</param>
-    /// <param name="walkThroughAllies">아군 캐릭터를 통과할 수 있는지 여부</param>
-    /// <returns>이동 가능한 모든 타일들의 리스트 (중복 제거됨)</returns>
-    public List<OverlayTile> GetTilesInRange(OverlayTile startingTile, int range, 
-        bool ignoreObstacle = false, bool walkThroughAllies = true)
+    //BFS 방식으로 타일을 확장하면서 지정된 이동 거리 만큼 주변 타일을 수집하는 함수
+    //<param name="location">캐릭터가 서 있는 위치</param>
+    //<param name="range">이동 가능한 거리</param>
+    //<returns>이동 가능한 범위 내의 타일 리스트</returns>
+    public List<OverlayTile> GetTilesInRange(Vector2Int location, int range)
     {
-        //var startingTile = mapDict[location]; // 시작 위치의 타일 가져오기
-        startingTile.remainingMovement = range; // 시작 타일의 남은 이동력을 최대 범위로 설정
-        var inRangeTiles = new List<OverlayTile>(); // 최종 결과 리스트 : 이동 가능한 모든 타일
-        int stepCount = 0; // 현재 이동 거리 단계 (0 to range)
+        //var startingTile = Managers.Instance.Map.map[location]; // 시작 위치의 타일 가져오기
+        var startingTile = mapDict[location]; // 시작 위치의 타일 가져오기
+        var inRangeTiles = new List<OverlayTile>(); // 최종 결과 리스트
+        int stepCount = 0; // 현재 이동 거리 단계
 
-        inRangeTiles.Add(startingTile); // 시작 타일은 항상 포함 (자기 자신도 "이동 가능한" 위치)
+        inRangeTiles.Add(startingTile); // 시작 타일은 항상 포함
 
         //BFS탐색 준비
-        var tilesForPreviousStep = new List<OverlayTile> { startingTile }; //이전 단계에서 확장된 타일들을 저장할 리스트
+        var tilesForPreviousStep = new List<OverlayTile>(); //이전 단계에서 확장된 타일들을 저장할 리스트
+        tilesForPreviousStep.Add(startingTile); // 첫 단계는 시작 타일
 
         //범위만큼 반복하며 주변 타일 확장
         while (stepCount < range) //지정된 이동 거리만큼 반복
@@ -291,28 +276,8 @@ public class MapManager
 
             foreach (var item in tilesForPreviousStep) // 이전 단계의 모든 타일에 대해
             {
-                int moveCost = !ignoreObstacle ? item.GetMoveCost() : 1;
-
-                var newNeighbours = Managers.Map.GetNeighbourTiles(item,
-                    new List<OverlayTile>(), ignoreObstacle, walkThroughAllies, item.remainingMovement);
-
-                foreach(var tile in newNeighbours)
-                {
-                    //높이 차이로 인한 추가 이동 비용 계산
-                    int heightDifference = CalculateHeightCost(ignoreObstacle, item, tile);
-
-                    //이 타일에 도달했을때의 남은 이동력 계산
-                    // 공식: 현재 타일의 남은 이동력 - 목표 타일의 기본 비용 - 높이 비용
-                    var remainingMovement = item.remainingMovement - tile.GetMoveCost() - heightDifference;
-
-                    if (remainingMovement > tile.remainingMovement)
-                        tile.remainingMovement = remainingMovement;
-                }
-
-                //남은 이동력이 0 이상인 타일만 현재 단계 결과에 추가
-                surroundingTiles.AddRange(newNeighbours.Where(x => x.remainingMovement >= 0).ToList());
                 // 해당 타일의 상하좌우 인접 타일들을 가져와서 리스트에 추가
-                //surroundingTiles.AddRange(GetSurroundingTiles(new Vector2Int(item.gridLocation.x, item.gridLocation.y)));
+                surroundingTiles.AddRange(GetSurroundingTiles(new Vector2Int(item.gridLocation.x, item.gridLocation.y)));
             }
 
             // 현재까지 수집된 타일들에 이번 단계 타일들을 추가
@@ -324,34 +289,8 @@ public class MapManager
             stepCount++;
         }
 
-        foreach (var item in inRangeTiles)
-        {
-            item.remainingMovement = 0;
-        }
-
         // 최종적으로 수집된 타일들을 중복 제거 후 반환
-        // Distinct(): 같은 타일이 여러 번 추가되는 것을 방지
         return inRangeTiles.Distinct().ToList();
-    }
-
-    /// <summary>
-    /// 높이(z) 차이로 인한 추가 이동 비용을 계산하는 함수
-    /// </summary>
-    /// <param name="ignoreObstacle">장애물 무시 여부</param>
-    /// <param name="item">start Position Tile</param>
-    /// <param name="tile">dest Position Tile</param>
-    /// <returns></returns>
-    private int CalculateHeightCost(bool ignoreObstacle, OverlayTile item, OverlayTile tile)
-    {
-        //dest와 start의 높이 차이 ( 양수: 올라가는 것, 음수: 내려가는 것)
-        int heightDifference = tile.gridLocation.z - item.gridLocation.z;
-        
-        // 최종 높이 비용 결정:
-        // 1. 장애물 무시 모드(!ignoreObstacles = false)면 높이 비용도 0
-        // 2. 올라가는 경우(heightDifference > 0)만 비용 발생
-        // 3. 내려가거나 같은 높이면 비용 0
-        heightDifference = !ignoreObstacle && heightDifference > 0 ? heightDifference : 0;
-        return heightDifference;
     }
 
     /// <summary>

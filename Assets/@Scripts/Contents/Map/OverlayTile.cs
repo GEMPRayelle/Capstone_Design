@@ -16,10 +16,6 @@ public class OverlayTile : InitBase
 
     //방향 화살표 스프라이트 리스트 (ArrowDirection enum 순서대로 저장)
     public List<Sprite> arrows;
-    public TileData tileData;
-
-    [HideInInspector]
-    public int remainingMovement;
 
     public override bool Init()
     {
@@ -70,19 +66,4 @@ public class OverlayTile : InitBase
         }
     }
 
-    /// <summary>
-    /// 이 타일의 이동 비용을 반환하는 메서드
-    /// 지형별로 다른 이동 비용을 제공
-    /// 
-    /// Example:
-    /// - 평지: 1 (기본)
-    /// - 숲: 2 (이동하기 어려움)
-    /// - 늪지대: 3 (매우 느림)
-    /// - 도로: 1 (빠른 이동)
-    /// - 산: 2 (험한 지형)
-    /// 
-    /// tileData가 없으면 기본값 1을 반환하여 오류 방지
-    /// </summary>
-    /// <returns>(int)이 타일의 이동 비용</returns>
-    public int GetMoveCost() => tileData != null ? tileData.moveCost : 1;
 }
