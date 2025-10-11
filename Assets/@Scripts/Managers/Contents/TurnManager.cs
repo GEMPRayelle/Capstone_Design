@@ -52,6 +52,7 @@ public class TurnManager
     public GameEventGameObject startNewCharacterTurn; //새로운 캐릭터 턴 시작
     public GameEventGameObjectList turnOrderSet; //턴 순서 설정
     public GameEventGameObjectList turnPreviewSet; //턴 미리보기 설정
+    
 
     public List<Creature> activePlayerList = new List<Creature>(); //Map상에서 배치된 플레이어 캐릭터들 리스트
     public List<Creature> activeMonsterList = new List<Creature>(); //Map상에서 배치된 플레이어 캐릭터들 리스트
@@ -140,7 +141,7 @@ public class TurnManager
     //턴 종료 버튼 클릭시 일괄적으로 플레이어 턴 종료
     public void OnPlayerTurnEnd()
     {
-        if (CurrentPhase != TurnPhase.PlayerMovement || !IsAllPlayerMoved())
+        if (CurrentPhase != TurnPhase.PlayerMovement)
             return;
 
         CurrentPhase = TurnPhase.PlayerAction;
@@ -161,7 +162,7 @@ public class TurnManager
     //아직 행동하지 않은 Monster(한 마리) 턴 시작
     public void StartEnemyTurn()
     {
-        if (IsAllMonsterMoved() == true) // 모든 적 행동 끝날 시
+        if (IsAllMonsterMoved() == true || activeMonsterList.Count == 0) // 모든 적 행동 끝날 시
         {
             // 다시 플레이어 턴 시작 
             PrepareNextPlayerTurn();
@@ -225,6 +226,10 @@ public class TurnManager
         }
 
         CurrentPhase = TurnPhase.PlayerMovement;
+
+        GameEvent startPlayerTurn = Managers.Resource.Load<GameEvent>("StartPlayerTurn");
+        if (startPlayerTurn != null)
+            startPlayerTurn.Raise();
     }
 
     //턴 순서 정렬

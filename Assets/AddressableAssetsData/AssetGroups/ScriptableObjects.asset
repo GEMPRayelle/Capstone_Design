@@ -15,8 +15,32 @@ MonoBehaviour:
   m_GroupName: ScriptableObjects
   m_GUID: ba93093bf5053c04e9d0983bcc042076
   m_SerializeEntries:
+  - m_GUID: 374f26cf718c451499d75da908942040
+    m_Address: StartPlayerTurn
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47db6478399792b45a000e6e43ab0c5b
+    m_Address: EndPlayerTurn
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7c3c90ea28c2d984ebd249e0aa3958cb
     m_Address: AllmoveFinish
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd44c48d424c07e48a85aebb0ca0f6db
+    m_Address: EndTurn
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ce3a75c01db689e46be87731741d67bf
+    m_Address: MoveAlongPath
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad

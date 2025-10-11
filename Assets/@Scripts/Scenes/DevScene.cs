@@ -48,7 +48,14 @@ public class DevScene : BaseScene
             //tagBtn.gameObject.SetActive(false);
 
             //Managers.UI.ShowBaseUI<UI_TagGauge>();
+            Managers.UI.ShowBaseUI<UI_GameScene>();
         }
+        #endregion
+
+        #region Contents_Init
+        Managers.Listener.InitController();
+        Managers.Listener.InitGameScene();
+        Managers.Listener.InstantiateListener();
         #endregion
 
         return true;

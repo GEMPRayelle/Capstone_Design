@@ -6,12 +6,16 @@ using System.Linq;
 public class ListenerManager
 {
     public GameObject ControllerContainer;
-    public MouseController mouseController;  
-
+    public MouseController mouseController;
+    public UI_GameScene GameScene;
     public void InitController()
     {
         ControllerContainer = Managers.Resource.Instantiate("ControllerContainer");
         mouseController = Util.FindChild<MouseController>(ControllerContainer, "MouseController");
+    }
+    public void InitGameScene()
+    {
+        GameScene = Util.FindChild<UI_GameScene>(Managers.UI.Root, "UI_GameScene");
     }
 
     public void InstantiateListener()
@@ -134,6 +138,15 @@ public class ListenerManager
                 // listener.Response.AddListener(턴 종료 버튼 활성화 함수); 턴 종료 버튼 활성화 함수 등록
                 Debug.Log($"Set response for {listenerName}");
                 break;
+            case "EndTurn_Listener":
+                listener.Response.AddListener(Managers.Turn.EndTurn);
+                break;
+            case "EndPlayerTurn_Listener":
+                listener.Response.AddListener(Managers.Turn.OnPlayerTurnEnd);
+                break;
+            case "StartPlayerTurn_Listener":
+                listener.Response.AddListener(GameScene.activeTurnEndBtn);
+                break;
             // 다른 기본 이벤트 리스너 추가
             default:
                 Debug.LogWarning($"No response defined for basic listener: {listenerName}");
@@ -182,6 +195,9 @@ public class ListenerManager
         switch (listenerName)
         {
             // 필요 시 추가
+            case "MoveAlongPath_Listener":
+                // TODO MovementController - MoveCharacterCommand() 함수 실행되게 (?)
+                break;
             // 다른 GameObject List 이벤트 리스너 추가
             default:
                 Debug.LogWarning($"No response defined for GameObject List listener: {listenerName}");
@@ -194,9 +210,17 @@ public class ListenerManager
         // 일단 하드코딩
         return new string[]
         {
+            // Basic_Event
+            "AllmoveFinish_Listener",
+            "EndTurn_Listener",
+            "EndPlayerTurn_Listener",
+            "StartPlayerTurn_Listener",
+
+            // GameObject_Event
             "moveFinish_Listener",
-            // "playerSpawn_Listener"
-            "AllmoveFinish_Listener"
+
+            // GameObjectList_Event
+            "MoveAlongPath_Listener",
             // 필요한 리스너들 추가
         };
 

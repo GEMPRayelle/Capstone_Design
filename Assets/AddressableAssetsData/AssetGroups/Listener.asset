@@ -21,8 +21,32 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27997e6c20bc95d42a1c3202e2471c27
+    m_Address: StartPlayerTurn_Listener
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 46bf6522641302440aedb2af9ba1f8a3
     m_Address: AllmoveFinish_Listener
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5013e0339c9bf264fa88997a55920be3
+    m_Address: EndPlayerTurn_Listener
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5bd910686b8b4134b8840469cd44aa45
+    m_Address: MoveAlongPath_Listener
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c358585a92fc73840a26d30cd8330afe
+    m_Address: EndTurn_Listener
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad

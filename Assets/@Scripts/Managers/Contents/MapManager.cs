@@ -90,8 +90,6 @@ public class MapManager
         }
 
         SpawnObjectByTileData(map, mapName);
-        Managers.Listener.InitController();
-        Managers.Listener.InstantiateListener();
     }
 
     public void DestroyMap()
@@ -179,7 +177,7 @@ public class MapManager
                         Vector3 worldPos = grid.GetCellCenterWorld(cellPos);
                         Monster monster = Managers.Object.Spawn<Monster>(worldPos, tile.DataId);
                         mapDict.TryGetValue(new Vector2Int(cellPos.x,cellPos.y), out monster.currentStandingTile);
-                        monster.currentStandingTile.isBlocked = true;
+                        // monster.currentStandingTile.isBlocked = true; 타일 없는 곳에 적 스폰시켜 null 에러 떠서 잠시 주석처리
                         monster.SetCellPos(cellPos, grid, true);
                     }
 
@@ -193,6 +191,7 @@ public class MapManager
                         player.PlayerType = EPlayerType.Order; // Order 생성
                         CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
                         camera.Target = player;
+                        Managers.Turn.activePlayerList.Add(player);
 
                     }
                     else if (tile.ObjectType == Define.EObjectType.Npc)

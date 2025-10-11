@@ -19,7 +19,7 @@ public class UIManager
     public GameObject Root //UI들을 배치할 Root
     {
         get
-        {
+       {
             GameObject root = GameObject.Find("@UI_Root");
             if (root == null)
                 root = new GameObject { name = "@UI_Root" };
