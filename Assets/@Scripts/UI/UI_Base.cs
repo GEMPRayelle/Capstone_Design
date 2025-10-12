@@ -100,6 +100,14 @@ public class UI_Base : InitBase
                 evt.OnDragHandler -= action;
                 evt.OnDragHandler += action;
                 break;
+            case Define.EUIEvent.PointerEnter: 
+                evt.OnPointerEnterHandler -= action;
+                evt.OnPointerEnterHandler += action;
+                break;
+            case Define.EUIEvent.PointerExit: 
+                evt.OnPointerExitHandler -= action;
+                evt.OnPointerExitHandler += action;
+                break;
         }
     }
 }

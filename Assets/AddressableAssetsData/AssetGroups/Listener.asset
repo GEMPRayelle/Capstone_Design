@@ -45,6 +45,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9600260d5e96bf548b065c67db144313
+    m_Address: AllPlayerSpawn_Listener
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c358585a92fc73840a26d30cd8330afe
     m_Address: EndTurn_Listener
     m_ReadOnly: 0

@@ -14,8 +14,8 @@ public class ListenerEditor : MonoBehaviour
     // 3. Assets/@Resources/Prefabs/Listeners에 ex) TestSO_Listener 파일이 만들어짊
     // 4. 해당 리스너를 Addressable에 등록
     // 5. 리스너 베이스가 된 SO(.asset)파일도 Addressable에 등록
-    // 6. ObjectManager에 GetAllListenerNames함수의 string 배열에 추가한 리스너 이름 추가(Addressable에 등록된 이름과 같아야함)
-    // 7. ObjectManager에 SetListenerResponse함수에서 타입별로 실행되는 Set~~ListenerResponse함수 들 중 내가 추가한 타입에 맞는 함수에 가서 
+    // 6. ListenerManager에 GetAllListenerNames함수의 string 배열에 추가한 리스너 이름 추가(Addressable에 등록된 이름과 같아야함)
+    // 7. ListenerManager에 SetListenerResponse함수에서 타입별로 실행되는 Set~~ListenerResponse함수 들 중 내가 추가한 타입에 맞는 함수에 가서 
     // 7 계속. switch문에 내가 string 배열에 추가한 이름을 case로 둬서 이벤트 실행 시 알람 받아 실행될 함수 등록
     // 8. 지금까지 작업은 이벤트 Raise를 호출하면 실행될 함수는 등록된 것. 이제 이벤트 Raise를 호출할 곳에 필요한 SO만들어서 Raise 시키기. 
     // 8. ex) MouseController에서 조종하던 캐릭터 이동이 끝나면 MoveFinish SO를 Raize시키는 함수 RaiseMoveFinishEvent() 처럼 만들어야된다는것

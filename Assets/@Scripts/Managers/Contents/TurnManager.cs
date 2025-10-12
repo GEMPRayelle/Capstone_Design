@@ -227,7 +227,7 @@ public class TurnManager
 
         CurrentPhase = TurnPhase.PlayerMovement;
 
-        GameEvent startPlayerTurn = Managers.Resource.Load<GameEvent>("StartPlayerTurn");
+        GameEvent startPlayerTurn = Managers.Resource.Load<GameEvent>("StartPlayerTurn"); // TODO TurnManager 초기화 생기면 거기서 처리?
         if (startPlayerTurn != null)
             startPlayerTurn.Raise();
     }
@@ -308,7 +308,7 @@ public class TurnManager
     // 모든 플레이어 행동(이동) 끝났을 때 실행되는 함수
     private void RaiseAllPlayerMoveFinishEvent()
     {
-        GameEvent AllmoveFinishEvent = Managers.Resource.Load<GameEvent>("AllmoveFinish"); // SO 생성
+        GameEvent AllmoveFinishEvent = Managers.Resource.Load<GameEvent>("AllmoveFinish"); // SO 생성 
         if (AllmoveFinishEvent != null)
         {
             AllmoveFinishEvent.Raise(); // Raise = Inovke, Turn Manager -> 턴 종료 UI
@@ -324,9 +324,9 @@ public class TurnManager
     {
         Debug.Log($"Turn Manager's OnMoveFinish at {receivedObject.name}");
 
-        if (IsAllPlayerMoved() == true)
+        if (IsAllPlayerMoved() == true) // 모두 이동했을 때
         {
-            RaiseAllPlayerMoveFinishEvent();
+            RaiseAllPlayerMoveFinishEvent(); // 이벤트 발생
         }
     }
 }

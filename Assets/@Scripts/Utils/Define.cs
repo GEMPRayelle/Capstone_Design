@@ -22,7 +22,9 @@ public static class Define
         PointerDown,//마우스 누르는순간
         PointerUp,//마우스 때는 순간
         Drag,//누르면서 드래그
-        OnValueUpdate
+        OnValueUpdate,
+        PointerEnter,
+        PointerExit
     }
 
     //Sound 타입

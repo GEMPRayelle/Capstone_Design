@@ -134,18 +134,23 @@ public class ListenerManager
         // 리스너 이름에 따라 적절한 콜백 등록
         switch (listenerName)
         {
-            case "AllmoveFinish_Listener":
+            case "AllmoveFinish_Listener": // 플레이어 캐릭터 모두가 이동(행동)했을 때
                 // listener.Response.AddListener(턴 종료 버튼 활성화 함수); 턴 종료 버튼 활성화 함수 등록
                 Debug.Log($"Set response for {listenerName}");
                 break;
-            case "EndTurn_Listener":
-                listener.Response.AddListener(Managers.Turn.EndTurn);
+            case "EndTurn_Listener": // 적군 endTurn
+                listener.Response.AddListener(Managers.Turn.EndTurn); // Creature -> TurnManager
                 break;
-            case "EndPlayerTurn_Listener":
-                listener.Response.AddListener(Managers.Turn.OnPlayerTurnEnd);
+            case "EndPlayerTurn_Listener": // Player endTurn 버튼 눌릴때
+                listener.Response.AddListener(Managers.Turn.OnPlayerTurnEnd); // EndTurnBtn -> TurnManager
+                listener.Response.AddListener(mouseController.EndPlayerEvent); // EndTurnBtn -> MouseController
                 break;
-            case "StartPlayerTurn_Listener":
-                listener.Response.AddListener(GameScene.activeTurnEndBtn);
+            case "StartPlayerTurn_Listener": // 플레이어 턴 시작할 때
+                listener.Response.AddListener(GameScene.activeTurnEndBtn); // TurnManager -> EndTurnBtn(UI_GameScene에 있음)
+                break;
+            case "AllPlayerSpawn_Listener": // 모든 플레이어 소환됬을 때
+                // 턴 매니저 턴 시작? 추가
+                listener.Response.AddListener(GameScene.activeTurnEndBtn); // MouseController -> EndTurnBtn
                 break;
             // 다른 기본 이벤트 리스너 추가
             default:
@@ -165,8 +170,8 @@ public class ListenerManager
         // 리스너 이름에 따라 적절한 콜백 등록
         switch (listenerName)
         {
-            case "moveFinish_Listener":
-                listener.Response.AddListener(Managers.Turn.OnCreatureMoveFinish);
+            case "moveFinish_Listener": // 한 캐릭터 이동(행동) 끝났을 때
+                listener.Response.AddListener(Managers.Turn.OnCreatureMoveFinish); // MouseController -> TurnManager
                 Debug.Log($"Set response for {listenerName}");
                 break;
 
@@ -215,6 +220,7 @@ public class ListenerManager
             "EndTurn_Listener",
             "EndPlayerTurn_Listener",
             "StartPlayerTurn_Listener",
+            "AllPlayerSpawn_Listener",
 
             // GameObject_Event
             "moveFinish_Listener",

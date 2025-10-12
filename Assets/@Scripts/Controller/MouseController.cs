@@ -24,6 +24,9 @@ public class MouseController : InitBase
     private GameObject cursor; // 커서
     private bool isClickedOrder; // Order 캐릭터가 다른 캐릭터 스폰시킬때 클릭된지에 대한 여부
 
+    //GameEvent
+    GameEvent AllPlayerSpawn; // 모든 플레이어 스폰 될 때 Raise
+    GameEventGameObject moveFinishEvent; // 모든 캐릭터 이동 끝나면 Raise
     // Ray 쏴서 결과값 받을 구조체
     public struct RaycastResult
     {
@@ -67,6 +70,10 @@ public class MouseController : InitBase
 
         spawnablePlayerID.Add(HERO_WIZARD_ID);
         spawnablePlayerID.Add(HERO_LION_ID);
+
+
+        AllPlayerSpawn = Managers.Resource.Load<GameEvent>("AllPlayerSpawn");
+        moveFinishEvent = Managers.Resource.Load<GameEventGameObject>("moveFinish");
 
         return true;
     }
@@ -319,9 +326,12 @@ public class MouseController : InitBase
         isClickedOrder = false; // 소환시 클릭은 해제
         HideAllRangeTiles(); // 소환 하이라이트 타일 숨기기
         _creature = null; // 조종하던 order 풀기
-        // 턴 매니저에 턴 시작 알리기
+        
         if (_copy != null)
             Managers.Object.Despawn<Player>(_copy); // 소환 끝나면 copy 사용 X
+        
+        // 턴 매니저에 턴 시작 알리기 + 턴 종료 버튼 활성화
+        AllPlayerSpawn.Raise();
     }
 
     private EPlayerControlState GetCurrentControlState()
@@ -487,8 +497,6 @@ public class MouseController : InitBase
     // 이동 끝났을 때 실행되는 함수
     private void RaiseMoveFinishEvent()
     {
-        GameEventGameObject moveFinishEvent = Managers.Resource.Load<GameEventGameObject>("moveFinish");
-        // SO 만들어서
         if (moveFinishEvent != null)
         {
             moveFinishEvent.Raise(_creature.gameObject); // Raise = Invoke 시키기
@@ -686,6 +694,12 @@ public class MouseController : InitBase
                 tile.HighlightTileRed();
             }
         }
+    }
+
+    public void EndPlayerEvent()
+    {
+        CleanupPlayer(); // 현재 플레이어 근처 타일 비활성화
+        _creature = null; // 조종하는 플레이어 조종 풀기
     }
 
 }
