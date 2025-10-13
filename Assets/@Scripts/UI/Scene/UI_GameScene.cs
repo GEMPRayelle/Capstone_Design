@@ -73,7 +73,6 @@ public class UI_GameScene : UI_Scene
         // 버튼 활성화
         TurnEndBtn.raycastTarget = true;
         TurnEndBtn.color = enableColor;
-        Debug.Log("EndTurn Button Can Click!!!");
     }
 
 

@@ -173,11 +173,12 @@ public class MapManager
                 else
                 {
                     if (tile.ObjectType == Define.EObjectType.Monster)
-                    {
+                    {   
                         Vector3 worldPos = grid.GetCellCenterWorld(cellPos);
                         Monster monster = Managers.Object.Spawn<Monster>(worldPos, tile.DataId);
                         mapDict.TryGetValue(new Vector2Int(cellPos.x,cellPos.y), out monster.currentStandingTile);
-                        // monster.currentStandingTile.isBlocked = true; 타일 없는 곳에 적 스폰시켜 null 에러 떠서 잠시 주석처리
+                        monster.currentStandingTile.isBlocked = true;
+                        Managers.Turn.activeMonsterList.Add(monster);
                         monster.SetCellPos(cellPos, grid, true);
                     }
 
