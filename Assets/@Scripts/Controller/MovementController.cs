@@ -93,6 +93,7 @@ public class MovementController : InitBase
         if (tile != null)
         {
             character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
+            character.currentStandingTile.isBlocked = false;
             character.currentStandingTile = tile;
             tile.isBlocked = true;
         }

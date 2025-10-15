@@ -137,8 +137,7 @@ public class ListenerManager
         switch (listenerName)
         {
             case "AllmoveFinish_Listener": // 플레이어 캐릭터 모두가 이동(행동)했을 때
-                // listener.Response.AddListener(턴 종료 버튼 활성화 함수); 턴 종료 버튼 활성화 함수 등록
-                Debug.Log($"Set response for {listenerName}");
+                // 필요하면 추가
                 break;
             case "EndTurn_Listener": // 적군 endTurn
                 listener.Response.AddListener(Managers.Turn.EndTurn); // Creature -> TurnManager
@@ -205,7 +204,7 @@ public class ListenerManager
             // 필요 시 추가
             case "MoveAlongPath_Listener":
                 // TODO MovementController - MoveCharacterCommand() 함수 실행되게 (?)
-                listener.Response.AddListener(movementController.MoveCharacterCommand);
+                listener.Response.AddListener(movementController.MoveCharacterCommand); // Creature -> MovemetController
                 break;
             // 다른 GameObject List 이벤트 리스너 추가
             default:

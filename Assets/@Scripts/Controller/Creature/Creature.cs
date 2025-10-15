@@ -21,8 +21,8 @@ public class Creature : BaseObject
     public int teamID = 0;
 
     //Event
-    public GameEvent endTurn;
-    public GameEventGameObjectList moveAlongPath;
+    public GameEvent endTurn; // Creature -> TurnManager
+    public GameEventGameObjectList moveAlongPath; // Creature -> MovemetController
     //public GameEventCommand castAbility; //스킬을 시전하는 이벤트
 
     private PathFinder _pathFinder { get; set; } //A*

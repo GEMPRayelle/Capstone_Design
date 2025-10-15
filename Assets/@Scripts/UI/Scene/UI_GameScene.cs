@@ -13,7 +13,8 @@ public class UI_GameScene : UI_Scene
 
     // GameEvent 
     GameEvent EndPlayerTurn; // 턴 종료 버튼 누르면 Raise
-
+    // EndTurnBtn -> TurnManager
+    // EndTurnBtn -> MouseController
 
     UnityEngine.UI.Image TurnEndBtn;
 

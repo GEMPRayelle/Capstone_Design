@@ -51,8 +51,10 @@ public class TurnManager
     //이벤트
     // public GameEventGameObject startNewCharacterTurn; //새로운 캐릭터 턴 시작
     // public GameEventGameObjectList turnOrderSet; //턴 순서 설정
-    // public GameEventGameObjectList turnPreviewSet; //턴 미리보기 설정
-    
+    // public GameEventGameObjectList turnPreviewSet; //턴 미리보기 설정 
+
+    GameEvent startPlayerTurn; // TurnManager -> EndTurnBtn(UI_GameScene에 있음)
+    GameEvent AllmoveFinishEvent; // 당장은 연결 함수 X
 
     public List<Creature> activePlayerList = new List<Creature>(); //Map상에서 배치된 플레이어 캐릭터들 리스트
     public List<Creature> activeMonsterList = new List<Creature>(); //Map상에서 배치된 플레이어 캐릭터들 리스트
@@ -88,6 +90,8 @@ public class TurnManager
         }
 
         //startNewCharacterTurn = Managers.Resource.Load<GameEventGameObject>("StartPlayerTurn");
+        startPlayerTurn = Managers.Resource.Load<GameEvent>("StartPlayerTurn");
+        AllmoveFinishEvent = Managers.Resource.Load<GameEvent>("AllmoveFinish");
     }
 
     //전투 시작전 초기 전투 정보 초기화
@@ -254,9 +258,7 @@ public class TurnManager
 
         CurrentPhase = TurnPhase.PlayerMovement;
 
-        GameEvent startPlayerTurn = Managers.Resource.Load<GameEvent>("StartPlayerTurn"); // TODO TurnManager 초기화 생기면 거기서 처리?
-        if (startPlayerTurn != null)
-            startPlayerTurn.Raise();
+        startPlayerTurn.Raise();
     }
 
     //턴 순서 정렬
@@ -342,20 +344,6 @@ public class TurnManager
         //}
     }
 
-    // 모든 플레이어 행동(이동) 끝났을 때 실행되는 함수
-    private void RaiseAllPlayerMoveFinishEvent()
-    {
-        GameEvent AllmoveFinishEvent = Managers.Resource.Load<GameEvent>("AllmoveFinish"); // SO 생성 
-        if (AllmoveFinishEvent != null)
-        {
-            AllmoveFinishEvent.Raise(); // Raise = Inovke, Turn Manager -> 턴 종료 UI
-        }
-        else
-        {
-            Debug.LogWarning("AllmoveFinish GameEvent not found!");
-        }
-    }
-
     // 플레이어 이동 끝나고 실행되는 함수
     public void OnCreatureMoveFinish(GameObject receivedObject)
     {
@@ -363,7 +351,7 @@ public class TurnManager
 
         if (IsAllPlayerMoved() == true) // 모두 이동했을 때
         {
-            RaiseAllPlayerMoveFinishEvent(); // 이벤트 발생
+            AllmoveFinishEvent.Raise(); // Raise = Inovke, Turn Manager -> 턴 종료 UI
         }
     }
 }
