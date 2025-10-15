@@ -49,9 +49,9 @@ public class TurnManager
     private List<BattleInfo> _battleInfoOrderList = new List<BattleInfo>(); //각 캐릭터 별로 BattleInfo를 저장
 
     //이벤트
-    public GameEventGameObject startNewCharacterTurn; //새로운 캐릭터 턴 시작
-    public GameEventGameObjectList turnOrderSet; //턴 순서 설정
-    public GameEventGameObjectList turnPreviewSet; //턴 미리보기 설정
+    // public GameEventGameObject startNewCharacterTurn; //새로운 캐릭터 턴 시작
+    // public GameEventGameObjectList turnOrderSet; //턴 순서 설정
+    // public GameEventGameObjectList turnPreviewSet; //턴 미리보기 설정
     
 
     public List<Creature> activePlayerList = new List<Creature>(); //Map상에서 배치된 플레이어 캐릭터들 리스트
@@ -87,7 +87,7 @@ public class TurnManager
             SortingTurn(true);
         }
 
-        startNewCharacterTurn = Managers.Resource.Load<GameEventGameObject>("StartPlayerTurn");
+        //startNewCharacterTurn = Managers.Resource.Load<GameEventGameObject>("StartPlayerTurn");
     }
 
     //전투 시작전 초기 전투 정보 초기화
@@ -127,7 +127,7 @@ public class TurnManager
         {
             //이벤트 호출
             activeCharacter.StartTurn();
-            startNewCharacterTurn.Raise(activeCharacter.gameObject);
+            //startNewCharacterTurn.Raise(activeCharacter.gameObject);
         }
 
         SortingTurn(true);
@@ -145,19 +145,10 @@ public class TurnManager
             {
                 if (activeCharacter.IsAlive)
                 {
-                    if (activeCharacter.IsAlive)
-                    {
-                        activeCharacter.StartTurn();
-                        
-                        startNewCharacterTurn.Raise(activeCharacter.gameObject); // turn -> movementcontroller aicontroller 기능은 creature 내에 있음, 최대한 적 이동되게
-                    }
-                    else
-                        EndTurn(); // 죽었으면 다음 턴으로
+                    StartEnemyTurn();
                 }
                 else
-                {
-                    EndTurn(); //죽었으면 다음 턴으로
-                }
+                    EndTurn(); // 죽었으면 다음 턴으로
             }
         }
 
@@ -206,7 +197,9 @@ public class TurnManager
                 activeCharacter = currentMonster;
                 // AI 행동 로직 시작 함수
                 Debug.Log($"{activeCharacter.gameObject.name} : Turn Start");
+                Managers.Listener.movementController.activeCharacter = activeCharacter; // movementController에 현재 조종ㅂ할려는 캐릭터 넣기
                 activeCharacter.StartTurn();
+
             }
         }
            

@@ -211,6 +211,7 @@ public class Creature : BaseObject
     /// </summary>
     public void CharacterMoved()
     {
+        IsMoved = true;
         // 이동 로그 기록 (그리드 좌표 포함)
         Debug.Log(gameObject.name + ": Moved To " + bestSenario.positionTile.grid2DLocation);
 
@@ -263,7 +264,8 @@ public class Creature : BaseObject
         }
         else
         {
-            StartCoroutine(EndTurn());
+            //StartCoroutine(EndTurn());
+            Debug.Log("No BestSenario");
         }
 
         yield return null;

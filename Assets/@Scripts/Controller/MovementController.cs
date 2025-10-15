@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using static Define;
@@ -8,208 +9,106 @@ using static UnityEngine.EventSystems.EventTrigger;
 // 일단 적 이동 관리하는 컨트롤러
 public class MovementController : InitBase
 {
-    //public Creature activeCharacter; // 현재 턴에 움직이는 캐릭터
+    public Creature activeCharacter; // 현재 턴에 움직이는 캐릭터
 
-    //public float speed;
-    //public bool enableAutoMove;
-    //public bool showAttackRange;
-    //public bool moveThroughAllies = true;
+    public float speed = 5.0f;
+    public bool enableAutoMove = true;
+    public bool moveThroughAllies = true;
 
     //public GameEvent endTurnEvent;
-    //public GameEventGameObject displayAttackRange;
-    ////public GameEventString cancelActionEvent;
 
-    ////Action Completed is required for the CTB turn order. The turn order needs to be solidified on each action. 
     //public GameEvent actionCompleted;
 
-    //private List<OverlayTile> path = new List<OverlayTile>();
-    //private List<OverlayTile> inAttackRangeTiles = new List<OverlayTile>();
-    //private OverlayTile focusedTile;
-    //private bool movementModeEnabled = false;
-    //private bool isMoving = false;
-    //private bool hasMoved = false;
+    private List<OverlayTile> path = new List<OverlayTile>();
+    private bool isMoving = false;
 
-    //public override bool Init()
-    //{
-    //    if (base.Init() == false)
-    //        return false;
+    public override bool Init()
+    {
+        if (base.Init() == false)
+            return false;
 
-    //    return true;
-    //}
+        return true;
+    }
 
-    //// Update is called once per frame
-    //void Update()
-    //{
-    //    //Is this the best way? Not sure
-    //    if (activeCharacter && !activeCharacter.IsAlive)
-    //    {
-    //        ResetMovementManager();
-    //    }
-
-    //    if (focusedTile)
-    //    {
-    //        if (movementModeEnabled && !isMoving && !focusedTile.isBlocked)
-    //        {
-    //            path = pathFinder.FindPath(activeCharacter.currentStandingTile, focusedTile, inRangeTiles, false, moveThroughAllies);
-
-    //            foreach (var item in inRangeTiles)
-    //            {
-    //                item.SetArrowSprite(ArrowDirection.None);
-    //            }
-
-    //            for (int i = 0; i < path.Count; i++)
-    //            {
-    //                var previousTile = i > 0 ? path[i - 1] : activeCharacter.activeTile;
-    //                var futureTile = i < path.Count - 1 ? path[i + 1] : null;
-
-    //                var arrowDir = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
-    //                path[i].SetArrowSprite(arrowDir);
-    //            }
-    //        }
-    //    }
-
-    //    if (path.Count > 0 && isMoving)
-    //    {
-    //        MoveAlongPath();
-    //    }
-    //}
-
-    ////Resets movement mode when movement has Finished or is Cancelled. 
-    //public void ResetMovementManager()
-    //{
-    //    movementModeEnabled = false;
-    //    isMoving = false;
-    //    activeCharacter.CharacterMoved();
-    //    path = new List<OverlayTile>();
-    //}
-
-    ////Move along a set path.
-    //private void MoveAlongPath()
-    //{
-    //    var step = speed * Time.deltaTime;
-
-    //    var zIndex = path[0].transform.position.z;
-    //    activeCharacter.transform.position = Vector3.MoveTowards(activeCharacter.transform.position, path[0].transform.position, step);
-
-    //    if (Vector3.Distance(activeCharacter.transform.position, path[0].transform.position) < 0.0001f)
-    //    {
-    //        //last tile
-    //        if (path.Count == 1)
-    //            PositionCharacterOnTile(activeCharacter, path[0]);
-
-    //        path.RemoveAt(0);
-    //    }
-
-    //    if (path.Count == 0)
-    //    {
-    //        ResetMovementManager();
-    //        hasMoved = true;
+    // Update is called once per frame
+    void Update()
+    {
+        if (activeCharacter && !activeCharacter.IsAlive)
+        {
+            ResetMovementManager();
+        }
 
 
-    //        if (actionCompleted)
-    //            actionCompleted.Raise();
+        if (path.Count > 0 && isMoving)
+        {
+            MoveAlongPath();
+        }
+    }
 
-    //        if (enableAutoMove)
-    //        {
-    //            if (endTurnEvent)
-    //                endTurnEvent.Raise();
-    //            else
-    //                SetActiveCharacter(activeCharacter.gameObject);
-    //        }
-    //    }
-    //}
+    //Resets movement mode when movement has Finished or is Cancelled. 
+    public void ResetMovementManager()
+    {
+        isMoving = false;
+        activeCharacter.CharacterMoved();
+        path = new List<OverlayTile>();
+    }
 
-    ////Get all tiles in movement range. 
-    //private void GetInRangeTiles()
-    //{
-    //    var moveColor = OverlayController.Instance.MoveRangeColor;
-    //    if (activeCharacter && activeCharacter.activeTile)
-    //    {
-    //        inRangeTiles = rangeFinder.GetTilesInRange(activeCharacter.activeTile, activeCharacter.GetStat(Stats.MoveRange).statValue, false, moveThroughAllies);
-    //        OverlayController.Instance.ColorTiles(moveColor, inRangeTiles);
-    //    }
-    //}
+    //Move along a set path.
+    private void MoveAlongPath()
+    {
+        var step = speed * Time.deltaTime;
 
-    ////Link character to tile once movement has finished
-    //public void PositionCharacterOnTile(Creature character, OverlayTile tile)
-    //{
-    //    if (tile != null)
-    //    {
-    //        character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
-    //        character.currentStandingTile = tile;
-    //    }
-    //}
+        var zIndex = path[0].transform.position.z;
+        activeCharacter.transform.position = Vector3.MoveTowards(activeCharacter.transform.position, path[0].transform.position, step);
 
-    ////Movement event receiver for the AI
-    //public void MoveCharacterCommand(List<GameObject> pathToFollow)
-    //{
-    //    if (activeCharacter)
-    //    {
-    //        isMoving = true;
-    //        activeCharacter.UpdateInitiative(Constants.MoveCost);
+        if (Vector3.Distance(activeCharacter.transform.position, path[0].transform.position) < 0.0001f)
+        {
+            //last tile
+            if (path.Count == 1)
+                PositionCharacterOnTile(activeCharacter, path[0]);
 
-    //        if (pathToFollow.Count > 0)
-    //            path = pathToFollow.Select(x => x.GetComponent<OverlayTile>()).ToList();
-    //    }
-    //}
+            path.RemoveAt(0);
+        }
 
-    ////Moused over new tile and display the attack range. 
-    //public void FocusedOnNewTile(GameObject focusedOnTile)
-    //{
-    //    if (!isMoving)
-    //        focusedTile = focusedOnTile.GetComponent<OverlayTile>();
+        if (path.Count == 0)
+        {
+            ResetMovementManager();
 
-    //    if (movementModeEnabled && inRangeTiles.Where(x => x.grid2DLocation == focusedTile.grid2DLocation).Any() && !isMoving && showAttackRange && displayAttackRange)
-    //        displayAttackRange.Raise(focusedOnTile);
-    //}
 
-    ////Show all the tiles in attack range based on mouse position. 
-    //public void ShowAttackRangeTiles(GameObject focusedOnTile)
-    //{
-    //    var attackColor = OverlayController.Instance.AttackRangeColor;
-    //    inAttackRangeTiles = rangeFinder.GetTilesInRange(focusedOnTile.GetComponent<OverlayTile>(), activeCharacter.GetStat(Stats.AttackRange).statValue, true, moveThroughAllies);
+            //if (actionCompleted)
+            //    actionCompleted.Raise();
 
-    //    OverlayController.Instance.ColorTiles(attackColor, inAttackRangeTiles);
-    //}
+            //if (enableAutoMove)
+            //{
+            //    if (endTurnEvent)
+            //        endTurnEvent.Raise();
+            //}
+        }
+    }
 
-    ////Set new active character
-    //public void SetActiveCharacter(GameObject character)
-    //{
-    //    activeCharacter = character.GetComponent<Entity>();
-    //    hasMoved = false;
-    //    if (enableAutoMove && activeCharacter.isAlive)
-    //        StartCoroutine(DelayedMovementmode());
-    //}
 
-    ////Wait until next loop to avoid possible race condition. 
-    //IEnumerator DelayedMovementmode()
-    //{
-    //    yield return new WaitForFixedUpdate();
-    //    InitiateMovementMode();
-    //}
+    //Link character to tile once movement has finished
+    public void PositionCharacterOnTile(Creature character, OverlayTile tile)
+    {
+        if (tile != null)
+        {
+            character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
+            character.currentStandingTile = tile;
+            tile.isBlocked = true;
+        }
+    }
 
-    ////Set a character to a tile when it spawns. 
-    //public void SpawnCharacter(GameObject newCharacter)
-    //{
-    //    PositionCharacterOnTile(newCharacter.GetComponent<Entity>(), focusedTile);
-    //}
+    //Movement event receiver for the AI
+    public void MoveCharacterCommand(List<GameObject> pathToFollow)
+    {
+        if (activeCharacter)
+        {
+            isMoving = true;
 
-    ////Enter movement mode on button click.
-    //public void StartMovementMode()
-    //{
-    //    StartCoroutine(DelayedMovementmode());
-    //}
+            if (pathToFollow.Count > 0)
+                path = pathToFollow.Select(x => x.GetComponent<OverlayTile>()).ToList();
+        }
+    }
 
-    ////Enter movement mode on button click.
-    //private void InitiateMovementMode()
-    //{
-    //    if (!hasMoved)
-    //    {
-    //        GetInRangeTiles();
-    //        movementModeEnabled = true;
 
-    //        if (previewAction)
-    //            previewAction.Raise(Constants.MoveCost);
-    //    }
-    //}
 }

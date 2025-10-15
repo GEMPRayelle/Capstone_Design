@@ -205,6 +205,7 @@ public class ListenerManager
             // 필요 시 추가
             case "MoveAlongPath_Listener":
                 // TODO MovementController - MoveCharacterCommand() 함수 실행되게 (?)
+                listener.Response.AddListener(movementController.MoveCharacterCommand);
                 break;
             // 다른 GameObject List 이벤트 리스너 추가
             default:
