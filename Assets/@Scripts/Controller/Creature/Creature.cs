@@ -137,7 +137,7 @@ public class Creature : BaseObject
 
         //Event
         endTurn = Managers.Resource.Load<GameEvent>("EndTurn");
-
+        moveAlongPath = Managers.Resource.Load<GameEventGameObjectList>("MoveAlongPath");
         //State
         CreatureState = ECreatureState.Idle;
 
@@ -219,6 +219,8 @@ public class Creature : BaseObject
         if (bestSenario != null && (bestSenario.targetTile != null || bestSenario.targetSkill != null))
         {
             //Attack();
+            StartCoroutine(EndTurn());
+            Debug.Log("Need Attack");
         }
         else
             StartCoroutine(EndTurn()); // 그렇지 않으면 턴 종료
@@ -279,8 +281,8 @@ public class Creature : BaseObject
         var currentTile = currentStandingTile;
 
         //현재 위치에서 목표 위치까지의 경로 계산
-        path = _pathFinder.FindPath(currentTile, bestSenario.positionTile, new List<OverlayTile>());
-
+        path = _pathFinder.FindPath(currentTile, bestSenario.positionTile);
+        Debug.Log("Monster Path Count : " + path.Count);
         //이동할 필요가 없고 공격 가능한 경우 즉시 공격
         if (path.Count == 0 && bestSenario.targetTile != null)
         {

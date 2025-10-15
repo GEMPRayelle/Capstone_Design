@@ -182,8 +182,8 @@ public class TurnManager
     {
         if (IsAllMonsterMoved() == true || activeMonsterList.Count == 0) // 모든 적 행동 끝날 시
         {
-            // 다시 플레이어 턴 시작 
-            PrepareNextPlayerTurn();
+            // 턴 다시 초기화(다시 플레이어 턴 시작)
+            PrepareNextTurn();
         }
 
         else // 아직 행동이 남은 적이 있다면
@@ -239,12 +239,17 @@ public class TurnManager
     }
 
     //다음 턴 준비
-    private void PrepareNextPlayerTurn()
+    private void PrepareNextTurn()
     {
         //모든 캐릭터의 이동 상태 초기화후 턴 넘김
         foreach (var player in activePlayerList)
         {
             player.IsMoved = false;
+        }
+
+        foreach (Monster monster in activeMonsterList)
+        {
+            monster.IsMoved = false;
         }
 
         CurrentPhase = TurnPhase.PlayerMovement;

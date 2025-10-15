@@ -84,7 +84,7 @@ public class Player : Creature
         Collider.isTrigger = true;
         RigidBody.simulated = true;
 
-        StartCoroutine(CoUpdateAI());
+        //StartCoroutine(CoUpdateAI());
 
         return true;
     }
