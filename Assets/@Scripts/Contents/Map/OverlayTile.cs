@@ -17,6 +17,8 @@ public class OverlayTile : InitBase
     //방향 화살표 스프라이트 리스트 (ArrowDirection enum 순서대로 저장)
     public List<Sprite> arrows;
 
+    public int remainingMovement;//남은 이동력 계산
+
     public override bool Init()
     {
         if (base.Init() == false)

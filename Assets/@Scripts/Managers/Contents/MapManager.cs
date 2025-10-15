@@ -290,6 +290,102 @@ public class MapManager
         return inRangeTiles.Distinct().ToList();
     }
 
+    //오버로딩
+    public List<OverlayTile> GetTilesInRange(OverlayTile startingTile, int range,
+            bool ignoreObstacles = false, bool walkThroughAllies = true)
+    {
+        // 최종 결과를 담을 리스트 - 이동 가능한 모든 타일
+        var inRangeTiles = new List<OverlayTile>();
+
+        // 현재 탐색 단계를 추적하는 카운터 (0부터 range까지)
+        int stepCount = 0;
+
+        // 시작 타일의 남은 이동력을 최대 범위로 설정
+        // 이는 이후 계산의 기준점이 됨
+        startingTile.remainingMovement = range;
+
+        // 시작 타일을 결과에 추가 (자기 자신의 위치도 "이동 가능한" 위치)
+        inRangeTiles.Add(startingTile);
+
+        // 이전 단계에서 탐색된 타일들을 저장하는 리스트
+        // BFS의 "현재 레벨" 개념 - 이 타일들로부터 다음 단계를 탐색
+        var tileForPreviousStep = new List<OverlayTile>
+            {
+                startingTile  // 첫 단계는 시작 타일만 포함
+            };
+
+        // BFS 메인 루프: 각 단계별로 범위를 1칸씩 확장
+        // 예: 이동력 3인 경우 → 3단계에 걸쳐 확장
+        while (stepCount < range)
+        {
+            // 현재 단계에서 새로 발견된 타일들을 저장할 리스트
+            var surroundingTiles = new List<OverlayTile>();
+
+            // 이전 단계의 각 타일을 기준으로 이웃 타일들을 탐색
+            foreach (var item in tileForPreviousStep)
+            {
+                // 현재 타일의 이동 비용 계산
+                // ignoreObstacles가 true면 모든 타일의 비용을 1로 처리
+                //int moveCost = !ignoreObstacles ? item.GetMoveCost() : 1;
+                int moveCost = 1; //임시로 모든 타일 비용은 1로 처리
+
+                // MapManager를 통해 현재 타일의 이웃 타일들을 가져오기
+                // 매개변수 설명:
+                // - item: 기준 타일
+                // - new List<OverlayTile>(): 전체 맵 탐색 (빈 리스트)
+                // - ignoreObstacles: 장애물 무시 여부
+                // - walkThroughAllies: 아군 통과 가능 여부
+                // - item.remainingMovement: 이 타일에서 남은 이동력
+                var newNeighbours = Managers.Map.GetNeighbourTiles(
+                    item, new List<OverlayTile>(), ignoreObstacles,
+                    walkThroughAllies, item.remainingMovement);
+
+                // 각 이웃 타일에 대해 이동 비용과 남은 이동력 계산
+                foreach (var tile in newNeighbours)
+                {
+                    // 높이 차이로 인한 추가 이동 비용 계산
+                    // 예: 1칸 높은 곳으로 올라가면 +1 비용
+                    //int heightDifference = CalculateHeightCost(ignoreObstacles, item, tile);
+
+                    // 이 타일에 도달했을 때의 남은 이동력 계산
+                    // 공식: 현재 타일의 남은 이동력 - 목표 타일의 기본 비용 - 높이 비용
+                    var remainingMovement = item.remainingMovement;// - tile.GetMoveCost() - heightDifference;
+
+                    // 더 효율적인 경로를 발견한 경우에만 업데이트
+                    // 같은 타일에 여러 경로로 도달할 수 있을 때, 더 적은 비용의 경로를 선택
+                    if (remainingMovement > tile.remainingMovement)
+                        tile.remainingMovement = remainingMovement;
+                }
+
+                // 남은 이동력이 0 이상인 타일만 현재 단계 결과에 추가
+                // LINQ Where절로 필터링: x.remainingMovement >= 0
+                // ToList()로 지연 실행을 즉시 실행으로 변환
+                surroundingTiles.AddRange(newNeighbours.Where(x => x.remainingMovement >= 0).ToList());
+            }
+
+            // 현재 단계에서 발견된 모든 타일을 최종 결과에 추가
+            inRangeTiles.AddRange(surroundingTiles);
+
+            // 다음 단계를 위해 현재 단계의 타일들을 "이전 단계"로 설정
+            // Distinct()로 중복 타일 제거 (같은 타일에 여러 경로로 도달 가능)
+            tileForPreviousStep = surroundingTiles.Distinct().ToList();
+
+            // 단계 카운터 증가 (1칸씩 더 멀리 탐색)
+            stepCount++;
+        }
+
+        // 계산 완료 후 정리 작업: 모든 타일의 남은 이동력을 0으로 리셋
+        // 이는 다음 계산에 영향을 주지 않기 위한 정리 작업
+        foreach (var item in inRangeTiles)
+        {
+            item.remainingMovement = 0;
+        }
+
+        // 최종 결과 반환: 중복 제거된 이동 가능한 모든 타일
+        // Distinct()는 같은 타일이 여러 번 추가되는 것을 방지
+        return inRangeTiles.Distinct().ToList();
+    }
+
     /// <summary>
     /// 주어진 타일 주변의 모든 이웃 타일을 리턴하는 함수
     /// 

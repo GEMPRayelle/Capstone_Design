@@ -236,6 +236,7 @@ public class Creature : BaseObject
 
         var senario = new Senario();
 
+        //각 이동 가능한 타일에 대해 시나리오 평가
         foreach (var tile in tileInMovementRange)
         {
             if (!tile.isBlocked) // 막혀있지 않은 타일만 고려
@@ -452,7 +453,7 @@ public class Creature : BaseObject
     /// </summary>
     /// <param name="position">위치 기준</param>
     /// <returns></returns>
-    private BaseObject FindClosestObject(OverlayTile position)
+    private Creature FindClosestObject(OverlayTile position)
     {
         Creature target = null;
         var closestDistance = 1000; //충분히 큰 초기값
@@ -623,8 +624,7 @@ public class Creature : BaseObject
     private Senario CreateTileSenarioValue(OverlayTile overlayTile)
     {
         // 기본 공격 시나리오 생성 (성격에 따라)
-        //var attackSenario = AutoAttackBasedOnPersonality(overlayTile);
-        var attackSenario = new Senario();
+        var attackSenario = AutoAttackBasedOnPersonality(overlayTile);
 
         //// 사용 가능한 모든 능력 검토
         //foreach (var abilityContainer in abilitiesForUse)
@@ -648,6 +648,35 @@ public class Creature : BaseObject
     #endregion
 
     #region AI
+
+    private Senario AutoAttackBasedOnPersonality(OverlayTile position)
+    {
+        //TEMP 가장 가까운 적을 공격하려고 하면서 최대한 가까이 접근
+        var targetCharacter = FindClosestObject(position);
+
+        if (targetCharacter)
+        {
+            //타겟을 향한 최단 거리
+            var closestDistance = _pathFinder.GetManhattenDistance(position, targetCharacter.currentStandingTile);
+
+            //공격 범위 내에 있고, 타겟과 같은 타일에 있지 않은지 확인
+            if (closestDistance <= SkillRange && position != targetCharacter)
+            {
+                // 타겟 근처의 가장 가까운 타일 찾기
+                var targetTile = GetClosestNeighbour(targetCharacter.currentStandingTile);
+
+                // 공격적 점수 계산: 가까울수록 높은 점수
+                var senarioValue = 0;
+                senarioValue += (int)Atk.Value + (MovementRange - closestDistance);
+
+                return new Senario(senarioValue, null, targetCharacter.currentStandingTile, position, true);
+            }
+        }
+
+        return new Senario();
+    }
+
+
     public float UpdateAITick { get; protected set; } = 0.0f;
 
     protected IEnumerator CoUpdateAI()
