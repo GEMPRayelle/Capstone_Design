@@ -112,7 +112,7 @@ MonoBehaviour:
       iconNameOrGuid: ComputeShader Icon
     - colorIndex: 3
       iconNameOrGuid: SceneAsset Icon
-    - colorIndex: 0
+    - colorIndex: 6
       iconNameOrGuid: Prefab Icon
     - colorIndex: 0
       iconNameOrGuid: TextAsset Icon
