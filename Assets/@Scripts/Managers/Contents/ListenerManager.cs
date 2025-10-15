@@ -7,11 +7,13 @@ public class ListenerManager
 {
     public GameObject ControllerContainer;
     public MouseController mouseController;
+    public MovementController movementController;
     public UI_GameScene GameScene;
     public void InitController()
     {
         ControllerContainer = Managers.Resource.Instantiate("ControllerContainer");
         mouseController = Util.FindChild<MouseController>(ControllerContainer, "MouseController");
+        movementController = Util.FindChild<MovementController>(ControllerContainer, "MovementController");
     }
     public void InitGameScene()
     {
@@ -147,6 +149,7 @@ public class ListenerManager
                 break;
             case "StartPlayerTurn_Listener": // 플레이어 턴 시작할 때
                 listener.Response.AddListener(GameScene.activeTurnEndBtn); // TurnManager -> EndTurnBtn(UI_GameScene에 있음)
+                //listener.Response.AddListener()
                 break;
             case "AllPlayerSpawn_Listener": // 모든 플레이어 소환됬을 때
                 // 턴 매니저 턴 시작? 추가

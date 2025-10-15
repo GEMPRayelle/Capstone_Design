@@ -168,7 +168,7 @@ public class Creature : BaseObject
             case ECreatureState.Dead:
                 PlayAnimation(0, AnimName.DEAD, true);
                 RigidBody.simulated = false;
-                break;
+                break;  
             default:
                 break; 
         }

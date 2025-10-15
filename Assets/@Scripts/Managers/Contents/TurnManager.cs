@@ -86,6 +86,8 @@ public class TurnManager
         {
             SortingTurn(true);
         }
+
+        startNewCharacterTurn = Managers.Resource.Load<GameEventGameObject>("StartPlayerTurn");
     }
 
     //전투 시작전 초기 전투 정보 초기화
@@ -146,7 +148,8 @@ public class TurnManager
                     if (activeCharacter.IsAlive)
                     {
                         activeCharacter.StartTurn();
-                        startNewCharacterTurn.Raise(activeCharacter.gameObject);
+                        
+                        startNewCharacterTurn.Raise(activeCharacter.gameObject); // turn -> movementcontroller aicontroller 기능은 creature 내에 있음, 최대한 적 이동되게
                     }
                     else
                         EndTurn(); // 죽었으면 다음 턴으로
