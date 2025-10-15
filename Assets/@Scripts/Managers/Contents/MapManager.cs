@@ -333,7 +333,8 @@ public class MapManager
                 Vector2Int locationToCheck = targetObjectTile.grid2DLocation + direction;
 
                 //각 방향의 타일이 접근 가능한지 검증
-                
+                ValidateNeighbour(targetObjectTile, ignoreObstacle, walkThroughAllies, 
+                    tileToSearch, neighbours, locationToCheck, remainRange);
             }
         }
 
@@ -370,7 +371,7 @@ public class MapManager
                 //TODO 
                 //if ( <= remainingRange || ignoreObstacles)
                 //{
-                //    canAccessLocation = true;
+                    canAccessLocation = true;
                 //}
             }
 

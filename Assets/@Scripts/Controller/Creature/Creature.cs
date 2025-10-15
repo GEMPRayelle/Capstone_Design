@@ -17,6 +17,9 @@ public class Creature : BaseObject
     public EffectComponent Effects { get; set; }//이펙트(상태 이상효과) 목록
     public bool IsMoved = false; // 현재 턴에 이동했는지에 대한 정보
 
+    [Header("기본 정보")]
+    public int teamID = 0;
+
     //Event
     public GameEvent endTurn;
     public GameEventGameObjectList moveAlongPath;
@@ -128,7 +131,12 @@ public class Creature : BaseObject
         Speed = CreatureData.speed;
         MovementRange = CreatureData.MovementRange;
         SkillRange = CreatureData.SkillRange;
-        
+
+        //A*
+        _pathFinder = new PathFinder();
+
+        //Event
+        endTurn = Managers.Resource.Load<GameEvent>("EndTurn");
 
         //State
         CreatureState = ECreatureState.Idle;
@@ -504,20 +512,20 @@ public class Creature : BaseObject
     }
 
     /// <summary>
-    /// 대상 타일 주변에서 가장 가까운 인접 타일을 찾는 함수
-    /// , 직접 그 타일로 이동이 불가능할때 사용해야함
+    /// 대상 타일 주변에서 가장 가까운 인접 타일을 찾는 함수.
+    /// 직접 그 타일로 이동이 불가능할때 사용해야함
     /// </summary>
-    /// <param name="targetObjectTile"></param>
-    /// <returns></returns>
+    /// <param name="targetObjectTile">대상 캐릭터가 있는 타일</param>
+    /// <returns>가장 가까운 인접 타일</returns>
     private OverlayTile GetClosestNeighbour(OverlayTile targetObjectTile)
     {
         //대상 타일의 모든 인접 타일 가져옴
-        var targetNeightbour = Managers.Map.GetNeighbourTiles(targetObjectTile, new List<OverlayTile>());
-        var targetTile = targetNeightbour[0];
+        var targetNeighbour = Managers.Map.GetNeighbourTiles(targetObjectTile, new List<OverlayTile>());
+        var targetTile = targetNeighbour[0];
         var targetDistance = _pathFinder.GetManhattenDistance(targetTile, currentStandingTile);
 
         //가장 가까운 인접 타일 탐색
-        foreach (var item in targetNeightbour)
+        foreach (var item in targetNeighbour)
         {
             var distance = _pathFinder.GetManhattenDistance(item, currentStandingTile);
 

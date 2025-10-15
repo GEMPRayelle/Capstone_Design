@@ -329,7 +329,8 @@ public class MouseController : InitBase
         
         if (_copy != null)
             Managers.Object.Despawn<Player>(_copy); // 소환 끝나면 copy 사용 X
-        
+
+        Managers.Turn.Init();
         // 턴 매니저에 턴 시작 알리기 + 턴 종료 버튼 활성화
         AllPlayerSpawn.Raise();
     }

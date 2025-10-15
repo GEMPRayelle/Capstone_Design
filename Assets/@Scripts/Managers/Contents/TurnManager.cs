@@ -61,12 +61,33 @@ public class TurnManager
     public List<TurnOrderPreviewObject> turnOrderPreview;
     public List<TurnOrderPreviewObject> currentTurnOrderPreview;
 
+    //턴 순서 미리보기 풀 크기
+    public int previewPoolCount = 8; 
+
     //추가 턴을 받는 캐릭터들
     public Queue<Creature> extraTurnPlayerQueue = new Queue<Creature>();
 
     //현재 턴을 진행중인 Creature
     public Creature activeCharacter;
     
+    public void Init()
+    {
+        turnOrderPreview = new List<TurnOrderPreviewObject>();
+
+        foreach (var item in activePlayerList)
+            item.teamID = 1;
+
+        foreach(var item in activeMonsterList)
+            item.teamID = 2;
+        
+
+        //초기 턴 순서 정렬
+        if(activePlayerList.Count > 0)
+        {
+            SortingTurn(true);
+        }
+    }
+
     //전투 시작전 초기 전투 정보 초기화
     private void SetBattleInfoOrder()
     {
@@ -106,6 +127,8 @@ public class TurnManager
             activeCharacter.StartTurn();
             startNewCharacterTurn.Raise(activeCharacter.gameObject);
         }
+
+        SortingTurn(true);
     }
 
     //턴 종료 후 다음 Creature의 턴 시작
@@ -114,6 +137,7 @@ public class TurnManager
         if (turnOrderPreview.Count > 0)
         {
             FinalEndCharacterTurn();
+            SortingTurn();
 
             if (HasAliveCharacters())
             {
@@ -178,6 +202,8 @@ public class TurnManager
             {
                 activeCharacter = currentMonster;
                 // AI 행동 로직 시작 함수
+                Debug.Log($"{activeCharacter.gameObject.name} : Turn Start");
+                activeCharacter.StartTurn();
             }
         }
            
@@ -250,7 +276,17 @@ public class TurnManager
                 .ToList();
 
             activeCharacter = turnOrderPreview[0].character;
-            
+
+            //턴 순서 풀을 채우기 위해 반복으로 리스트 추가
+            int characterCount = 0;
+            while(turnOrderPreview.Count < previewPoolCount)
+            {
+                foreach (var item in combinedList)
+                {
+                    turnOrderPreview.Add(new TurnOrderPreviewObject(item, characterCount));
+                }
+                characterCount++;
+            }
         }
         //재 정렬이 필요 없으면
         else
