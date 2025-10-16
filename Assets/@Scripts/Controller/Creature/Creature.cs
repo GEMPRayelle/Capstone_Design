@@ -153,10 +153,9 @@ public class Creature : BaseObject
             case ECreatureState.Idle:
                 PlayAnimation(0, AnimName.IDLE, true);
                 break;
-            //공격 애니메이션 적용은 Skill쪽으로 이전
-            case ECreatureState.Attack:
-                break;
+            //공격 애니메이션 적용은 Skill 클래스쪽으로 이전
             case ECreatureState.Skill:
+                //PlayAnimation(0, AnimName.ATTACK_A, true);
                 break;
             case ECreatureState.Move:
                 PlayAnimation(0, AnimName.MOVE, true);

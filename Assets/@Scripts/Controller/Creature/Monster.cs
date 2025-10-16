@@ -33,7 +33,6 @@ public class Monster : Creature
                     case ECreatureState.Dead:
                         UpdateAITick = 1.0f;
                         break;
-
                 }
             }
         }
@@ -45,12 +44,6 @@ public class Monster : Creature
             return false;
 
         ObjectType = EObjectType.Monster;
-
-        Speed = 2.5f;
-        GameObject player = GameObject.Find("@Players");
-
-        if (player != null)
-            Target = player.transform.GetChild(0).GetComponent<Player>() as BaseObject;
 
         StartCoroutine(CoUpdateAI());
 
@@ -67,7 +60,7 @@ public class Monster : Creature
     #region AI
     protected override void UpdateIdle()
     {
-        // idle은 플레이어가 마스터일떼만 적용
+
     }
 
     protected override void UpdateMove()
@@ -99,22 +92,22 @@ public class Monster : Creature
     {
         base.OnDead(attacker, skill);
 
-        int dropItemId = MonsterData.DropItemId;
+        //int dropItemId = MonsterData.DropItemId;
 
-        //TODO Item Drop 데이터 연동을 통해 정리
-        RewardData rewardData = GetRandomReward();
-        if (rewardData != null)
-        {
-            var itemHolder = Managers.Object.Spawn<ItemHolder>(transform.position, dropItemId);
+        ////TODO Item Drop 데이터 연동을 통해 정리
+        //RewardData rewardData = GetRandomReward();
+        //if (rewardData != null)
+        //{
+        //    var itemHolder = Managers.Object.Spawn<ItemHolder>(transform.position, dropItemId);
 
-            #region 포물선
-            Vector2 ran = new Vector2(transform.position.x + Random.Range(-10, -15) * 0.1f, transform.position.y);
-            Vector2 ran2 = new Vector2(transform.position.x + Random.Range(10, 15) * 0.1f, transform.position.y);
-            Vector2 dropPos = Random.value < 0.5 ? ran : ran2;
-            #endregion
+        //    #region 포물선
+        //    Vector2 ran = new Vector2(transform.position.x + Random.Range(-10, -15) * 0.1f, transform.position.y);
+        //    Vector2 ran2 = new Vector2(transform.position.x + Random.Range(10, 15) * 0.1f, transform.position.y);
+        //    Vector2 dropPos = Random.value < 0.5 ? ran : ran2;
+        //    #endregion
 
-            itemHolder.SetInfo(dropItemId, rewardData.ItemTemplateId, dropPos);
-        }
+        //    itemHolder.SetInfo(dropItemId, rewardData.ItemTemplateId, dropPos);
+        //}
 
         Managers.Object.Despawn(this);
     }

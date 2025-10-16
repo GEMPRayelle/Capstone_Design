@@ -129,17 +129,6 @@ public class Player : Creature
             CreatureState = ECreatureState.Move;
             return;
         }
-
-        //2. 몬스터 탐색 및 사냥
-        //BaseObject를 반환하기 때문에 Creature로 다시 캐스팅
-        Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.Monsters) as Creature;
-        if (creature != null)
-        {
-            Target = creature;
-            CreatureState = ECreatureState.Skill;
-            PlayerMoveState = EPlayerMoveState.TargetMonster;
-            return;
-        }
     }
 
     protected override void UpdateMove()
@@ -152,20 +141,8 @@ public class Player : Creature
         }
         
         //TODO 나중에 조이스틱으로 움직이려고 할때 수정이 필요함 (Grid 이동때문에 임시 주석처리)
-        //if (_moveDir == Vector2.zero) // 조이스틱으로 움직이지않으면 
-        //    CreatureState = ECreatureState.Idle; // Idle 상태
-
-        //1. 주면에 몬스터가 있다면
-        Creature creature = FindClosetObjectInRange(PLAYER_SEARCH_DISTANCE, Managers.Object.Monsters) as Creature;
-
-        if (creature != null) 
-        {
-            Target = creature;
-            CreatureState = ECreatureState.Skill;
-            PlayerMoveState = EPlayerMoveState.TargetMonster;
-            return;
-        }
-        else { }
+        if (_moveDir == Vector2.zero) // 조이스틱으로 움직이지않으면 
+            CreatureState = ECreatureState.Idle; // Idle 상태
     }
 
     protected override void UpdateSkill()

@@ -327,7 +327,6 @@ public class MapManager
                 // 현재 타일의 이동 비용 계산
                 // ignoreObstacles가 true면 모든 타일의 비용을 1로 처리
                 //int moveCost = !ignoreObstacles ? item.GetMoveCost() : 1;
-                int moveCost = 1; //임시로 모든 타일 비용은 1로 처리
 
                 // MapManager를 통해 현재 타일의 이웃 타일들을 가져오기
                 // 매개변수 설명:

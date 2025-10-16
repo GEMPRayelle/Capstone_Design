@@ -54,11 +54,6 @@ public class BaseObject : InitBase
         return true;
     }
 
-    protected virtual void OnDisable()
-    {
-        //TODO
-    }
-
     public void TranslateEx(Vector3 dir)
     {
         transform.Translate(dir);
