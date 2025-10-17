@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using static Define;
 
 public static class Util
 {
@@ -80,5 +81,36 @@ public static class Util
         yield return Vector2Int.down;  // (0, -1)
         yield return Vector2Int.right; // (1, 0)
         yield return Vector2Int.left;  // (-1, 0)
+    }
+    
+    public static Vector3 GetLookAtRotation(Vector3 dir)
+    {
+        //Mathf.Atan2를 사용해 각도를 계산하고, 라디안에서 디그리로 변환 
+        float angle = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;
+
+        //Z축을 기준으로 회전하는 Vec3값을 리턴
+        return new Vector3(0, 0, angle);
+    }
+
+    public static float GetEffectRadius(EEffectSize size)
+    {
+        //몬스터마다 피격을 정해주도록 함 
+        switch (size)
+        {
+            case EEffectSize.CircleSmall:
+                return EFFECT_SMALL_RADIUS;
+            case EEffectSize.CircleNormal:
+                return EFFECT_NORMAL_RADIUS;
+            case EEffectSize.CircleBig:
+                return EFFECT_BIG_RADIUS;
+            case EEffectSize.ConeSmall:
+                return EFFECT_SMALL_RADIUS * 2f;
+            case EEffectSize.ConeNormal:
+                return EFFECT_NORMAL_RADIUS * 2f;
+            case EEffectSize.ConeBig:
+                return EFFECT_BIG_RADIUS * 2f;
+            default:
+                return EFFECT_SMALL_RADIUS;
+        }
     }
 }

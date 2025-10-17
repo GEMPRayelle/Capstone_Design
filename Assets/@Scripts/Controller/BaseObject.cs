@@ -54,6 +54,17 @@ public class BaseObject : InitBase
         return true;
     }
 
+    protected virtual void OnDisable()
+    {
+        if (SkeletonAnim == null)
+            return;
+        if (SkeletonAnim.AnimationState == null)
+            return;
+
+        //비활성화 될시 이벤트 제거
+        SkeletonAnim.AnimationState.Event -= OnAnimEventHandler;
+    }
+
     public void TranslateEx(Vector3 dir)
     {
         transform.Translate(dir);

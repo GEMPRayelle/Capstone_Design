@@ -119,6 +119,13 @@ public static class Define
         B
     }
 
+    public enum EIndicatorType
+    {
+        None,
+        Cone,
+        Rectangle,
+    }
+
     public enum EEffectSize
     {
         CircleSmall,
@@ -197,8 +204,10 @@ public static class Define
 
     public static class SortingLayers
     {
+        public const int UI_GAMESCENE = 1;
         public const int UI_JOYSTICK = 500;
         public const int UI_HpBar = 400;
+        public const int SPELL_INDICATOR = 200;
         public const int CREATURE = 350;
         public const int PROJECTILE = 310;
         public const int SKILL_EFFECT = 310;
@@ -224,6 +233,9 @@ public static class Define
         public const string EVENT_SKILL_B = "event_attack";
     }
 
+    public const float EFFECT_SMALL_RADIUS = 2.5f;
+    public const float EFFECT_NORMAL_RADIUS = 4.5f;
+    public const float EFFECT_BIG_RADIUS = 5.5f;
 
     //Hard Coding
     public const float PLAYER_SEARCH_DISTANCE = 4.0f;
