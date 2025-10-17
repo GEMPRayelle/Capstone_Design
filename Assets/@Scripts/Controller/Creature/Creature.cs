@@ -11,7 +11,7 @@ public class Creature : BaseObject
 {
     public BaseObject Target { get; protected set; } //찾아가려는 타겟
     public SkillComponent Skills { get; protected set; } //현재 가지고있는 스킬
-    
+
     public Data.CreatureData CreatureData { get; private set; }
     public OverlayTile currentStandingTile;//현재 서 있는 타일 정보
     public EffectComponent Effects { get; set; }//이펙트(상태 이상효과) 목록
@@ -103,7 +103,7 @@ public class Creature : BaseObject
             CreatureData = Managers.Data.HeroDic[templateID];
         else
             CreatureData = Managers.Data.MonsterDic[templateID];
-        
+
         //Name
         gameObject.name = $"{CreatureData.DataId}_{CreatureData.DescriptionTextID}";
 
@@ -167,9 +167,9 @@ public class Creature : BaseObject
             case ECreatureState.Dead:
                 PlayAnimation(0, AnimName.DEAD, true);
                 RigidBody.simulated = false;
-                break;  
+                break;
             default:
-                break; 
+                break;
         }
     }
 
@@ -255,21 +255,19 @@ public class Creature : BaseObject
                 senario = CheckIfSenarioValuesAreEqual(tileInMovementRange, senario, tempSenario);
 
                 // 공격 대상이 없는 경우의 처리
-                senario = CheckSenarioValueIfNoTarget(senario, tile, tempSenario);
+                //senario = CheckSenarioValueIfNoTarget(senario, tile, tempSenario);
             }
         }
 
-        // 최적 시나리오가 결정되면 실행, 그렇지 않으면 턴 종료
-        if (senario.positionTile)
+        // 공격 대상이 없는 경우
+        if (senario.positionTile == null)
         {
-            ApplyBestSenario(senario);
-        }
-        else
-        {
-            //StartCoroutine(EndTurn());
-            Debug.Log("No BestSenario");
+            // 목표와 가장 가까운 타일 찾아서 senario 반영
+            senario = ApplySenarioValueIfNoTarget(senario, tileInMovementRange);
         }
 
+        // 최적 시나리오가 결정되면 실행, 그렇지 않으면 턴 종료
+        ApplyBestSenario(senario);
         yield return null;
     }
 
@@ -281,7 +279,6 @@ public class Creature : BaseObject
 
         //현재 위치에서 목표 위치까지의 경로 계산
         path = _pathFinder.FindPath(currentTile, bestSenario.positionTile);
-        Debug.Log("Monster Path Count : " + path.Count);
         //이동할 필요가 없고 공격 가능한 경우 즉시 공격
         if (path.Count == 0 && bestSenario.targetTile != null)
         {
@@ -350,48 +347,43 @@ public class Creature : BaseObject
     /// 가장 약한 적에게 다가가는 것을 목표로 함
     /// </summary>
     /// <param name="senario">현재 최고 시나리오</param>
-    /// <param name="tile">평가 중인 타일</param>
-    /// <param name="tempSenario">현재 타일의 시나리오</param>
+    /// <param name="tileInMovementRange">이동 범위 타일</param>
     /// <returns>업데이트된 시나리오</returns>
-    private Senario CheckSenarioValueIfNoTarget(Senario senario, OverlayTile tile, Senario tempSenario)
+    private Senario ApplySenarioValueIfNoTarget(Senario senario, List<OverlayTile> tileInMovementRange)
     {
-        if (tempSenario.positionTile == null && !senario.targetTile)
+        // 가장 약한 적 찾기
+        var targetCharacter = FindClosestObjectToDeath(currentStandingTile);
+        if (targetCharacter)
         {
-            // 가장 약한 적 찾기
-            var targetCharacter = FindClosestObjectToDeath(tile);
-            if (targetCharacter)
+            // 이동 범위 타일 중 적과 가장 가까운 타일 찾기
+            var targetTile = GetClosestTileInRange(targetCharacter.currentStandingTile, tileInMovementRange);
+
+            // 적이 있고 가장 가까운 타일도 있다면
+            if (targetCharacter && targetTile)
             {
-                // 그 적 근처의 가장 가까운 타일 찾기
-                var targetTile = GetClosestNeighbour(targetCharacter.currentStandingTile);
+                // 해당 적까지의 경로와 거리 계산
+                var pathToCharacter = _pathFinder.FindPath(currentStandingTile, targetTile);
+                var distance = pathToCharacter.Count;
 
-                if (targetCharacter && targetTile)
-                {
-                    // 해당 적까지의 경로와 거리 계산
-                    var pathToCharacter = _pathFinder.FindPath(tile, targetTile, new List<OverlayTile>());
-                    var distance = pathToCharacter.Count;
+                // 거리와 적 체력을 고려한 점수 계산 (음수: 가까울수록, 약할수록 좋음)
+                var senarioValue = -distance - targetCharacter.Hp;
 
-                    // 거리와 적 체력을 고려한 점수 계산 (음수: 가까울수록, 약할수록 좋음)
-                    var senarioValue = -distance - targetCharacter.Hp;
+                //TODO : AttackDistance를 다른걸로 치환해야함
+                //if (distance >= AttackDistance)
+                //{
+                // 타일 효과 고려
+                //if (tile.tileData && tile.tileData.effect)
+                //{
+                //    var tileEffectValue = GetEffectsSenarioValue(
+                //        new List<ScriptableEffect>() { tile.tileData.effect },
+                //        new List<Entity>() { this });
+                //    senarioValue -= tileEffectValue;
+                //}
 
-                    //TODO : AttackDistance를 다른걸로 치환해야함
-                    if (distance >= AttackDistance)
-                    {
-                        // 타일 효과 고려
-                        //if (tile.tileData && tile.tileData.effect)
-                        //{
-                        //    var tileEffectValue = GetEffectsSenarioValue(
-                        //        new List<ScriptableEffect>() { tile.tileData.effect },
-                        //        new List<Entity>() { this });
-                        //    senarioValue -= tileEffectValue;
-                        //}
-
-                        // 유효한 이동 타일이고 더 좋은 점수라면 업데이트
-                        if (tile.grid2DLocation != currentStandingTile.grid2DLocation &&
-                            tile.grid2DLocation != targetCharacter.currentStandingTile.grid2DLocation &&
-                            (senarioValue > senario.senarioValue || !senario.positionTile))
-                            senario = new Senario(senarioValue, null, null, tile, false);
-                    }
-                }
+                // 더 좋은 점수라면 업데이트
+                if ((senarioValue > senario.senarioValue || !senario.positionTile))
+                    senario = new Senario(senarioValue, null, null, targetTile, false);
+                //}
             }
         }
 
@@ -424,7 +416,7 @@ public class Creature : BaseObject
 
         //데미지를 주는건 Creature들끼리 가능
         Creature creature = attacker as Creature;
-        if (creature == null) 
+        if (creature == null)
             return;
 
         float finalDamage = creature.Atk.Value; //TODO - 최종 공격력 계산식 기입
@@ -476,6 +468,25 @@ public class Creature : BaseObject
         return target;
     }
 
+    // 어떤 범위 밖 타일에서 가장 가까운 범위 내 타일을 찾는 함수
+    private OverlayTile GetClosestTileInRange(OverlayTile targetTile, List<OverlayTile> rangeTiles)
+    {
+        OverlayTile closestTile = null;
+        float minDistance = float.MaxValue;
+
+        foreach (var rangeTile in rangeTiles)
+        {
+            float distance = _pathFinder.GetManhattenDistance(targetTile, rangeTile);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestTile = rangeTile;
+            }
+        }
+
+        return closestTile;
+    }
+
     /// <summary>
     /// 죽이기 가장 쉬운 캐릭터를 찾는 함수 (for Strategy AI)
     /// </summary>
@@ -496,7 +507,7 @@ public class Creature : BaseObject
 
                 // 공격 범위 내에 있는 경우 우선 고려
                 //TODO AttackDistance는 데이터시트에 있는 값이 아님
-                if (currentDistance <= player.AttackDistance && 
+                if (currentDistance <= player.AttackDistance &&
                     ((lowestHealth == -1) || (currentHealth <= lowestHealth || isObjectInRange)))
                 {
                     lowestHealth = (int)currentHealth;
@@ -542,6 +553,8 @@ public class Creature : BaseObject
 
         return targetTile;
     }
+
+
 
     /// <summary>
     /// 주어진 타일들 내에 있는 모든 적 캐릭터를 찾음
@@ -602,7 +615,7 @@ public class Creature : BaseObject
     public List<SkillBase> GetUsableSkillList()
     {
         List<SkillBase> canUsableSkillList = new List<SkillBase>();
-        foreach(SkillBase skill in Skills.SkillList)
+        foreach (SkillBase skill in Skills.SkillList)
         {
             //if (skill.IsReadytoUse)
             //{
@@ -610,7 +623,7 @@ public class Creature : BaseObject
             //}
         }
 
-        canUsableSkillList.Add(Skills.DefaultSkill); 
+        canUsableSkillList.Add(Skills.DefaultSkill);
         return canUsableSkillList;
     }
     #endregion
@@ -711,14 +724,14 @@ public class Creature : BaseObject
             else
                 yield return null;
         }
-        
+
     }
 
     protected virtual void UpdateIdle() { }
     protected virtual void UpdateMove() { }
     protected virtual void UpdateAttack() { }
 
-    protected virtual void UpdateSkill() 
+    protected virtual void UpdateSkill()
     {
         if (_coWait != null)
             return;

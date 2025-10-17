@@ -172,7 +172,7 @@ public class PathFinder
     public List<OverlayTile> GetNeightbourOverlayTiles(OverlayTile currentOverlayTile)
     {
         //전체 타일 맵 <Vec2Int, OverlayTile>로 세팅된 딕셔너리
-        var map = Managers.Map.mapDict;
+         var map = Managers.Map.mapDict;
         //인접한 타일들을 저장할 리스트 생성
         List<OverlayTile> neighbours = new List<OverlayTile>();
 
@@ -181,31 +181,31 @@ public class PathFinder
         //right
         Vector2Int locationToCheck = new Vector2Int(currentOverlayTile.gridLocation.x + 1, currentOverlayTile.gridLocation.y);
         //맵에 해당하는 위치의 타일이 존재하면
-        if (searchableTiles.ContainsKey(locationToCheck))
+        if (map.ContainsKey(locationToCheck))
         {
             //인접 리스트에 추가
-            neighbours.Add(searchableTiles[locationToCheck]);
+            neighbours.Add(map[locationToCheck]);
         }
 
         //left
         locationToCheck = new Vector2Int(currentOverlayTile.gridLocation.x - 1, currentOverlayTile.gridLocation.y);
-        if (searchableTiles.ContainsKey(locationToCheck))
+        if (map.ContainsKey(locationToCheck))
         {
-            neighbours.Add(searchableTiles[locationToCheck]);
+            neighbours.Add(map[locationToCheck]);
         }
 
         //top
         locationToCheck = new Vector2Int(currentOverlayTile.gridLocation.x, currentOverlayTile.gridLocation.y + 1);
-        if (searchableTiles.ContainsKey(locationToCheck))
+        if (map.ContainsKey(locationToCheck))
         {
-            neighbours.Add(searchableTiles[locationToCheck]);
+            neighbours.Add(map[locationToCheck]);
         }
 
         //bottom
         locationToCheck = new Vector2Int(currentOverlayTile.gridLocation.x, currentOverlayTile.gridLocation.y - 1);
-        if (searchableTiles.ContainsKey(locationToCheck))
+        if (map.ContainsKey(locationToCheck))
         {
-            neighbours.Add(searchableTiles[locationToCheck]);
+            neighbours.Add(map[locationToCheck]);
         }
 
         //상하좌우 인접 타일 리스트 리턴
