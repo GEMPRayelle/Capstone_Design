@@ -201,7 +201,7 @@ public class TurnManager
                 activeCharacter = currentMonster;
                 // AI 행동 로직 시작 함수
                 Debug.Log($"{activeCharacter.gameObject.name} : Turn Start");
-                Managers.Listener.movementController.activeCharacter = activeCharacter; // movementController에 현재 조종ㅂ할려는 캐릭터 넣기
+                Managers.Controller.movementController.activeCharacter = activeCharacter; // movementController에 현재 조종ㅂ할려는 캐릭터 넣기
                 activeCharacter.StartTurn();
 
             }

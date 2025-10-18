@@ -5,16 +5,8 @@ using System.Linq;
 
 public class ListenerManager
 {
-    public GameObject ControllerContainer;
-    public MouseController mouseController;
-    public MovementController movementController;
     public UI_GameScene GameScene;
-    public void InitController()
-    {
-        ControllerContainer = Managers.Resource.Instantiate("ControllerContainer");
-        mouseController = Util.FindChild<MouseController>(ControllerContainer, "MouseController");
-        movementController = Util.FindChild<MovementController>(ControllerContainer, "MovementController");
-    }
+    
     public void InitGameScene()
     {
         GameScene = Util.FindChild<UI_GameScene>(Managers.UI.Root, "UI_GameScene");
@@ -144,7 +136,7 @@ public class ListenerManager
                 break;
             case "EndPlayerTurn_Listener": // Player endTurn 버튼 눌릴때
                 listener.Response.AddListener(Managers.Turn.OnPlayerTurnEnd); // EndTurnBtn -> TurnManager
-                listener.Response.AddListener(mouseController.EndPlayerEvent); // EndTurnBtn -> MouseController
+                listener.Response.AddListener(Managers.Controller.mouseController.EndPlayerEvent); // EndTurnBtn -> MouseController
                 break;
             case "StartPlayerTurn_Listener": // 플레이어 턴 시작할 때
                 listener.Response.AddListener(GameScene.activeTurnEndBtn); // TurnManager -> EndTurnBtn(UI_GameScene에 있음)
@@ -153,6 +145,18 @@ public class ListenerManager
             case "AllPlayerSpawn_Listener": // 모든 플레이어 소환됬을 때
                 // 턴 매니저 턴 시작? 추가
                 listener.Response.AddListener(GameScene.activeTurnEndBtn); // MouseController -> EndTurnBtn
+                break;
+            case "DespawnCopy_Listener":
+                listener.Response.AddListener(Managers.Controller.spawnController.DespawnCopy);
+                break;
+            case "ShowRangeTiles_Listener":
+                listener.Response.AddListener(Managers.Controller.tileEffectController.ShowRangeTiles);
+                break;
+            case "HighlightSpawnTile_Listener":
+                listener.Response.AddListener(Managers.Controller.tileEffectController.HighlightSpawnTile);
+                break;
+            case "HideAllRangeTiles_Listener":
+                listener.Response.AddListener(Managers.Controller.tileEffectController.HideAllRangeTiles);
                 break;
             // 다른 기본 이벤트 리스너 추가
             default:
@@ -175,6 +179,15 @@ public class ListenerManager
             case "moveFinish_Listener": // 한 캐릭터 이동(행동) 끝났을 때
                 listener.Response.AddListener(Managers.Turn.OnCreatureMoveFinish); // MouseController -> TurnManager
                 Debug.Log($"Set response for {listenerName}");
+                break;
+            case "ChangePlayer_Listener":
+                //listener.Response.AddListener(Managers.Controller.playerMovementController.ChangePlayer);
+                break;
+            case "switchToOrderForSpawn_Listener":
+                listener.Response.AddListener(Managers.Controller.spawnController.SwitchToOrderForSpawn);
+                break;
+            case "InstantiatePlayerByOrder_Listener":
+                listener.Response.AddListener(Managers.Controller.spawnController.InstantiatePlayerByOrder);
                 break;
 
             // 필요 시 추가
@@ -203,8 +216,7 @@ public class ListenerManager
         {
             // 필요 시 추가
             case "MoveAlongPath_Listener":
-                // TODO MovementController - MoveCharacterCommand() 함수 실행되게 (?)
-                listener.Response.AddListener(movementController.MoveCharacterCommand); // Creature -> MovemetController
+                listener.Response.AddListener(Managers.Controller.movementController.MoveCharacterCommand); // Creature -> MovemetController
                 break;
             // 다른 GameObject List 이벤트 리스너 추가
             default:
@@ -224,10 +236,16 @@ public class ListenerManager
             "EndPlayerTurn_Listener",
             "StartPlayerTurn_Listener",
             "AllPlayerSpawn_Listener",
+            "DespawnCopy_Listener",
+            "ShowRangeTiles_Listener",
+            "HighlightSpawnTile_Listener",
+            "HideAllRangeTiles_Listener",
 
             // GameObject_Event
             "moveFinish_Listener",
-
+            "ChangePlayer_Listener",
+            "switchToOrderForSpawn_Listener",
+            "InstantiatePlayerByOrder_Listener",
             // GameObjectList_Event
             "MoveAlongPath_Listener",
             // 필요한 리스너들 추가

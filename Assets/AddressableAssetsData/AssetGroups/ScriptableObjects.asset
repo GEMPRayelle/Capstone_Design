@@ -27,14 +27,50 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d645b8d8062bfa46bec6981e9fad297
+    m_Address: HideAllRangeTiles
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 73d0d739249dde846899594ed90636bb
     m_Address: AllPlayerSpawn
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 749d63050bf1d60408f0ad5f3a5b309b
+    m_Address: HighlightSpawnTile
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7c3c90ea28c2d984ebd249e0aa3958cb
     m_Address: AllmoveFinish
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d4a56fd23f8fce45963c87f37857c1c
+    m_Address: switchToOrderForSpawn
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7da49084f91df9a45bd9ab6c3c5c5f00
+    m_Address: InstantiatePlayerByOrder
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 867990de727c11a41a3db5623b90edd9
+    m_Address: ChangePlayer
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a56654cce1f1fff478b24cdf7916e0b3
+    m_Address: DespawnCopy
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
@@ -47,6 +83,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ce3a75c01db689e46be87731741d67bf
     m_Address: MoveAlongPath
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ddaf5967ddc6c69438eeaddf36379eca
+    m_Address: 'ShowRangeTiles '
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad

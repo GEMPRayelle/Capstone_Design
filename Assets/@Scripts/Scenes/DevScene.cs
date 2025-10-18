@@ -53,7 +53,7 @@ public class DevScene : BaseScene
         #endregion
 
         #region Contents_Init
-        Managers.Listener.InitController();
+        Managers.Controller.InitController();
         Managers.Listener.InitGameScene();
         Managers.Listener.InstantiateListener();
         #endregion

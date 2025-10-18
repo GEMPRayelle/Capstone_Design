@@ -25,12 +25,14 @@ public class Managers : Singleton<Managers>
     private MapManager _map = new MapManager();
     private TurnManager _turn = new TurnManager();
     private ListenerManager _listener = new ListenerManager();
+    private ControllerManager _controller = new ControllerManager();
 
     public static GameManager Game { get { return Instance?._game; } }
     public static ObjectManager Object { get { return Instance?._object; } }
     public static MapManager Map { get { return Instance?._map; } }
     public static TurnManager Turn { get { return Instance?._turn; } }
     public static ListenerManager Listener { get { return Instance?._listener; } }
+    public static ControllerManager Controller { get { return Instance?._controller; } }
     #endregion
 
 }
