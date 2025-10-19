@@ -88,7 +88,7 @@ MonoBehaviour:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ddaf5967ddc6c69438eeaddf36379eca
-    m_Address: 'ShowRangeTiles '
+    m_Address: ShowRangeTiles
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
