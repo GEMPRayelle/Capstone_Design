@@ -47,9 +47,6 @@ public class BaseObject : InitBase
         Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
         //Anim = GetComponent<Animation>();
         SkeletonAnim = GetComponent<SkeletonAnimation>();
-        meshRenderer = GetComponent<MeshRenderer>();
-        materialInstance = Instantiate(meshRenderer.sharedMaterial);
-        meshRenderer.material = materialInstance;
 
         return true;
     }

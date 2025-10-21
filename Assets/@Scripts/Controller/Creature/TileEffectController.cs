@@ -71,7 +71,7 @@ public class TileEffectController : InitBase
     public void HighlightSpawnTile()
     {
         PlayerState.rangeFinderTiles = Managers.Map.GetTilesInRangeNxN( // GetTilesInRangeNxN에서 range는 3이상 홀수가 되어야 함!!! 
-            new Vector2Int(PlayerState.creature.currentStandingTile.gridLocation.x, PlayerState.creature.currentStandingTile.gridLocation.y), 3);
+            new Vector2Int(PlayerState.creature.currentStandingTile.gridLocation.x, PlayerState.creature.currentStandingTile.gridLocation.y), 5);
 
         // 계산된 타일들을 시각적으로 표시
         foreach (var tile in PlayerState.rangeFinderTiles)

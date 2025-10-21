@@ -19,6 +19,7 @@ public class SpellIndicator : BaseObject
 
         _coneSprite = Util.FindChild<SpriteRenderer>(gameObject, "Cone", true);
         _coneSprite.sortingOrder = SortingLayers.SPELL_INDICATOR;
+        Collider.isTrigger = true;
 
         return true;
     }
