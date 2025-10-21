@@ -173,6 +173,7 @@ public class TurnManager
             if (player.IsAlive)
             {
                 //NormalAttack or Skill
+                player.IsMoved = true;
                 player.CreatureState = ECreatureState.Skill;
             }
         }

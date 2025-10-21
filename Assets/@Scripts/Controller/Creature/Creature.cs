@@ -83,6 +83,7 @@ public class Creature : BaseObject
     public CreatureStat AttackSpeedRate;
     public int MovementRange = 3; // 캐릭터의 이동 가능 범위 (타일 수 기준)
     public int SkillRange = 3;
+    public int NormalAttackRange = 1; // 기본 공격 범위
     #endregion
 
     public override bool Init()
@@ -131,6 +132,7 @@ public class Creature : BaseObject
         Speed = CreatureData.speed;
         MovementRange = CreatureData.MovementRange;
         SkillRange = CreatureData.SkillRange;
+        NormalAttackRange = CreatureData.NormalAttackRange;
 
         //A*
         _pathFinder = new PathFinder();
@@ -217,7 +219,7 @@ public class Creature : BaseObject
         // 최적 시나리오에 공격이나 능력 사용이 포함되어 있다면 실행
         if (bestSenario != null && (bestSenario.targetTile != null || bestSenario.targetSkill != null))
         {
-            //Attack();
+            Attack();
             StartCoroutine(EndTurn());
             Debug.Log("Need Attack");
         }
@@ -382,7 +384,7 @@ public class Creature : BaseObject
 
                 // 더 좋은 점수라면 업데이트
                 if ((senarioValue > senario.senarioValue || !senario.positionTile))
-                    senario = new Senario(senarioValue, null, null, targetTile, false);
+                    senario = new Senario(senarioValue, null, null, targetTile, false, null);
                 //}
             }
         }
@@ -439,6 +441,12 @@ public class Creature : BaseObject
     public override void OnDead(BaseObject attacker, SkillBase skill)
     {
         base.OnDead(attacker, skill);
+    }
+
+    public void Attack()
+    {
+        Target = bestSenario.targetCharacter;
+        CreatureState = ECreatureState.Skill;
     }
 
     /// <summary>
@@ -673,8 +681,8 @@ public class Creature : BaseObject
             //타겟을 향한 최단 거리
             var closestDistance = _pathFinder.GetManhattenDistance(position, targetCharacter.currentStandingTile);
 
-            //공격 범위 내에 있고, 타겟과 같은 타일에 있지 않은지 확인
-            if (closestDistance <= SkillRange && position != targetCharacter)
+            //공격 범위 내에 있고, 타겟과 같은 타일에 있지 않은지 확인, 일단은 NormalAttack 범위로 체크
+            if (closestDistance <= NormalAttackRange && position != targetCharacter)
             {
                 // 타겟 근처의 가장 가까운 타일 찾기
                 var targetTile = GetClosestNeighbour(targetCharacter.currentStandingTile);
@@ -683,7 +691,7 @@ public class Creature : BaseObject
                 var senarioValue = 0;
                 senarioValue += (int)Atk.Value + (MovementRange - closestDistance);
 
-                return new Senario(senarioValue, null, targetCharacter.currentStandingTile, position, true);
+                return new Senario(senarioValue, null, targetCharacter.currentStandingTile, position, true, targetCharacter);
             }
         }
 
@@ -789,6 +797,9 @@ public class Creature : BaseObject
     {
         yield return new WaitForSeconds(seconds);
         _coWait = null;
+
+        if (CreatureState == ECreatureState.Skill) // 스킬 모션 한번만 실행되게
+            CreatureState = ECreatureState.Idle;
     }
 
     protected void CancleWait()

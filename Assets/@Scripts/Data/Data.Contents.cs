@@ -33,6 +33,7 @@ namespace Data
         public float speed;
         public int MovementRange;
         public int SkillRange;
+        public int NormalAttackRange;
     }
     #endregion
 

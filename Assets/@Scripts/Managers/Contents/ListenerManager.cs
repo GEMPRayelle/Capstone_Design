@@ -158,10 +158,6 @@ public class ListenerManager
             case "HideAllRangeTiles_Listener":
                 listener.Response.AddListener(Managers.Controller.tileEffectController.HideAllRangeTiles);
                 break;
-            // 다른 기본 이벤트 리스너 추가
-            default:
-                Debug.LogWarning($"No response defined for basic listener: {listenerName}");
-                break;
         }
     }
 
@@ -196,10 +192,6 @@ public class ListenerManager
             //    Debug.Log($"Set response for {listenerName}");
             //    break;
 
-            // 다른 GameObject 이벤트 리스너 추가
-            default:
-                Debug.LogWarning($"No response defined for GameObject listener: {listenerName}");
-                break;
         }
     }
 
@@ -217,10 +209,6 @@ public class ListenerManager
             // 필요 시 추가
             case "MoveAlongPath_Listener":
                 listener.Response.AddListener(Managers.Controller.movementController.MoveCharacterCommand); // Creature -> MovemetController
-                break;
-            // 다른 GameObject List 이벤트 리스너 추가
-            default:
-                Debug.LogWarning($"No response defined for GameObject List listener: {listenerName}");
                 break;
         }
     }

@@ -24,7 +24,8 @@
       "SkillBId": 0,
       "speed": 1.0,
       "MovementRange": 6,
-      "SkillRange": 3
+      "SkillRange": 3,
+      "NormalAttackRange": 1
     },
     {
       "DropItemId": 400000,
@@ -50,7 +51,8 @@
       "SkillBId": 0,
       "speed": 1.0,
       "MovementRange": 6,
-      "SkillRange": 3
+      "SkillRange": 3,
+      "NormalAttackRange": 1
     },
     {
       "DropItemId": 400000,
@@ -76,7 +78,8 @@
       "SkillBId": 0,
       "speed": 1.0,
       "MovementRange": 6,
-      "SkillRange": 3
+      "SkillRange": 3,
+      "NormalAttackRange": 1
     },
     {
       "DropItemId": 400000,
@@ -102,7 +105,8 @@
       "SkillBId": 0,
       "speed": 1.0,
       "MovementRange": 6,
-      "SkillRange": 3
+      "SkillRange": 3,
+      "NormalAttackRange": 1
     },
     {
       "DropItemId": 400000,
@@ -128,7 +132,8 @@
       "SkillBId": 0,
       "speed": 1.0,
       "MovementRange": 6,
-      "SkillRange": 3
+      "SkillRange": 3,
+      "NormalAttackRange": 1
     },
     {
       "DropItemId": 400000,
@@ -154,7 +159,8 @@
       "SkillBId": 0,
       "speed": 1.0,
       "MovementRange": 6,
-      "SkillRange": 3
+      "SkillRange": 3,
+      "NormalAttackRange": 1
     }
   ]
 }

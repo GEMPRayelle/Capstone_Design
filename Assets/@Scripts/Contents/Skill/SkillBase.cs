@@ -55,7 +55,9 @@ public abstract class SkillBase : InitBase
         float timeScale = 1.0f;
 
         if (Owner.Skills.DefaultSkill == this)
+        {
             Owner.PlayAnimation(0, SkillData.AnimName, false).TimeScale = timeScale;
+        }
         else
             Owner.PlayAnimation(0, SkillData.AnimName, false).TimeScale = 1;
 

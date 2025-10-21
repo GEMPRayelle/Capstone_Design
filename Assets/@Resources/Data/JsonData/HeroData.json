@@ -23,7 +23,8 @@
       "SkillBId": 0,
       "speed": 5.0,
       "MovementRange": 3,
-      "SkillRange": 2
+      "SkillRange": 2,
+      "NormalAttackRange": 3
     },
     {
       "DataId": 201001,
@@ -48,7 +49,8 @@
       "SkillBId": 0,
       "speed": 5.0,
       "MovementRange": 3,
-      "SkillRange": 2
+      "SkillRange": 2,
+      "NormalAttackRange": 1
     },
     {
       "DataId": 201002,
@@ -73,7 +75,8 @@
       "SkillBId": 10011,
       "speed": 5.0,
       "MovementRange": 3,
-      "SkillRange": 2
+      "SkillRange": 2,
+      "NormalAttackRange": 2
     },
     {
       "DataId": 201003,
@@ -98,7 +101,8 @@
       "SkillBId": 10019,
       "speed": 5.0,
       "MovementRange": 3,
-      "SkillRange": 2
+      "SkillRange": 2,
+      "NormalAttackRange": 1
     },
     {
       "DataId": 201004,
@@ -123,7 +127,8 @@
       "SkillBId": 0,
       "speed": 5.0,
       "MovementRange": 3,
-      "SkillRange": 2
+      "SkillRange": 2,
+      "NormalAttackRange": 1
     },
     {
       "DataId": 201020,
@@ -148,7 +153,8 @@
       "SkillBId": 0,
       "speed": 5.0,
       "MovementRange": 3,
-      "SkillRange": 2
+      "SkillRange": 2,
+      "NormalAttackRange": 1
     }
   ]
 }

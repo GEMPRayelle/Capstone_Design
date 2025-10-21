@@ -14,14 +14,15 @@ public class Senario
     public OverlayTile targetTile; //목표 타겟
     public OverlayTile positionTile; //이동할 위치
     public bool useNormalAttack; //기본 공격을 사용할지 여부
-
-    public Senario(float senarioValue, SkillComponent targetSkill, OverlayTile targetTile, OverlayTile positionTile, bool useNormalAttack)
+    public Creature targetCharacter; // normalAttack 또는 1인 스킬의 경우 타겟
+    public Senario(float senarioValue, SkillComponent targetSkill, OverlayTile targetTile, OverlayTile positionTile, bool useNormalAttack, Creature targetCharacter)
     {
         this.senarioValue = senarioValue;
         this.targetSkill = targetSkill;
         this.targetTile = targetTile;
         this.positionTile = positionTile;
         this.useNormalAttack = useNormalAttack;
+        this.targetCharacter = targetCharacter;
     }
 
     public Senario()
@@ -31,5 +32,6 @@ public class Senario
         this.targetTile = null;
         this.positionTile = null;
         this.useNormalAttack = false;
+        this.targetCharacter = null;
     }
 }
