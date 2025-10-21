@@ -242,7 +242,7 @@ public class Creature : BaseObject
         //각 이동 가능한 타일에 대해 시나리오 평가
         foreach (var tile in tileInMovementRange)
         {
-            if (!tile.isBlocked) // 막혀있지 않은 타일만 고려
+            if (!tile.isBlocked || tile == currentStandingTile) // 막혀있지 않은 타일, 자기 자신이 서있는 타일만 고려
             {
                 // 해당 타일에서의 행동 시나리오 생성
                 var tempSenario = CreateTileSenarioValue(tile);
@@ -284,7 +284,8 @@ public class Creature : BaseObject
         //이동할 필요가 없고 공격 가능한 경우 즉시 공격
         if (path.Count == 0 && bestSenario.targetTile != null)
         {
-            CreatureState = ECreatureState.Skill;
+            Attack();
+            StartCoroutine(EndTurn());
         }
         else
         {
@@ -443,10 +444,12 @@ public class Creature : BaseObject
         base.OnDead(attacker, skill);
     }
 
+    // 공격을 위해 사용하는 함수
     public void Attack()
     {
-        Target = bestSenario.targetCharacter;
-        CreatureState = ECreatureState.Skill;
+        Target = bestSenario.targetCharacter; // 타겟 설정
+        CreatureState = ECreatureState.Skill; 
+        IsMoved = true; // TODO : IsActed 처럼 쓰고 있는데 따로 나눌지 아니면 플레이어처럼 이동 + 행동을 지금처럼 IsMoved로 관리할지
     }
 
     /// <summary>
@@ -680,9 +683,8 @@ public class Creature : BaseObject
         {
             //타겟을 향한 최단 거리
             var closestDistance = _pathFinder.GetManhattenDistance(position, targetCharacter.currentStandingTile);
-
             //공격 범위 내에 있고, 타겟과 같은 타일에 있지 않은지 확인, 일단은 NormalAttack 범위로 체크
-            if (closestDistance <= NormalAttackRange && position != targetCharacter)
+            if (closestDistance <= NormalAttackRange && position != targetCharacter.currentStandingTile)
             {
                 // 타겟 근처의 가장 가까운 타일 찾기
                 var targetTile = GetClosestNeighbour(targetCharacter.currentStandingTile);
