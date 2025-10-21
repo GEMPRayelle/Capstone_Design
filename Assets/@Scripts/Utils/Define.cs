@@ -13,6 +13,7 @@ public static class Define
         TitleScene,
         GameScene,
         DevScene,
+        DormitoryScene,
     }
 
     //UI 이벤트 타입
@@ -59,6 +60,14 @@ public static class Define
         Skill,
         OnDamaged, //CC상태
         Dead
+    }
+
+    public enum ENpcType
+    {
+        None,
+        Communication,
+        StartPosition,
+        Quest,
     }
 
     public enum EJoystickState
@@ -213,6 +222,7 @@ public static class Define
         public const int SKILL_EFFECT = 310;
         public const int PLAYER = 300;
         public const int MONSTER = 300;
+        public const int NPC = 300;
     }
 
     public static class AnimName

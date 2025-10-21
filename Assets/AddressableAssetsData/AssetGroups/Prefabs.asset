@@ -33,6 +33,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1dca60970f84ebf4faf645048ad86e3d
+    m_Address: 00_Dormitory
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 21924fc6c6130d142aee72a79b0012d4
     m_Address: EffectBase
     m_ReadOnly: 0

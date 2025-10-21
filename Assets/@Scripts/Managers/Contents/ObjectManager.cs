@@ -14,6 +14,7 @@ public class ObjectManager
     public HashSet<Player> Players { get; } = new HashSet<Player>();
     public HashSet<Monster> Monsters { get; } = new HashSet<Monster>();
     public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
+    public HashSet<Npc> Npcs { get; } = new HashSet<Npc>();
 
     public HashSet<AttackEffect> attackEffects { get; } = new HashSet<AttackEffect>();
     public HashSet<EffectBase> Effects { get; } = new HashSet<EffectBase>();
@@ -40,6 +41,7 @@ public class ObjectManager
     public Transform ItemHolderRoot { get { return GetRootTransform("@ItemHolders"); } }
     public Transform OverlayTileRoot { get { return GetRootTransform("@OverlayTiles"); } }
     public Transform ListenerRoot { get { return GetRootTransform("@Listeners"); } }
+    public Transform NpcRoot { get { return GetRootTransform("@Npcs"); } }
 
     //각각의 오브젝트들을 모을 Root 오브젝트를 생성
     public Transform GetRootTransform(string name)
@@ -135,7 +137,16 @@ public class ObjectManager
             ItemHolders.Add(itemHolder);
             // 아이템의 setinfo는 소환하는 몬스터의 OnDead에서 구현
         }
-        
+        else if(obj.ObjectType == EObjectType.Npc)
+        {
+            obj.transform.parent = NpcRoot;
+
+            Npc npc = go.GetOrAddComponent<Npc>();
+            Npcs.Add(npc);
+
+            npc.SetInfo(templateId);
+        }
+
         //오브젝트를 스폰하고 그 T타입에 obj를 리턴
         return obj as T;
     }
@@ -172,6 +183,11 @@ public class ObjectManager
         {
             ItemHolder itemHolder = obj as ItemHolder;
             ItemHolders.Remove(itemHolder);
+        }
+        else if (obj.ObjectType == EObjectType.Npc)
+        {
+            Npc npc = obj as Npc;
+            Npcs.Remove(npc);
         }
 
         Managers.Resource.Destroy(obj.gameObject);
