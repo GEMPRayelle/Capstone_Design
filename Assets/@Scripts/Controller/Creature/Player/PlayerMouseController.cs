@@ -472,25 +472,25 @@ public class PlayerMouseController : InitBase
 
     }
 
-    //public void GetSkillRangeTiles(OverlayTile tile)
-    //{
-    //    // Skill Range 하이라이트 전 타일 원래대로 되돌리기
-    //    ResetSkillRangeTiles();
+    public void GetSkillRangeTiles(OverlayTile tile)
+    {
+        //// Skill Range 하이라이트 전 타일 원래대로 되돌리기
+        //ResetSkillRangeTiles();
 
-    //    // copy가 있다면 위치와 init할거 하기
-    //    UpdateCopyPosition(tile);
+        //// copy가 있다면 위치와 init할거 하기
+        //UpdateCopyPosition(tile);
 
-    //    // 캐릭터 실루엣 위치를 기준으로 이동 가능한 타일 계산
-    //    SkillRangeTiles = Managers.Map.GetTilesInRange(
-    //        new Vector2Int(PlayerState.creature.currentStandingTile.gridLocation.x, PlayerState.creature.currentStandingTile.gridLocation.y),
-    //        PlayerState.creature.SkillRange);
+        //// 캐릭터 실루엣 위치를 기준으로 이동 가능한 타일 계산
+        //PlayerState.SkillRangeTiles = Managers.Map.GetTilesInRange(
+        //    new Vector2Int(PlayerState.creature.currentStandingTile.gridLocation.x, PlayerState.creature.currentStandingTile.gridLocation.y),
+        //    PlayerState.creature.SkillRange);
 
-    //    // 계산된 타일들을 시각적으로 표시
-    //    foreach (var item in SkillRangeTiles)
-    //    {
-    //        item.HighlightTileBlue();
-    //    }
-    //}
+        //// 계산된 타일들을 시각적으로 표시
+        //foreach (var item in SkillRangeTiles)
+        //{
+        //    item.HighlightTileBlue();
+        //}
+    }
     #endregion
 
     #region GameEvent오면 실행 함수

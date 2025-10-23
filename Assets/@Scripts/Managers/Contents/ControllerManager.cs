@@ -34,7 +34,7 @@ public class ControllerManager
         public List<OverlayTile> path;//타일의 이동 경로 정보 리스트
 
         public List<OverlayTile> rangeFinderTiles; // 캐릭터 이동 범위
-        //public List<OverlayTile> SkillRangeTiles; // 캐릭터 공격 범위
+        public List<OverlayTile> SkillRangeTiles; // 캐릭터 공격 범위
         public List<int> spawnablePlayerID; // order가 스폰할 캐릭터들 ID
 
         public SharedPlayerState() 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static Define;
 
@@ -172,7 +173,7 @@ public class TurnManager
         {
             if (player.IsAlive)
             {
-                //NormalAttack or Skill
+                player.PlayerAttack();
                 player.IsMoved = true;
                 player.CreatureState = ECreatureState.Skill;
             }
@@ -181,6 +182,8 @@ public class TurnManager
         // Need delay?
         StartEnemyTurn();
     }
+
+   
 
     //아직 행동하지 않은 Monster(한 마리) 턴 시작
     public void StartEnemyTurn()

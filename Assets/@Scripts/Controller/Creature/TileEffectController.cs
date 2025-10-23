@@ -53,12 +53,12 @@ public class TileEffectController : InitBase
         }
     }
 
-    //private void ResetSkillRangeTiles()
+    //private void ResetSkillRangeTiles() // 스킬 범위 타일 가리기
     //{
     //    foreach (var skillTile in PlayerState.SkillRangeTiles)
     //    {
-    //        if (skillTile.isBlocked || !PlayerState.rangeFinderTiles.Contains(skillTile))
-    //            skillTile.HideTile();
+    //        if (skillTile.isBlocked || !PlayerState.rangeFinderTiles.Contains(skillTile)) // SkillTile이 Blocking이거나 이동 범위에 포함이 안되는 경우
+    //            skillTile.HideTile(); // 숨기기
     //        else
     //            skillTile.ShowTile();
 
