@@ -26,7 +26,7 @@ public class Managers : Singleton<Managers>
     private TurnManager _turn = new TurnManager();
     private ListenerManager _listener = new ListenerManager();
     private ControllerManager _controller = new ControllerManager();
-    private TalkManager _talk = new TalkManager();
+    private CutSceneManager _cutscene = new CutSceneManager();
 
     public static GameManager Game { get { return Instance?._game; } }
     public static ObjectManager Object { get { return Instance?._object; } }
@@ -34,7 +34,7 @@ public class Managers : Singleton<Managers>
     public static TurnManager Turn { get { return Instance?._turn; } }
     public static ListenerManager Listener { get { return Instance?._listener; } }
     public static ControllerManager Controller { get { return Instance?._controller; } }
-    public static TalkManager Talk { get { return Instance?._talk; } }
+    public static CutSceneManager CutScene { get { return Instance?._cutscene; } }
     #endregion
 
 }

@@ -14,6 +14,7 @@ public static class Define
         GameScene,
         DevScene,
         DormitoryScene,
+        TalkingScene
     }
 
     //UI 이벤트 타입
