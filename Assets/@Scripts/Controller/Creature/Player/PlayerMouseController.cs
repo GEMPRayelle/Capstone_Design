@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -24,6 +23,10 @@ public class PlayerMouseController : InitBase
     GameEvent ShowRangeTiles; // 계산된 범위 타일 중 실제 이동 가능 길 보여줄 때 날릴 이벤트
     GameEvent HideAllRangeTiles; // 계산된 범위 타일 가릴 때 날릴 이벤트
 
+    // 직접 호출을 위해 들고 있는 컨트롤러
+    SpawnController SC;
+    TileEffectController TEC;
+    PlayerMovementController PMC;
 
 
 
@@ -48,6 +51,12 @@ public class PlayerMouseController : InitBase
         return true;
     }
 
+    public void SetOtherController()
+    {
+        SC = Managers.Controller.spawnController;
+        TEC = Managers.Controller.tileEffectController;
+        PMC = Managers.Controller.playerMovementController;
+    }
 
     void LateUpdate()
     {
@@ -185,24 +194,22 @@ public class PlayerMouseController : InitBase
         if (PlayerState.creature == null)
             return;
 
-        //blocking되지 않은 타일위에 마우스를 대면
-        if (tile.isBlocked == false)
-        {
-            HandleHoverOnTile(tile);
-        }
+        // Hover 경우 체크
+        HandleHoverOnTile(tile);
 
         // 현재 가리키는 타일이 플레이어 캐릭터가 있다면
-        else
-        {
-            HandleHoverOnBlockedTile();
-        }
+        //else
+        //{
+        //    HandleHoverOnBlockedTile();
+        //}
     }
 
     private void HandleHoverOnTile(OverlayTile tile)
     {
         switch (PlayerControlState)
         {
-            case EPlayerControlState.ControlledFinish: // 이미 이동 완료한 creature을 조종할 때 
+            case EPlayerControlState.ControlledFinish:
+                HandlePreviewMovedCreature(tile); // 이미 이동 완료한 creature을 조종할 때
                 break;
             case EPlayerControlState.ControllingOffensive:
             case EPlayerControlState.ControllingOrderForMove:
@@ -215,17 +222,41 @@ public class PlayerMouseController : InitBase
         }
     }
 
+    private void HandlePreviewMovedCreature(OverlayTile tile)
+    {
+        TEC.ClearArrows();
+        TEC.HideSkillRangeTiles();
+        PlayerState.GetSkillRangeTilesPlayer();
+
+        // 계산된 타일들을 시각적으로 표시
+        TEC.ShowSkillRangeTile();
+
+    }
+
     private void HandleMovementPreview(OverlayTile tile)
     {
         // 기존 화살표 제거
-        Managers.Controller.tileEffectController.ClearArrows();
+        TEC.ClearArrows();
 
-        if (PlayerState.rangeFinderTiles.Contains(tile)) // 범위 안 tile hover
+        if (PlayerState.rangeFinderTiles.Contains(tile) && tile.isBlocked == false) // 범위 안 tile hover, Blocking 되지않은 타일 일 때
         {
-            // 현재 위치에서 클릭한 타일까지 경로 계산
-            Managers.Controller.tileEffectController.ShowPathToTile(tile);
-            // Skill Range Highlights
-            // GetSkillRangeTiles(tile);
+            // 현재 위치에서 마우스가 위치한 타일까지 경로 계산
+            TEC.ShowPathToTile(tile);
+
+            PlayerState.GetInRangeTiles();
+            TEC.ShowRangeTiles();
+
+            // Skill Range 하이라이트 전 타일 원래대로 되돌리기
+            TEC.HideSkillRangeTiles();
+
+            //copy가 있다면 위치와 init할거 하기
+            SC.UpdateCopyPosition(tile);
+
+            // Skill Range 구하기
+            PlayerState.GetSkillRangeTilesCopy();
+
+            // 계산된 타일들을 시각적으로 표시
+            TEC.ShowSkillRangeTile();
         }
         else // 범위 밖 tile hover하면
         {
@@ -246,26 +277,28 @@ public class PlayerMouseController : InitBase
     private void HandleSpawnPreview(OverlayTile tile) // 소환할때 마우스 tile에 hover상태일때 실행
     {
         // 마우스가 이동 범위 내 타일에 있다면
-        if (PlayerState.rangeFinderTiles.Contains(tile))
+        if (PlayerState.rangeFinderTiles.Contains(tile) && tile.isBlocked == false)
         {
             // copy가 있다면 위치와 init할거 하기
-            Managers.Controller.spawnController.HandleSpawnPreviewCopy(tile);
+             SC.HandleSpawnPreviewCopy(tile);
         }
 
-        else if (PlayerState.rangeFinderTiles.Contains(tile) == false) // 범위 밖 
+        else if (PlayerState.rangeFinderTiles.Contains(tile) == false || tile.isBlocked == true) // 범위 밖 
         {
-            Managers.Controller.spawnController.HideCopy();
+           SC.HideCopy();
         }
     }
 
     private void HandleHoverOnBlockedTile()
     {
         // 화살표 제거 (길찾기 방향 표시 X)
-        Managers.Controller.tileEffectController.ClearArrows();
+        TEC.ClearArrows();
         // 실루엣 안보이게 처리
-        Managers.Controller.spawnController.HideCopy();
-        // Skill Range 하이라이트 전 타일 원래대로 되돌리기
-        //ResetSkillRangeTiles();
+        SC.HideCopy();
+        // 스킬 범위 타일 원래대로 되돌리기
+        TEC.HideSkillRangeTiles();
+        // 이동 범위 타일 다시 그려주기
+        TEC.ShowRangeTiles();
     }
     #endregion
 
@@ -342,8 +375,8 @@ public class PlayerMouseController : InitBase
         else // 스폰할 캐릭터가 남았고 order를 클릭했다면
         {
             // 스폰 모드로 전환
-            SwitchToOrderForSpawn.Raise(tile.gameObject);
             PlayerState.creature = player;
+            SwitchToOrderForSpawn.Raise(tile.gameObject);
             PlayerState.creature.CreatureState = ECreatureState.Idle;
             HighlightSpawnTile.Raise();
             isClickedOrder = true;
@@ -362,9 +395,11 @@ public class PlayerMouseController : InitBase
 
         PlayerState.creature = newPlayer;
         PlayerState.creature.CreatureState = ECreatureState.Idle;
+        
         if (PlayerState.creature.IsMoved == false) // 이미 이동한 크리쳐가 아니라면
         {
-            GetInRangeTiles(); // 이동 가능한 타일 계산
+            SC.SwitchCopy(tile.gameObject);
+            PlayerState.GetInRangeTiles(); // 이동 가능한 타일 계산
             ShowRangeTiles.Raise(); // 및 표시
         }
         SetCameraTarget(PlayerState.creature);
@@ -392,7 +427,7 @@ public class PlayerMouseController : InitBase
         HideAllRangeTiles.Raise(); // 소환 하이라이트 타일 숨기기
         PlayerState.creature = null; // 조종하던 order 풀기
 
-        despawnCopy.Raise();
+        //despawnCopy.Raise();
 
         Managers.Turn.Init();
         // 턴 매니저에 턴 시작 알리기 + 턴 종료 버튼 활성화
@@ -429,6 +464,9 @@ public class PlayerMouseController : InitBase
 
             // 바꾸기 전 플레이어 근처 타일 비활성화
             HideAllRangeTiles.Raise();
+
+            PlayerState.ResetRangeTiles();        // 이동 범위 타일 초기화
+            PlayerState.ResetSkillRangeTiles();   // 스킬 범위 타일 초기화
         }
     }
 
@@ -440,64 +478,57 @@ public class PlayerMouseController : InitBase
 
 
 
-    // 범위 밖 타일에서 가장 가까운 범위 내 타일을 찾는 함수
-    private OverlayTile GetClosestTileInRange(OverlayTile targetTile)
-    {
-        if (PlayerState.rangeFinderTiles == null || PlayerState.rangeFinderTiles.Count == 0)
-            return null;
+    ////범위 밖 타일에서 가장 가까운 범위 내 타일을 찾는 함수
+    //private OverlayTile GetClosestTileInRange(OverlayTile targetTile)
+    //{
+    //    if (PlayerState.rangeFinderTiles == null || PlayerState.rangeFinderTiles.Count == 0)
+    //        return null;
 
-        OverlayTile closestTile = null;
-        float minDistance = float.MaxValue;
+    //    OverlayTile closestTile = null;
+    //    float minDistance = float.MaxValue;
 
-        foreach (var rangeTile in PlayerState.rangeFinderTiles)
-        {
-            float distance = Vector2.Distance(targetTile.transform.position, rangeTile.transform.position);
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                closestTile = rangeTile;
-            }
-        }
+    //    foreach (var rangeTile in PlayerState.rangeFinderTiles)
+    //    {
+    //        float distance = Vector2.Distance(targetTile.transform.position, rangeTile.transform.position);
+    //        if (distance < minDistance)
+    //        {
+    //            minDistance = distance;
+    //            closestTile = rangeTile;
+    //        }
+    //    }
 
-        return closestTile;
-    }
+    //    return closestTile;
+    //}
 
-    //캐릭터 기준으로 이동 가능한 타일 계산 및 표시
-    private void GetInRangeTiles()
-    {
-        // 캐릭터의 현재 위치를 기준으로 이동 가능한 타일 계산
-        PlayerState.rangeFinderTiles = Managers.Map.GetTilesInRange(
-            new Vector2Int(PlayerState.creature.currentStandingTile.gridLocation.x, PlayerState.creature.currentStandingTile.gridLocation.y),
-            PlayerState.creature.MovementRange);
-
-    }
-
-    public void GetSkillRangeTiles(OverlayTile tile)
-    {
-        //// Skill Range 하이라이트 전 타일 원래대로 되돌리기
-        //ResetSkillRangeTiles();
-
-        //// copy가 있다면 위치와 init할거 하기
-        //UpdateCopyPosition(tile);
-
-        //// 캐릭터 실루엣 위치를 기준으로 이동 가능한 타일 계산
-        //PlayerState.SkillRangeTiles = Managers.Map.GetTilesInRange(
-        //    new Vector2Int(PlayerState.creature.currentStandingTile.gridLocation.x, PlayerState.creature.currentStandingTile.gridLocation.y),
-        //    PlayerState.creature.SkillRange);
-
-        //// 계산된 타일들을 시각적으로 표시
-        //foreach (var item in SkillRangeTiles)
-        //{
-        //    item.HighlightTileBlue();
-        //}
-    }
     #endregion
 
     #region GameEvent오면 실행 함수
     public void EndPlayerEvent() // 턴 종료 버튼 눌릴 때 실행되는 함수(GameEvent로 동작)
     {
-        CleanupPlayer(); // 현재 플레이어 근처 타일 비활성화
-        PlayerState.creature = null; // 조종하는 플레이어 조종 풀기
+        CleanupPlayer();
+        if (PlayerState.creature != null)
+        {
+            PlayerState.creature = null; // 조종하는 플레이어 조종 풀기
+        }
     }
+
+    // 스킬 토글 알람오면
+    /*
+     * Creatute -> SkillRange set
+		       TEC -> isMoved 따라 Copy or Creature에 스킬 범위 표시
+			SC -> isMoved 따라 Copy Set
+			PMC -> SkillRangeTiles Set
+    즉 HandleHoverOnTile함수에 각 State마다 처리 중
+     case EPlayerControlState.ControlledFinish:  
+                HandleMovementPreviewMovedCreature(tile); // 이미 이동 완료한 creature을 조종할 때
+                break;
+            case EPlayerControlState.ControllingOffensive:
+            case EPlayerControlState.ControllingOrderForMove:
+                HandleMovementPreview(tile); // 공격형 이동할때 or 오더가 스폰을 끝내고 움직일때 로직
+                break;
+    이 경우들 처리
+     */
     #endregion
+
+
 }

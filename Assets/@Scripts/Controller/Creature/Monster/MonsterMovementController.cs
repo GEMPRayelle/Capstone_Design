@@ -6,8 +6,8 @@ using UnityEngine;
 using static Define;
 using static UnityEngine.EventSystems.EventTrigger;
 
-// 일단 적 이동 관리하는 컨트롤러
-public class MovementController : InitBase
+// 적 이동 관리하는 컨트롤러
+public class MonsterMovementController : InitBase
 {
     public Creature activeCharacter; // 현재 턴에 움직이는 캐릭터
 

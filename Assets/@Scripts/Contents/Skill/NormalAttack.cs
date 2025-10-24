@@ -46,7 +46,7 @@ public class NormalAttack : SkillBase
             //기본 근접 공격
             Vector3 Ndir = (Owner.Target.transform.position - Owner.transform.position).normalized;
             Owner.Target.OnDamaged(Owner, this);
-            //MeeleeAttack(Owner, Owner.CenterPosition + Ndir);
+            MeeleeAttack(Owner, Owner.CenterPosition + Ndir);
         }
         //Projectile 데이터가 있다면
         else

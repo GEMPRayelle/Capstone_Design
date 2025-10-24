@@ -219,9 +219,8 @@ public class Creature : BaseObject
         // 최적 시나리오에 공격이나 능력 사용이 포함되어 있다면 실행
         if (bestSenario != null && (bestSenario.targetTile != null || bestSenario.targetSkill != null))
         {
-            Attack();
+            MonsterAttack();
             StartCoroutine(EndTurn());
-            Debug.Log("Need Attack");
         }
         else
             StartCoroutine(EndTurn()); // 그렇지 않으면 턴 종료
@@ -284,7 +283,7 @@ public class Creature : BaseObject
         //이동할 필요가 없고 공격 가능한 경우 즉시 공격
         if (path.Count == 0 && bestSenario.targetTile != null)
         {
-            Attack();
+            MonsterAttack();
             StartCoroutine(EndTurn());
         }
         else
@@ -445,42 +444,13 @@ public class Creature : BaseObject
     }
 
     // 몬스터에서 공격을 위해 사용하는 함수
-    public void Attack()
+    public void MonsterAttack()
     {
         Target = bestSenario.targetCharacter; // 타겟 설정
         CreatureState = ECreatureState.Skill; 
         IsMoved = true; // TODO : IsActed 처럼 쓰고 있는데 따로 나눌지 아니면 플레이어처럼 이동 + 행동을 지금처럼 IsMoved로 관리할지
     }
-
-    public void PlayerAttack()
-    {
-        //NormalAttack or Skill
-        if (Skills.CurrentSkill != Skills.DefaultSkill) // 현재 사용하는 스킬이 있다면
-        {
-            // Skill
-        }
-        else // 준비한 스킬이 없다면
-        {
-            List<Creature> AttackableMonster = new List<Creature>();
-            // NormalAttack
-            foreach (Creature monster in Managers.Turn.activeMonsterList)
-            {
-                if (Managers.Controller.PlayerState.SkillRangeTiles.Contains(monster.currentStandingTile)) 
-                {
-                    AttackableMonster.Add(monster);
-                }
-
-            }
-
-            AttackableMonster.Sort((a, b) => a.Hp.CompareTo(b.Hp)); // 체력 낮은 순으로 sorting
-
-            if (AttackableMonster.Count > 0)
-            {
-                Target = AttackableMonster.First();
-            }
-
-        }
-    }
+    
     /// <summary>
     /// 현재 위치에서 가장 가까운 적 캐릭터를 찾는 함수
     /// </summary>

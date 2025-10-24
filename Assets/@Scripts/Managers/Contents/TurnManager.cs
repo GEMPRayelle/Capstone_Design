@@ -169,13 +169,16 @@ public class TurnManager
 
         CurrentPhase = TurnPhase.PlayerAction;
 
-        foreach (var player in activePlayerList)
+        foreach (var playerCreature in activePlayerList)
         {
-            if (player.IsAlive)
+            if (playerCreature.IsAlive)
             {
+                Player player = playerCreature as Player;
+                Managers.Controller.PlayerState.creature = player; // 임시 코드, TODO 하면서 처리 고쳐야함
+                Managers.Controller.PlayerState.GetSkillRangeTilesPlayer(); // 임시 코드, TODO 하면서 처리 고쳐야함
                 player.PlayerAttack();
-                player.IsMoved = true;
                 player.CreatureState = ECreatureState.Skill;
+                player.IsMoved = true;
             }
         }
 
