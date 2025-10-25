@@ -41,6 +41,14 @@ public class TileEffectController : InitBase
             PlayerState.path[i].SetSprite(arrow);
         }
     }
+
+    public void ShowSkillRangeTile()
+    {
+        foreach (var item in PlayerState.SkillRangeTiles)
+        {
+            item.HighlightTileBlue();
+        }
+    }
     #endregion
 
     #region GameEvent를 통해 실행되는 함수
@@ -51,19 +59,22 @@ public class TileEffectController : InitBase
             tile.HideTile();
             tile.SetSprite(ArrowDirection.None);
         }
+
+        foreach (var tile in PlayerState.SkillRangeTiles)
+        {
+            tile.HideTile();
+            tile.SetSprite(ArrowDirection.None);
+        }
     }
 
-    //private void ResetSkillRangeTiles()
-    //{
-    //    foreach (var skillTile in PlayerState.SkillRangeTiles)
-    //    {
-    //        if (skillTile.isBlocked || !PlayerState.rangeFinderTiles.Contains(skillTile))
-    //            skillTile.HideTile();
-    //        else
-    //            skillTile.ShowTile();
+    public void HideSkillRangeTiles() // 스킬 범위 타일 가리기
+    {
+        foreach (var skillTile in PlayerState.SkillRangeTiles)
+        {
+            skillTile.HideTile();
+        }
+    }
 
-    //    }
-    //}
 
 
 

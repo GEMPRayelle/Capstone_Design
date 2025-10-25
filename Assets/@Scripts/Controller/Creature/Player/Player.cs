@@ -3,6 +3,7 @@ using Newtonsoft.Json.Serialization;
 using Spine.Unity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static Define;
@@ -84,7 +85,7 @@ public class Player : Creature
         Collider.isTrigger = true;
         RigidBody.simulated = true;
 
-        //StartCoroutine(CoUpdateAI());
+        StartCoroutine(CoUpdateAI());
 
         return true;
     }
@@ -202,5 +203,35 @@ public class Player : Creature
         //    float angle = Mathf.Atan2(-dir.x, +dir.y) * 180 / Mathf.PI;
         //    Pivot.eulerAngles = new Vector3(0,0,angle);
         //}
+    }
+
+    public void PlayerAttack()
+    {
+        //NormalAttack or Skill
+        if (Skills.CurrentSkill != Skills.DefaultSkill) // 현재 사용하는 스킬이 있다면
+        {
+            // Skill
+        }
+        else // 준비한 스킬이 없다면
+        {
+            List<Creature> AttackableMonster = new List<Creature>();
+            // NormalAttack
+            foreach (Creature monster in Managers.Turn.activeMonsterList)
+            {
+                if (Managers.Controller.PlayerState.SkillRangeTiles.Contains(monster.currentStandingTile))
+                {
+                    AttackableMonster.Add(monster);
+                }
+
+            }
+
+            AttackableMonster.Sort((a, b) => a.Hp.CompareTo(b.Hp)); // 체력 낮은 순으로 sorting
+
+            if (AttackableMonster.Count > 0)
+            {
+                Target = AttackableMonster.First();
+            }
+
+        }
     }
 }

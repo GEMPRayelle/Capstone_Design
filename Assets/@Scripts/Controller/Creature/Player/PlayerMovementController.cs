@@ -78,6 +78,8 @@ public class PlayerMovementController : InitBase // 플레이어 이동 관리�
             PlayerState.isMoving = false; // 이동 종료
             PlayerState.creature.CreatureState = ECreatureState.Idle;
             PlayerState.creature.IsMoved = true;
+            Managers.Controller.spawnController.DespawnCopy();
+            PlayerState.ResetRangeTiles();
             RaiseMoveFinishEvent(); // 캐릭터 하나 이동했을 때 보내는 event
         }
     }
