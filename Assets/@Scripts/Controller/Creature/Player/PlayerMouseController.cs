@@ -11,17 +11,20 @@ public class PlayerMouseController : InitBase
     private SharedPlayerState PlayerState; // Controller들이 공유하는 데이터
  
     //GameEvent
-    GameEvent AllPlayerSpawn; // 모든 플레이어 스폰 될 때 Raise
+    GameEvent AllPlayerSpawn; // 모든 플레이어 스폰 될 때 Raise, MouseController -> TurnManager
 
     // MouseController -> SpawnController
     GameEvent despawnCopy; // copy 지울때 날릴 이벤트
     GameEventGameObject SwitchToOrderForSpawn; // 스폰모드일 때 Copy 세팅을 위해 날리는 이벤트
     GameEventGameObject InstantiatePlayerByOrder; // 스폰모드일 때 실제 Spawn 함수를 실행하기위해 날리는 이벤트
+    GameEventGameObject SwitchCopy;
 
     // MouseController -> TileEffectController
     GameEvent HighlightSpawnTile; // 스폰 타일 보여줄 때 날릴 이벤트
     GameEvent ShowRangeTiles; // 계산된 범위 타일 중 실제 이동 가능 길 보여줄 때 날릴 이벤트
     GameEvent HideAllRangeTiles; // 계산된 범위 타일 가릴 때 날릴 이벤트
+
+    GameEventGameObject SetCameraTarget;
 
     // 직접 호출을 위해 들고 있는 컨트롤러
     SpawnController SC;
@@ -43,11 +46,13 @@ public class PlayerMouseController : InitBase
         despawnCopy = Managers.Resource.Load<GameEvent>("DespawnCopy");
         SwitchToOrderForSpawn = Managers.Resource.Load<GameEventGameObject>("switchToOrderForSpawn");
         InstantiatePlayerByOrder = Managers.Resource.Load<GameEventGameObject>("InstantiatePlayerByOrder");
+        SwitchCopy = Managers.Resource.Load<GameEventGameObject>("SwitchCopy");
+
 
         HighlightSpawnTile = Managers.Resource.Load<GameEvent>("HighlightSpawnTile");
         ShowRangeTiles = Managers.Resource.Load<GameEvent>("ShowRangeTiles");
         HideAllRangeTiles = Managers.Resource.Load<GameEvent>("HideAllRangeTiles");
-
+        SetCameraTarget = Managers.Resource.Load<GameEventGameObject>("SetCameraTarget");
         return true;
     }
 
@@ -219,6 +224,9 @@ public class PlayerMouseController : InitBase
             case EPlayerControlState.ControllingOrderForSpawn:
                 HandleSpawnPreview(tile); // 오더가 스폰중일때 소환시킬 Playable 캐릭터 실루엣 생성
                 break;
+
+            case EPlayerControlState.None:
+                break;
         }
     }
 
@@ -332,7 +340,9 @@ public class PlayerMouseController : InitBase
         // 감지된 캐릭터가 없다면 && 조종할 플레이어를 변경한 경우가 아니면 == 이동할 경우
         if (changePlayer == false && PlayerState.creature != null && CanMove())
         {
-            StartMovement(hit.tile);
+            UI_MovementPopup MovementPopUp = Managers.UI.ShowPopupUI<UI_MovementPopup>();
+            MovementPopUp.transform.position = hit.tile.transform.position;
+            //StartMovement();
         }
     }
 
@@ -380,7 +390,7 @@ public class PlayerMouseController : InitBase
             PlayerState.creature.CreatureState = ECreatureState.Idle;
             HighlightSpawnTile.Raise();
             isClickedOrder = true;
-            SetCameraTarget(PlayerState.creature);
+            SetCameraTarget.Raise(PlayerState.creature.gameObject);
             return false; // 플레이어는 바뀌었지만 이동하지 않음
         }
     }
@@ -398,11 +408,11 @@ public class PlayerMouseController : InitBase
         
         if (PlayerState.creature.IsMoved == false) // 이미 이동한 크리쳐가 아니라면
         {
-            SC.SwitchCopy(tile.gameObject);
+            SwitchCopy.Raise(tile.gameObject);
             PlayerState.GetInRangeTiles(); // 이동 가능한 타일 계산
             ShowRangeTiles.Raise(); // 및 표시
         }
-        SetCameraTarget(PlayerState.creature);
+        SetCameraTarget.Raise(PlayerState.creature.gameObject);
         Debug.Log($"Current Playable Character : {PlayerState.creature.name}");
     }
 
@@ -434,17 +444,7 @@ public class PlayerMouseController : InitBase
         AllPlayerSpawn.Raise();
     }
 
-    private void StartMovement(OverlayTile tile)
-    {
-        if (PlayerControlState == EPlayerControlState.ControlledFinish) // 이미 이동한 크리쳐라면
-            return; // 무시
-
-        PlayerState.isMoving = true; // 이동 시작
-        tile.HideTile(); // 클릭한 타일 숨김 처리 
-        HideAllRangeTiles.Raise(); // 이동 시작하기 직전 이동 범위 표시 지우기
-
-        PlayerState.creature.CreatureState = ECreatureState.Move;
-    }
+    
     #endregion
 
     #region Helper Methods
@@ -458,7 +458,7 @@ public class PlayerMouseController : InitBase
     {
         // 바꾸기 전 플레이어가 있다면
         if (PlayerState.creature != null)
-        {
+        { 
             // Copy 비활성화
             despawnCopy.Raise();
 
@@ -469,14 +469,6 @@ public class PlayerMouseController : InitBase
             PlayerState.ResetSkillRangeTiles();   // 스킬 범위 타일 초기화
         }
     }
-
-    private void SetCameraTarget(Player target)
-    {
-        CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
-        camera.Target = target;
-    }
-
-
 
     ////범위 밖 타일에서 가장 가까운 범위 내 타일을 찾는 함수
     //private OverlayTile GetClosestTileInRange(OverlayTile targetTile)
@@ -506,12 +498,24 @@ public class PlayerMouseController : InitBase
     public void EndPlayerEvent() // 턴 종료 버튼 눌릴 때 실행되는 함수(GameEvent로 동작)
     {
         CleanupPlayer();
+
         if (PlayerState.creature != null)
         {
             PlayerState.creature = null; // 조종하는 플레이어 조종 풀기
         }
     }
 
+    public void StartMovement()
+    {
+        if (PlayerControlState == EPlayerControlState.ControlledFinish) // 이미 이동한 크리쳐라면
+            return; // 무시
+        Debug.Log("Move Pressed");
+        PlayerState.isMoving = true; // 이동 시작
+        HideAllRangeTiles.Raise(); // 이동 시작하기 직전 이동 범위 표시 지우기
+
+        despawnCopy.Raise();
+        PlayerState.creature.CreatureState = ECreatureState.Move;
+    }
     // 스킬 토글 알람오면
     /*
      * Creatute -> SkillRange set

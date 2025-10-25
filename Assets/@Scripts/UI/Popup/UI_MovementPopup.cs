@@ -21,6 +21,7 @@ public class UI_MovementPopup : UI_Popup
         Text_PopupDescription,
     }
 
+    GameEvent StartMovementPlayer;
 
     public override bool Init()
     {
@@ -39,26 +40,35 @@ public class UI_MovementPopup : UI_Popup
         GetText((int)Texts.Text_PopupName).text = "이동할 위치";
         GetText((int)Texts.Text_PopupDescription).text = $"버튼을 눌러야 이동이 확정됩니다.";
 
+        StartMovementPlayer = Managers.Resource.Load<GameEvent>("StartMovementPlayer");
+
         return true;
     }
 
     void OnClickCloseArea(PointerEventData evt)
     {
+        evt.Use();
         Managers.UI.ClosePopupUI(this);
     }
 
     void OnClickMovementButton(PointerEventData evt)
     {
+        evt.Use();
         Debug.Log("OnClickMovementButton");
+        StartMovementPlayer.Raise();
+        Managers.UI.ClosePopupUI(this);
+
     }
 
     void OnClickSkillButton(PointerEventData evt)
     {
+        evt.Use();
         Debug.Log("OnClickSKillButton");
     }
 
     void OnClickCloseButton(PointerEventData evt)
     {
+        evt.Use();
         Managers.UI.ClosePopupUI(this);
     }
 }

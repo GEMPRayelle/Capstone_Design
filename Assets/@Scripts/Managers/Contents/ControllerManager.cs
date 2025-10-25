@@ -10,6 +10,7 @@ public class ControllerManager
     public SpawnController spawnController;
     public TileEffectController tileEffectController;
     public PlayerMouseController mouseController;
+    public CameraController cameraController;
     public SharedPlayerState PlayerState;
 
     public void InitController()
@@ -22,6 +23,7 @@ public class ControllerManager
         spawnController = Util.FindChild<SpawnController>(ControllerContainer, "SpawnController");
         tileEffectController = Util.FindChild<TileEffectController>(ControllerContainer, "TileEffectController");
         mouseController = Util.FindChild<PlayerMouseController>(ControllerContainer, "MouseController");
+        cameraController = Camera.main.GetComponent<CameraController>();
 
         mouseController.SetOtherController();
     }

@@ -1,9 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static Define;
 
@@ -57,6 +54,9 @@ public class TurnManager
     GameEvent startPlayerTurn; // TurnManager -> EndTurnBtn(UI_GameScene에 있음)
     GameEvent AllmoveFinishEvent; // 당장은 연결 함수 X
 
+    GameEventGameObject SetCameraTarget;
+
+
     public List<Creature> activePlayerList = new List<Creature>(); //Map상에서 배치된 플레이어 캐릭터들 리스트
     public List<Creature> activeMonsterList = new List<Creature>(); //Map상에서 배치된 플레이어 캐릭터들 리스트
 
@@ -93,6 +93,8 @@ public class TurnManager
         //startNewCharacterTurn = Managers.Resource.Load<GameEventGameObject>("StartPlayerTurn");
         startPlayerTurn = Managers.Resource.Load<GameEvent>("StartPlayerTurn");
         AllmoveFinishEvent = Managers.Resource.Load<GameEvent>("AllmoveFinish");
+
+        SetCameraTarget = Managers.Resource.Load<GameEventGameObject>("SetCameraTarget");
     }
 
     //전투 시작전 초기 전투 정보 초기화
@@ -174,13 +176,19 @@ public class TurnManager
             if (playerCreature.IsAlive)
             {
                 Player player = playerCreature as Player;
-                Managers.Controller.PlayerState.creature = player; // 임시 코드, TODO 하면서 처리 고쳐야함
-                Managers.Controller.PlayerState.GetSkillRangeTilesPlayer(); // 임시 코드, TODO 하면서 처리 고쳐야함
-                player.PlayerAttack();
-                player.CreatureState = ECreatureState.Skill;
+                Managers.Controller.PlayerState.creature = player; // 임시 코드, TODO 하면서 처리 고쳐야함. 아마 공격 UI 생기면 고쳐질 것
+                Managers.Controller.PlayerState.GetSkillRangeTilesPlayer(); // 임시 코드, TODO 하면서 처리 고쳐야함. 이것때문에 EndPlayerEvent함수에서
+                // creature가 이상한걸로 초기화되는 버그 발생함 반드시 고칠것
+                player.PlayerAttack(); // 플레이어 공격함수(타겟 찾기)
+
+                if (player.Target != null)
+                    player.CreatureState = ECreatureState.Skill;
+
                 player.IsMoved = true;
             }
         }
+
+        Managers.Controller.PlayerState.creature = null; // 역시 TODO 삭제
 
         // Need delay?
         StartEnemyTurn();
@@ -209,12 +217,15 @@ public class TurnManager
                 // AI 행동 로직 시작 함수
                 Debug.Log($"{activeCharacter.gameObject.name} : Turn Start");
                 Managers.Controller.movementController.activeCharacter = activeCharacter; // movementController에 현재 조종ㅂ할려는 캐릭터 넣기
+                SetCameraTarget.Raise(activeCharacter.gameObject);
                 activeCharacter.StartTurn();
 
             }
         }
            
     }
+
+
 
     //턴 종료시 추가 턴 처리
     public void StartExtraTurn() 

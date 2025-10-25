@@ -49,7 +49,7 @@ public class UI_TitleScene : UI_Scene
         //비동기로 로딩이 완료되면 그 다음 넣어주는 콜백 함수를 통해 이 함수가 실행되므로 인해 완료 통보를 받는것
         Managers.Resource.LoadAllAsync<Object>("PreLoad", (key, count, totalCount) =>
         {
-            Debug.Log($"{key} {count}/{totalCount}");
+            // Debug.Log($"{key} {count}/{totalCount}");
 
             if (count == totalCount)
             {

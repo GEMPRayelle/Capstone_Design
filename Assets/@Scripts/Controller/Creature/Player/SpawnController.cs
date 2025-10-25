@@ -98,7 +98,6 @@ public class SpawnController : InitBase
         // TODO 실루엣 처리
         player.GetComponent<CircleCollider2D>().enabled = false;
         Destroy(player.GetComponent<Rigidbody2D>());
-        player.CreatureState = ECreatureState.Skill;
         player.gameObject.SetActive(false);
         return player;
     }
@@ -111,7 +110,6 @@ public class SpawnController : InitBase
         // TODO 실루엣 처리
         player.GetComponent<CircleCollider2D>().enabled = false;
         Destroy(player.GetComponent<Rigidbody2D>());
-        player.CreatureState = ECreatureState.Skill;
         player.gameObject.SetActive(false);
         return player;
     }

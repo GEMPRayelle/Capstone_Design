@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Listener
   m_GUID: 1ceaaa2ef64adda44ad04d70a9cc227c
   m_SerializeEntries:
+  - m_GUID: 16bfd3e9792579b4387ae316e3caa308
+    m_Address: StartMovementPlayer_Listener
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1bc7a34f2b08a344487651e3ecd79c05
     m_Address: moveFinish_Listener
     m_ReadOnly: 0
@@ -47,6 +53,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5bd910686b8b4134b8840469cd44aa45
     m_Address: MoveAlongPath_Listener
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 60b08285efe2ba146aefe24c4705483e
+    m_Address: SwitchCopy_Listener
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
@@ -89,6 +101,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c358585a92fc73840a26d30cd8330afe
     m_Address: EndTurn_Listener
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: daa8344b55e761e44bf65da4830a8633
+    m_Address: SetCameraTarget_Listener
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad

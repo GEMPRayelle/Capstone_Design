@@ -42,7 +42,6 @@ public class PlayerMovementController : InitBase // 플레이어 이동 관리�
         // 경로가 없거나, 이동중이 아닌경우
         else if ((PlayerState.path.Count == 0 || !PlayerState.isMoving) && PlayerState.creature != null)
         {
-            PlayerState.creature.CreatureState = ECreatureState.Idle;
             //foreach (var tile in rangeFinderTiles) 왜 넣었었지?
             //{
             //    tile.ShowTile();
@@ -78,8 +77,9 @@ public class PlayerMovementController : InitBase // 플레이어 이동 관리�
             PlayerState.isMoving = false; // 이동 종료
             PlayerState.creature.CreatureState = ECreatureState.Idle;
             PlayerState.creature.IsMoved = true;
-            Managers.Controller.spawnController.DespawnCopy();
             PlayerState.ResetRangeTiles();
+
+
             RaiseMoveFinishEvent(); // 캐릭터 하나 이동했을 때 보내는 event
         }
     }

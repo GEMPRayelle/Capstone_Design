@@ -135,8 +135,8 @@ public class ListenerManager
                 listener.Response.AddListener(Managers.Turn.EndTurn); // Creature -> TurnManager
                 break;
             case "EndPlayerTurn_Listener": // Player endTurn 버튼 눌릴때
-                listener.Response.AddListener(Managers.Turn.OnPlayerTurnEnd); // EndTurnBtn -> TurnManager
                 listener.Response.AddListener(Managers.Controller.mouseController.EndPlayerEvent); // EndTurnBtn -> MouseController
+                listener.Response.AddListener(Managers.Turn.OnPlayerTurnEnd); // EndTurnBtn -> TurnManager
                 break;
             case "StartPlayerTurn_Listener": // 플레이어 턴 시작할 때
                 listener.Response.AddListener(GameScene.activeTurnEndBtn); // TurnManager -> EndTurnBtn(UI_GameScene에 있음)
@@ -157,6 +157,9 @@ public class ListenerManager
                 break;
             case "HideAllRangeTiles_Listener":
                 listener.Response.AddListener(Managers.Controller.tileEffectController.HideAllRangeTiles);
+                break;
+            case "StartMovementPlayer_Listener":
+                listener.Response.AddListener(Managers.Controller.mouseController.StartMovement);
                 break;
         }
     }
@@ -185,7 +188,12 @@ public class ListenerManager
             case "InstantiatePlayerByOrder_Listener":
                 listener.Response.AddListener(Managers.Controller.spawnController.InstantiatePlayerByOrder);
                 break;
-
+            case "SetCameraTarget_Listener":
+                listener.Response.AddListener(Managers.Controller.cameraController.SetCameraTarget);
+                break;
+            case "SwitchCopy_Listener":
+                listener.Response.AddListener(Managers.Controller.spawnController.SwitchCopy);
+                break;
             // 필요 시 추가
             //case "playerSpawn_Listener":
             //    listener.Response.AddListener(Managers.Object.SetPlayerListenerResponse);
@@ -208,7 +216,7 @@ public class ListenerManager
         {
             // 필요 시 추가
             case "MoveAlongPath_Listener":
-                listener.Response.AddListener(Managers.Controller.movementController.MoveCharacterCommand); // Creature -> MovemetController
+                listener.Response.AddListener(Managers.Controller.movementController.MoveCharacterCommand); // Monster(코드로는 Creature) -> MovemetController
                 break;
         }
     }
@@ -228,12 +236,15 @@ public class ListenerManager
             "ShowRangeTiles_Listener",
             "HighlightSpawnTile_Listener",
             "HideAllRangeTiles_Listener",
+            "StartMovementPlayer_Listener",
 
             // GameObject_Event
             "moveFinish_Listener",
             "ChangePlayer_Listener",
             "switchToOrderForSpawn_Listener",
             "InstantiatePlayerByOrder_Listener",
+            "SetCameraTarget_Listener",
+            "SwitchCopy_Listener",
             // GameObjectList_Event
             "MoveAlongPath_Listener",
             // 필요한 리스너들 추가

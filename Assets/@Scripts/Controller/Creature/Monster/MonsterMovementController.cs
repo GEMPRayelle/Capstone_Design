@@ -74,7 +74,6 @@ public class MonsterMovementController : InitBase
         {
             ResetMovementManager();
 
-
             //if (actionCompleted)
             //    actionCompleted.Raise();
 
@@ -105,7 +104,7 @@ public class MonsterMovementController : InitBase
         if (activeCharacter)
         {
             isMoving = true;
-
+            activeCharacter.CreatureState = ECreatureState.Move;
             if (pathToFollow.Count > 0)
                 path = pathToFollow.Select(x => x.GetComponent<OverlayTile>()).ToList();
         }

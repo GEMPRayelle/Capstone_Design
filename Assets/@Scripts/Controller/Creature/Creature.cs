@@ -175,6 +175,7 @@ public class Creature : BaseObject
         }
     }
 
+
     #region Turn-Based
     /// <summary>
     /// AI 턴 시작 시 호출되는 메서드
@@ -194,7 +195,8 @@ public class Creature : BaseObject
     /// <returns></returns>
     private IEnumerator EndTurn()
     {
-        yield return new WaitForSeconds(0.25f);
+
+        yield return new WaitUntil(() => CreatureState == ECreatureState.Idle);
 
         // 타일 색상 초기화
         //OverlayController.Instance.ClearTiles();
@@ -213,6 +215,8 @@ public class Creature : BaseObject
     public void CharacterMoved()
     {
         IsMoved = true;
+
+        CreatureState = ECreatureState.Idle;
         // 이동 로그 기록 (그리드 좌표 포함)
         Debug.Log(gameObject.name + ": Moved To " + bestSenario.positionTile.grid2DLocation);
 

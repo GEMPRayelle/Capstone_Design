@@ -140,10 +140,10 @@ public class Player : Creature
             CreatureState = ECreatureState.Move;
             return;
         }
-        
-        //TODO 나중에 조이스틱으로 움직이려고 할때 수정이 필요함 (Grid 이동때문에 임시 주석처리)
-        if (_moveDir == Vector2.zero) // 조이스틱으로 움직이지않으면 
-            CreatureState = ECreatureState.Idle; // Idle 상태
+
+        //TODO 나중에 조이스틱으로 움직이려고 할때 수정이 필요함(Grid 이동때문에 임시 주석처리)
+        //if (_moveDir == Vector2.zero) // 조이스틱으로 움직이지않으면 
+        //    CreatureState = ECreatureState.Idle; // Idle 상태
     }
 
     protected override void UpdateSkill()
