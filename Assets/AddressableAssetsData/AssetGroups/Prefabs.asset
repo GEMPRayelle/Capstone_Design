@@ -40,7 +40,7 @@ MonoBehaviour:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1dca60970f84ebf4faf645048ad86e3d
-    m_Address: 00_Dormitory
+    m_Address: Dormitory
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad

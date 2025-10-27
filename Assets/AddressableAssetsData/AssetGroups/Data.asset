@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0a6cdbb53df9e2749ad40c007e18cc0a
+    m_Address: DormitoryCollision
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0cd7437e03c31264795085e26d523440
     m_Address: HeroData
     m_ReadOnly: 0

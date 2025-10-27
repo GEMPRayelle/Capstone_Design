@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -9,7 +10,7 @@ using UnityEngine;
 /// - 전역 설정 값 제공 (타이핑 속도, 자동 재생 등)
 /// - 다른 스크립트에서 접근 가능한 중앙 인터페이스
 /// </summary>
-public class CutSceneManager 
+public class CutSceneManager : MonoBehaviour
 {
     // ==================== 👥 캐릭터 관리 ====================
 
@@ -79,7 +80,6 @@ public class CutSceneManager
     /// </summary>
     public void Init()
     {
-
         // 2. 모든 캐릭터 프리팹을 인스턴스화하여 오브젝트 풀 생성
         InitCharacters();
 
@@ -90,8 +90,16 @@ public class CutSceneManager
         InitCutscenes(currentCutscene);
     }
 
-    // ==================== 👤 캐릭터 초기화 ====================
+    // TODO -> Inspector에 넣을 오브젝트들 매니저가 로드될때 바로 실행
+    private void LoadAsset()
+    {
+        GameObject gameObject = Managers.Resource.Load<GameObject>("ff");
 
+        //_cutscenes.Add(Managers.Resource.Load<CutScene>("CutScene")); //리스트
+        guiPanel = Managers.Resource.Load<GameObject>("CutSceneGUI");
+    }
+
+    // ==================== 👤 캐릭터 초기화 ====================
     /// <summary>
     /// 모든 캐릭터 프리팹을 인스턴스화하여 오브젝트 풀 생성
     /// 
