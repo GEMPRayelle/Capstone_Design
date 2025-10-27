@@ -212,6 +212,7 @@ public class Player : Creature
 
     public void PlayerAttack()
     {
+        GetSkillRangeTilesPlayer(); // 실제 공격 전 공격 범위 구하기
         //NormalAttack or Skill
         if (Skills.CurrentSkill != Skills.DefaultSkill) // 현재 사용하는 스킬이 있다면
         {
@@ -223,7 +224,7 @@ public class Player : Creature
             // NormalAttack
             foreach (Creature monster in Managers.Turn.activeMonsterList)
             {
-                if (Managers.Controller.PlayerState.SkillRangeTiles.Contains(monster.currentStandingTile))
+                if (SkillRangeTiles.Contains(monster.currentStandingTile))
                 {
                     AttackableMonster.Add(monster);
                 }

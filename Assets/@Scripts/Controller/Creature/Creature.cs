@@ -29,6 +29,9 @@ public class Creature : BaseObject
     protected Senario bestSenario; //현재 턴에서 실행할 최적의 시나리오
     protected List<OverlayTile> path; //현재 계산된 최적의 이동 경로
 
+    public List<OverlayTile> MovementRangeTiles; // 캐릭터 이동 범위
+    public List<OverlayTile> SkillRangeTiles; // 캐릭터 공격 범위
+
     protected ECreatureState _creatureState = ECreatureState.None;
     public virtual ECreatureState CreatureState
     {
@@ -136,6 +139,10 @@ public class Creature : BaseObject
 
         //A*
         _pathFinder = new PathFinder();
+
+        //Tiles
+        MovementRangeTiles = new List<OverlayTile>();
+        SkillRangeTiles = new List<OverlayTile>();
 
         //Event
         endTurn = Managers.Resource.Load<GameEvent>("EndTurn");
@@ -813,5 +820,46 @@ public class Creature : BaseObject
             StopCoroutine(_coWait);
         _coWait = null;
     }
+    #endregion
+
+    #region Tiles
+    public void GetMovementRangeTiles()
+    {
+        // 캐릭터의 현재 위치를 기준으로 이동 가능한 타일 계산
+        if (IsMoved == false) // 이동 가능한 타일이므로 isMoved가 false일때만 계산
+        {
+            MovementRangeTiles = Managers.Map.GetTilesInRange(
+            new Vector2Int(currentStandingTile.gridLocation.x, currentStandingTile.gridLocation.y),
+            MovementRange);
+        }
+
+        else
+        {
+            MovementRangeTiles = new List<OverlayTile>();
+        }
+
+    }
+
+    public void GetSkillRangeTilesPlayer()
+    {
+        SkillRangeTiles = Managers.Map.GetTilesInRange(
+            currentStandingTile,
+            NormalAttackRange, true, true); // TODO 현재 활성화 된 스킬의 AttackRange, 즉 스킬 ui  누르면 SkillRange도 그 스킬에 정보로 변경되게
+    }
+
+    public void GetSkillRangeTilesCopy()
+    {
+        if (Managers.Controller.spawnController.IsCopyValid())
+        {
+            SkillRangeTiles = Managers.Map.GetTilesInRange(
+                Managers.Controller.spawnController.GetCopyStandingTile(),
+                NormalAttackRange, true, true); // TODO
+        }
+
+    }
+
+    public void ResetMovementRangeTiles() {  MovementRangeTiles.Clear(); }
+
+    public void ResetSkillRangeTiles() { SkillRangeTiles.Clear(); }
     #endregion
 }

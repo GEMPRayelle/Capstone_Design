@@ -36,8 +36,7 @@ public class ControllerManager
         public PathFinder _pathFinder; //경로 탐색기
         public List<OverlayTile> path;//타일의 이동 경로 정보 리스트
 
-        public List<OverlayTile> rangeFinderTiles; // 캐릭터 이동 범위
-        public List<OverlayTile> SkillRangeTiles; // 캐릭터 공격 범위
+        
         public List<int> spawnablePlayerID; // order가 스폰할 캐릭터들 ID
 
         public SharedPlayerState() 
@@ -47,8 +46,6 @@ public class ControllerManager
             _pathFinder = new PathFinder();
             path = new List<OverlayTile>();
 
-            rangeFinderTiles = new List<OverlayTile>();
-            SkillRangeTiles = new List<OverlayTile>();
             spawnablePlayerID = new List<int>();
 
             spawnablePlayerID.Add(HERO_WIZARD_ID);
@@ -66,44 +63,24 @@ public class ControllerManager
             return (spawnablePlayerID.Count == 0);
         }
 
-        public void GetInRangeTiles()
+        
+        public void CleanupAllPlayer() // 모든 타일 정보 초기화 함수
         {
-            // 캐릭터의 현재 위치를 기준으로 이동 가능한 타일 계산
-            if (creature.IsMoved == false) // 이동 가능한 타일이므로 isMoved가 false일때만 계산
+            foreach (Creature player in Managers.Turn.activePlayerList) // 플레이어 마다
             {
-                rangeFinderTiles = Managers.Map.GetTilesInRange(
-                new Vector2Int(creature.currentStandingTile.gridLocation.x, creature.currentStandingTile.gridLocation.y),
-                creature.MovementRange);
+                player.GetMovementRangeTiles(); // 이동 범위 타일 구하기
+                player.GetSkillRangeTilesPlayer(); // 스킬 범위 타일 구하기
+                creature = player as Player;
+
+                Managers.Controller.tileEffectController.HideAllRangeTiles(); // 구한 모든 타일 가리기
+
+                player.ResetMovementRangeTiles(); // 이동 타일 초기화
+                player.ResetSkillRangeTiles(); // 스킬 범위 타일 초기화
             }
 
-            else
-            {
-                rangeFinderTiles = new List<OverlayTile>();
-            }
-
+            if (creature != null) // creature은 조종하는 크리쳐기 때문에 반드시 초기화
+                creature = null;
         }
-
-        public void GetSkillRangeTilesPlayer()
-        {
-            SkillRangeTiles = Managers.Map.GetTilesInRange(
-                creature.currentStandingTile,
-                creature.NormalAttackRange, true, true); // TODO 현재 활성화 된 스킬의 AttackRange, 즉 스킬 ui  누르면 SkillRange도 그 스킬에 정보로 변경되게
-        }
-
-        public void GetSkillRangeTilesCopy()
-        {
-            if (Managers.Controller.spawnController.IsCopyValid())
-            {
-                SkillRangeTiles = Managers.Map.GetTilesInRange(
-                    Managers.Controller.spawnController.GetCopyStandingTile(),
-                    creature.NormalAttackRange, true, true); // TODO
-            }
-
-        }
-
-        public void ResetRangeTiles() { rangeFinderTiles.Clear(); }
-
-        public void ResetSkillRangeTiles() { SkillRangeTiles.Clear(); }
         #endregion
     }
 

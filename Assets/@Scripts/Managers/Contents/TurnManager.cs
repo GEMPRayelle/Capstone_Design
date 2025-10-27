@@ -176,10 +176,7 @@ public class TurnManager
             if (playerCreature.IsAlive)
             {
                 Player player = playerCreature as Player;
-                Managers.Controller.PlayerState.creature = player; // 임시 코드, TODO 하면서 처리 고쳐야함. 아마 공격 UI 생기면 고쳐질 것
-                Managers.Controller.PlayerState.GetSkillRangeTilesPlayer(); // 임시 코드, TODO 하면서 처리 고쳐야함. 이것때문에 EndPlayerEvent함수에서
-                // creature가 이상한걸로 초기화되는 버그 발생함 반드시 고칠것
-                player.PlayerAttack(); // 플레이어 공격함수(타겟 찾기)
+                player.PlayerAttack(); // 플레이어 공격함수
 
                 if (player.Target != null)
                     player.CreatureState = ECreatureState.Skill;
@@ -187,8 +184,6 @@ public class TurnManager
                 player.IsMoved = true;
             }
         }
-
-        Managers.Controller.PlayerState.creature = null; // 역시 TODO 삭제
 
         // Need delay?
         StartEnemyTurn();

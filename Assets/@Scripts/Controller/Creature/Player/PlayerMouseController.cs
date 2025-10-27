@@ -234,7 +234,7 @@ public class PlayerMouseController : InitBase
     {
         TEC.ClearArrows();
         TEC.HideSkillRangeTiles();
-        PlayerState.GetSkillRangeTilesPlayer();
+        PlayerState.creature.GetSkillRangeTilesPlayer();
 
         // 계산된 타일들을 시각적으로 표시
         TEC.ShowSkillRangeTile();
@@ -246,12 +246,12 @@ public class PlayerMouseController : InitBase
         // 기존 화살표 제거
         TEC.ClearArrows();
 
-        if (PlayerState.rangeFinderTiles.Contains(tile) && tile.isBlocked == false) // 범위 안 tile hover, Blocking 되지않은 타일 일 때
+        if (PlayerState.creature.MovementRangeTiles.Contains(tile) && tile.isBlocked == false) // 범위 안 tile hover, Blocking 되지않은 타일 일 때
         {
             // 현재 위치에서 마우스가 위치한 타일까지 경로 계산
             TEC.ShowPathToTile(tile);
 
-            PlayerState.GetInRangeTiles();
+            PlayerState.creature.GetMovementRangeTiles();
             TEC.ShowRangeTiles();
 
             // Skill Range 하이라이트 전 타일 원래대로 되돌리기
@@ -261,7 +261,7 @@ public class PlayerMouseController : InitBase
             SC.UpdateCopyPosition(tile);
 
             // Skill Range 구하기
-            PlayerState.GetSkillRangeTilesCopy();
+            PlayerState.creature.GetSkillRangeTilesCopy();
 
             // 계산된 타일들을 시각적으로 표시
             TEC.ShowSkillRangeTile();
@@ -285,13 +285,13 @@ public class PlayerMouseController : InitBase
     private void HandleSpawnPreview(OverlayTile tile) // 소환할때 마우스 tile에 hover상태일때 실행
     {
         // 마우스가 이동 범위 내 타일에 있다면
-        if (PlayerState.rangeFinderTiles.Contains(tile) && tile.isBlocked == false)
+        if (PlayerState.creature.MovementRangeTiles.Contains(tile) && tile.isBlocked == false)
         {
             // copy가 있다면 위치와 init할거 하기
              SC.HandleSpawnPreviewCopy(tile);
         }
 
-        else if (PlayerState.rangeFinderTiles.Contains(tile) == false || tile.isBlocked == true) // 범위 밖 
+        else if (PlayerState.creature.MovementRangeTiles.Contains(tile) == false || tile.isBlocked == true) // 범위 밖 
         {
            SC.HideCopy();
         }
@@ -331,18 +331,18 @@ public class PlayerMouseController : InitBase
         }
 
         // 범위 밖 타일을 클릭했다면
-        else if (PlayerState.creature != null && PlayerState.rangeFinderTiles.Contains(hit.tile) == false)
+        else if (PlayerState.creature != null && PlayerState.creature.MovementRangeTiles.Contains(hit.tile) == false)
         {
-            CleanupPlayer(); // 현재 플레이어 근처 타일 비활성화
+            CleanupPlayer(); // 조종 풀기 전 플레이어(지금 조종하고 있는 플레이어) 근처 타일 비활성화
             PlayerState.creature = null; // 조종하는 플레이어 조종 풀기
         }
 
         // 감지된 캐릭터가 없다면 && 조종할 플레이어를 변경한 경우가 아니면 == 이동할 경우
         if (changePlayer == false && PlayerState.creature != null && CanMove())
         {
-            UI_MovementPopup MovementPopUp = Managers.UI.ShowPopupUI<UI_MovementPopup>();
-            MovementPopUp.transform.position = hit.tile.transform.position;
-            //StartMovement();
+            //UI_MovementPopup MovementPopUp = Managers.UI.ShowPopupUI<UI_MovementPopup>();
+            //MovementPopUp.transform.position = hit.tile.transform.position;
+            StartMovement();
         }
     }
 
@@ -409,7 +409,7 @@ public class PlayerMouseController : InitBase
         if (PlayerState.creature.IsMoved == false) // 이미 이동한 크리쳐가 아니라면
         {
             SwitchCopy.Raise(tile.gameObject);
-            PlayerState.GetInRangeTiles(); // 이동 가능한 타일 계산
+            PlayerState.creature.GetMovementRangeTiles(); // 이동 가능한 타일 계산
             ShowRangeTiles.Raise(); // 및 표시
         }
         SetCameraTarget.Raise(PlayerState.creature.gameObject);
@@ -420,7 +420,7 @@ public class PlayerMouseController : InitBase
 
     private void HandleSpawnClick(OverlayTile tile) // Spawn을 위해 실행되는 함수
     {
-        if (!PlayerState.rangeFinderTiles.Contains(tile) || tile.isBlocked || PlayerState.IsSpawnable() == false) // 범위 밖 타일에서 생성, blocking tile에서 생성은 X
+        if (!PlayerState.creature.MovementRangeTiles.Contains(tile) || tile.isBlocked || PlayerState.IsSpawnable() == false) // 범위 밖 타일에서 생성, blocking tile에서 생성은 X
             return; // 생성할 spawnablePlayer가 없다면 생성 X
 
         InstantiatePlayerByOrder.Raise(tile.gameObject); // 캐릭터 생성
@@ -465,8 +465,8 @@ public class PlayerMouseController : InitBase
             // 바꾸기 전 플레이어 근처 타일 비활성화
             HideAllRangeTiles.Raise();
 
-            PlayerState.ResetRangeTiles();        // 이동 범위 타일 초기화
-            PlayerState.ResetSkillRangeTiles();   // 스킬 범위 타일 초기화
+            PlayerState.creature.ResetMovementRangeTiles(); // 이동 범위 타일 초기화
+            PlayerState.creature.ResetSkillRangeTiles();   // 스킬 범위 타일 초기화
         }
     }
 
@@ -497,7 +497,7 @@ public class PlayerMouseController : InitBase
     #region GameEvent오면 실행 함수
     public void EndPlayerEvent() // 턴 종료 버튼 눌릴 때 실행되는 함수(GameEvent로 동작)
     {
-        CleanupPlayer();
+        PlayerState.CleanupAllPlayer();
 
         if (PlayerState.creature != null)
         {
