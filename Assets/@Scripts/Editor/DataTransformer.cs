@@ -23,6 +23,7 @@ public class DataTransformer : EditorWindow
         ParseExcelDataToJson<EffectDataLoader, EffectData>("Effect");
         ParseExcelDataToJson<DropTableDataLoader, DropTableData_Internal>("DropTable");
         ParseExcelDataToJson<LevelDataLoader, LevelData>("Level");
+        ParseExcelDataToJson<NpcDataLoader, NpcData>("Npc");
         Debug.Log("DataTransformer Completed");
     }
 

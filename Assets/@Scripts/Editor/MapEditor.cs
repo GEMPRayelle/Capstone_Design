@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using static Define;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
+
 
 #if UNITY_EDITOR
 using Newtonsoft.Json;
@@ -117,6 +119,34 @@ public class MapEditor : MonoBehaviour
             customTile.ObjectType = EObjectType.Player;
             string name = $"{data.DataId}_{data.DescriptionTextID}";
             string path = "Assets/@Resources/TileMaps/01_asset/Dev/Players"; //새로 만들 에셋 경로
+            path = Path.Combine(path, $"{name}.Asset");
+
+            if (path == "")
+                continue;
+
+            if (File.Exists(path))
+                continue;
+
+            AssetDatabase.CreateAsset(customTile, path);
+        }
+        #endregion
+
+        #region NPC
+        Dictionary<int, Data.NpcData> Npc = LoadJson<Data.NpcDataLoader, int, Data.NpcData>("NpcData").MakeDict();
+        foreach(var data in Npc.Values)
+        {
+            CustomTile customTile = ScriptableObject.CreateInstance<CustomTile>();
+            customTile.Name = data.DescriptionTextID;
+            string spriteName = data.SpriteName;
+            spriteName = spriteName.Replace(".sprite", "");
+
+            Sprite spr = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/NPC/{spriteName}.png");
+            customTile.sprite = spr;
+            customTile.Name = data.Name;
+            customTile.DataId = data.DataId;
+            customTile.ObjectType = EObjectType.Npc;
+            string name = $"{data.DataId}_{data.Name}";
+            string path = "Assets/@Resources/TileMaps/01_asset/dev/Npc"; //새로 만든 에셋을 넣을 경로
             path = Path.Combine(path, $"{name}.Asset");
 
             if (path == "")

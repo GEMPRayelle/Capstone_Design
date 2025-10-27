@@ -197,7 +197,9 @@ public class MapManager
                     }
                     else if (tile.ObjectType == Define.EObjectType.Npc)
                     {
-
+                        Vector3 worldPos = grid.GetCellCenterWorld(cellPos);
+                        Npc npc = Managers.Object.Spawn<Npc>(worldPos, tile.DataId);
+                        npc.SetCellPos(cellPos, grid, true);
                     }
                 }
             }

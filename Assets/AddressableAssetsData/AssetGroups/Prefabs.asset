@@ -99,6 +99,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: afab09cea2c5d3643909320b9d36a519
+    m_Address: Npc
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ca15f7c94ac186c4483a93d4d11097cd
     m_Address: AttackEffect
     m_ReadOnly: 0

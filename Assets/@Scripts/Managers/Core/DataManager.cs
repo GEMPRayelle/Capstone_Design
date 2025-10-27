@@ -19,6 +19,7 @@ public class DataManager
     public Dictionary<int, Data.DropTableData> DropTableDic { get; private set; } = new Dictionary<int, Data.DropTableData>();
     public Dictionary<int, Data.EffectData> EffectDic { get; private set; } = new Dictionary<int, Data.EffectData>();
     public Dictionary<int, Data.LevelData> LevelDic { get; private set; } = new Dictionary<int, Data.LevelData>();
+    public Dictionary<int, Data.NpcData> NpcDic { get; private set; } = new Dictionary<int, Data.NpcData>();
     #endregion
 
     public void Init()
@@ -30,6 +31,7 @@ public class DataManager
         DropTableDic = LoadJson<Data.DropTableDataLoader, int, Data.DropTableData>("DropTableData").MakeDict();
         EffectDic = LoadJson<Data.EffectDataLoader, int, Data.EffectData>("EffectData").MakeDict();
         LevelDic = LoadJson<Data.LevelDataLoader, int, Data.LevelData>("LevelData").MakeDict();
+        NpcDic = LoadJson<Data.NpcDataLoader, int, Data.NpcData>("NpcData").MakeDict();
     }
 
     /// <summary>

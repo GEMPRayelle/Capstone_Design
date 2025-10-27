@@ -18,6 +18,7 @@ public class DormitoryScene : BaseScene
         {
             //카메라 설정
             CameraController camera = Camera.main.GetOrAddComponent<CameraController>();
+            camera.GetComponent<Camera>().orthographicSize = 7.0f;
         }
         #endregion
 

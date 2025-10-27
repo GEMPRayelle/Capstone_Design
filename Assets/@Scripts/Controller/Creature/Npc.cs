@@ -42,7 +42,8 @@ public class Npc : BaseObject
 
     public void SetInfo(int dataId)
     {
-        //Data = Managers.Data.NpcDict[dataId];
+        Data = Managers.Data.NpcDic[dataId];
+
         gameObject.name = $"{Data.DataId}_{Data.Name}";
 
         #region Spine Animation
@@ -65,7 +66,7 @@ public class Npc : BaseObject
                 //Interaction = new QuestInteraction();
                 break;
             //대화 형식의 타입이면
-            case ENpcType.Communication:
+            case ENpcType.Talking:
                 //Interaction = new Communication();
                 break;
 

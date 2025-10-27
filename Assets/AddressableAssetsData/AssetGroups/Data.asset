@@ -51,6 +51,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ce72cf1e45cb9c4c90792f5390b9409
+    m_Address: NpcData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3c751791bffb1f442a3450cd2182a244
     m_Address: LevelData
     m_ReadOnly: 0

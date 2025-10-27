@@ -66,9 +66,21 @@ public static class Define
     public enum ENpcType
     {
         None,
-        Communication,
         StartPosition,
+        Guild,
+        Portal,
+        Waypoint,
+        BlackSmith,
+        Training,
+        TreasureBox,
+        Dungeon,
         Quest,
+        GoldStorage,
+        WoodStorage,
+        MineralStorage,
+        ExChange,
+        RuneStone,
+        Talking,
     }
 
     public enum EJoystickState
