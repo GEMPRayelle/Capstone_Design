@@ -102,6 +102,11 @@ public class Player : Creature
         RigidBody.linearDamping = 0; //마찰력 설정
     }
 
+    private void Update()
+    {
+        transform.TranslateEx(_moveDir * Time.deltaTime * Speed);
+    }
+
     public override void OnDamaged(BaseObject attacker, SkillBase skill)
     {
         base.OnDamaged(attacker, skill);

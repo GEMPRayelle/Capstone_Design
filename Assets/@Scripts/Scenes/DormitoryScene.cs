@@ -12,7 +12,7 @@ public class DormitoryScene : BaseScene
         SceneType = EScene.DormitoryScene;
 
         //DevScene에서 맵 로딩
-        Managers.Map.LoadMap("00_Dormitory");
+        Managers.Map.LoadMap("Dormitory");
 
         #region Player
         {
@@ -24,7 +24,7 @@ public class DormitoryScene : BaseScene
         #region UI
         {
             Managers.UI.ShowBaseUI<UI_Joystick>();
-            Managers.UI.ShowBaseUI<UI_PointAndClick>();
+            //Managers.UI.ShowBaseUI<UI_PointAndClick>();
             Managers.UI.ShowBaseUI<UI_DormitoryScene>();
         }
         #endregion

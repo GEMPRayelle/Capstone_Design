@@ -71,7 +71,7 @@ public class Creature : BaseObject
 
     #region Stat Property
     public float Hp { get; set; }
-    public float Speed { get; protected set; } = 1.0f;
+    public float Speed { get; protected set; } = 5.0f;
     public CreatureStat MaxHp;
     public CreatureStat Atk;
     public CreatureStat CriRate;
