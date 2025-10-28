@@ -30,13 +30,13 @@ public class Npc : BaseObject
 
     private void Update()
     {
-        if(Interaction != null && !Interaction.CanInteract())
+        if(Interaction != null && Interaction.CanInteract())
         {
-            _ui.gameObject.SetActive(false);
+            _ui.gameObject.SetActive(true);
         }
         else
         {
-            _ui.gameObject.SetActive(true);
+            _ui.gameObject.SetActive(false);
         }
     }
 
@@ -60,16 +60,10 @@ public class Npc : BaseObject
         //실행하고 있는 npc에 따라 처리
         switch (Data.NpcType)
         {
-            //Quest타입이면
-            case ENpcType.Quest:
-                //QuestInteraction을 붙여서
-                //Interaction = new QuestInteraction();
-                break;
             //대화 형식의 타입이면
             case ENpcType.Talking:
-                //Interaction = new Communication();
+                Interaction = new TalkInteraction();
                 break;
-
         }
 
         //초기화하는 부분을 실행

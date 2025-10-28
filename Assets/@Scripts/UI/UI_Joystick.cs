@@ -34,6 +34,10 @@ public class UI_Joystick : UI_Base
         gameObject.BindEvent(OnPointerUp, type: Define.EUIEvent.PointerUp);
         gameObject.BindEvent(OnDrag, type: Define.EUIEvent.Drag);
 
+        //Joystick이 UI화면 전체를 먹고 있는걸 예방하기 위해 Overlay가 아닌 Camera로 세팅
+        GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceCamera;
+        GetComponent<Canvas>().worldCamera = Camera.main;
+
         return true;
     }
 
