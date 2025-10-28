@@ -1,7 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.UI;
-using static Define;
 
 //GameScene에 실질적으로 고정으로 배치될 UI들에 대한 제어를 하는 클래스
 public class UI_GameScene : UI_Scene

@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics.SymbolStore;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -9,7 +11,7 @@ public class PlayerMouseController : InitBase
     private GameObject cursor; // 커서
     private bool isClickedOrder; // Order 캐릭터가 다른 캐릭터 스폰시킬때 클릭된지에 대한 여부
     private SharedPlayerState PlayerState; // Controller들이 공유하는 데이터
- 
+    //private bool isMovePopup; // 이동할지 묻는 팝업 창 사용중인지
     //GameEvent
     GameEvent AllPlayerSpawn; // 모든 플레이어 스폰 될 때 Raise, MouseController -> TurnManager
 
@@ -30,6 +32,11 @@ public class PlayerMouseController : InitBase
     SpawnController SC;
     TileEffectController TEC;
     PlayerMovementController PMC;
+
+    // MouseController을 통해 소환되는 팝업창들
+    UI_ActPopup actPopUp;
+    UI_MovementPopup MovementPopUp;
+
 
 
 
@@ -98,13 +105,16 @@ public class PlayerMouseController : InitBase
         if (PlayerState.creature == null) // 조종중인 크리쳐가 없다면 NONE
             return EPlayerControlState.None;
 
-        if (PlayerState.creature.IsMoved == true) // 이미 조종한 크리쳐를 조종하려 한다면 
+        else if (actPopUp != null || MovementPopUp != null) // 팝업 UI가 있을 땐 클릭, Hover 감지 X
+            return EPlayerControlState.ControlledUI;
+
+        else if (PlayerState.creature.IsMoved == true) // 이미 조종한 크리쳐를 조종하려 한다면 
             return EPlayerControlState.ControlledFinish;
 
         if (PlayerState.creature.PlayerType == EPlayerType.Offensive) // 아직 행동하지않은 공격형 크리쳐를 조종한다면
             return EPlayerControlState.ControllingOffensive;
 
-        if (PlayerState.creature.PlayerType == EPlayerType.Order) // 아직 행동하지않은 오더를 조종한다면
+        else if (PlayerState.creature.PlayerType == EPlayerType.Order) // 아직 행동하지않은 오더를 조종한다면
         {
             return isClickedOrder ? // 오더가 스폰을 시작했다면
                 EPlayerControlState.ControllingOrderForSpawn : // True : 스폰 모드
@@ -213,6 +223,8 @@ public class PlayerMouseController : InitBase
     {
         switch (PlayerControlState)
         {
+            case EPlayerControlState.ControlledUI:
+                break;
             case EPlayerControlState.ControlledFinish:
                 HandlePreviewMovedCreature(tile); // 이미 이동 완료한 creature을 조종할 때
                 break;
@@ -317,6 +329,9 @@ public class PlayerMouseController : InitBase
         if (Input.GetMouseButtonDown(0) == false)
             return;
 
+        if (PlayerControlState == EPlayerControlState.ControlledUI) // UI 조종중일땐 클릭 안먹게
+            return;
+
         bool changePlayer = false; // 조종할 플레이어가 변경될 때 바꼈는지 판별하는 bool
 
         // 플레이어 hit됬는지 검사
@@ -340,9 +355,9 @@ public class PlayerMouseController : InitBase
         // 감지된 캐릭터가 없다면 && 조종할 플레이어를 변경한 경우가 아니면 == 이동할 경우
         if (changePlayer == false && PlayerState.creature != null && CanMove())
         {
-            //UI_MovementPopup MovementPopUp = Managers.UI.ShowPopupUI<UI_MovementPopup>();
-            //MovementPopUp.transform.position = hit.tile.transform.position;
-            StartMovement();
+            MovementPopUp = Managers.UI.ShowPopupUI<UI_MovementPopup>();
+            MovementPopUp.transform.position = hit.tile.transform.position;
+            //StartMovement();
         }
     }
 
@@ -412,11 +427,10 @@ public class PlayerMouseController : InitBase
             PlayerState.creature.GetMovementRangeTiles(); // 이동 가능한 타일 계산
             ShowRangeTiles.Raise(); // 및 표시
         }
+        ShowActPopUp(); // ActPopUp 생성 및 위치 설정
         SetCameraTarget.Raise(PlayerState.creature.gameObject);
         Debug.Log($"Current Playable Character : {PlayerState.creature.name}");
     }
-
-
 
     private void HandleSpawnClick(OverlayTile tile) // Spawn을 위해 실행되는 함수
     {
@@ -444,7 +458,11 @@ public class PlayerMouseController : InitBase
         AllPlayerSpawn.Raise();
     }
 
-    
+    private void ShowActPopUp()
+    {
+        actPopUp = Managers.UI.ShowPopupUI<UI_ActPopup>();
+        actPopUp.transform.position = PlayerState.creature.transform.position + new Vector3(50, 1, 0);
+    }
     #endregion
 
     #region Helper Methods
@@ -512,10 +530,14 @@ public class PlayerMouseController : InitBase
         Debug.Log("Move Pressed");
         PlayerState.isMoving = true; // 이동 시작
         HideAllRangeTiles.Raise(); // 이동 시작하기 직전 이동 범위 표시 지우기
-
         despawnCopy.Raise();
         PlayerState.creature.CreatureState = ECreatureState.Move;
     }
+
+    public void CancelMovement()
+    {
+    }
+
     // 스킬 토글 알람오면
     /*
      * Creatute -> SkillRange set

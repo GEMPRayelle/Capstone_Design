@@ -105,7 +105,8 @@ public static class Define
         ControllingOffensive,
         ControllingOrderForMove,
         ControllingOrderForSpawn,
-        ControlledFinish
+        ControlledFinish,
+        ControlledUI
     }
 
     public enum EPlayerType

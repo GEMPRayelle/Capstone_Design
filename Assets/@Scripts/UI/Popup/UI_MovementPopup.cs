@@ -22,6 +22,7 @@ public class UI_MovementPopup : UI_Popup
     }
 
     GameEvent StartMovementPlayer;
+    GameEvent CancelMovement;
 
     public override bool Init()
     {
@@ -41,13 +42,14 @@ public class UI_MovementPopup : UI_Popup
         GetText((int)Texts.Text_PopupDescription).text = $"버튼을 눌러야 이동이 확정됩니다.";
 
         StartMovementPlayer = Managers.Resource.Load<GameEvent>("StartMovementPlayer");
-
+        CancelMovement = Managers.Resource.Load<GameEvent>("CancelMovement");
         return true;
     }
 
     void OnClickCloseArea(PointerEventData evt)
     {
         evt.Use();
+        CancelMovement.Raise();
         Managers.UI.ClosePopupUI(this);
     }
 
@@ -69,6 +71,7 @@ public class UI_MovementPopup : UI_Popup
     void OnClickCloseButton(PointerEventData evt)
     {
         evt.Use();
+        CancelMovement.Raise();
         Managers.UI.ClosePopupUI(this);
     }
 }

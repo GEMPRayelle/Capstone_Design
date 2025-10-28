@@ -147,19 +147,22 @@ public class ListenerManager
                 listener.Response.AddListener(GameScene.activeTurnEndBtn); // MouseController -> EndTurnBtn
                 break;
             case "DespawnCopy_Listener":
-                listener.Response.AddListener(Managers.Controller.spawnController.DespawnCopy);
+                listener.Response.AddListener(Managers.Controller.spawnController.DespawnCopy); // MouseController -> SpawnController
                 break;
             case "ShowRangeTiles_Listener":
-                listener.Response.AddListener(Managers.Controller.tileEffectController.ShowRangeTiles);
+                listener.Response.AddListener(Managers.Controller.tileEffectController.ShowRangeTiles); // MouseController -> TileEffectController
                 break;
             case "HighlightSpawnTile_Listener":
-                listener.Response.AddListener(Managers.Controller.tileEffectController.HighlightSpawnTile);
+                listener.Response.AddListener(Managers.Controller.tileEffectController.HighlightSpawnTile); // MouseController -> TileEffectController
                 break;
             case "HideAllRangeTiles_Listener":
                 listener.Response.AddListener(Managers.Controller.tileEffectController.HideAllRangeTiles);
                 break;
             case "StartMovementPlayer_Listener":
                 listener.Response.AddListener(Managers.Controller.mouseController.StartMovement);
+                break;
+            case "CancelMovement_Listener":
+                listener.Response.AddListener(Managers.Controller.mouseController.CancelMovement);
                 break;
         }
     }
@@ -237,6 +240,7 @@ public class ListenerManager
             "HighlightSpawnTile_Listener",
             "HideAllRangeTiles_Listener",
             "StartMovementPlayer_Listener",
+            "CancelMovement_Listener",
 
             // GameObject_Event
             "moveFinish_Listener",
