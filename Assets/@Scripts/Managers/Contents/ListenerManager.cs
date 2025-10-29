@@ -150,7 +150,7 @@ public class ListenerManager
                 listener.Response.AddListener(Managers.Controller.spawnController.DespawnCopy); // MouseController -> SpawnController
                 break;
             case "ShowRangeTiles_Listener":
-                listener.Response.AddListener(Managers.Controller.tileEffectController.ShowRangeTiles); // MouseController -> TileEffectController
+                //listener.Response.AddListener(Managers.Controller.tileEffectController.ShowRangeTiles); // MouseController -> TileEffectController
                 break;
             case "HighlightSpawnTile_Listener":
                 listener.Response.AddListener(Managers.Controller.tileEffectController.HighlightSpawnTile); // MouseController -> TileEffectController

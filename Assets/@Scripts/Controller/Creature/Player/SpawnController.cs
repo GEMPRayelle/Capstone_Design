@@ -79,8 +79,6 @@ public class SpawnController : InitBase
         _copy = InstantiateCopyPlayer(tile); // 실루엣 캐릭터 생성
     }
 
-
-    /// 아마 GameEvent로 고쳐야함
     public void SwitchCopy(GameObject go)
     {
         OverlayTile tile = go.GetComponent<OverlayTile>();
@@ -89,7 +87,7 @@ public class SpawnController : InitBase
     }
 
     // Order의 다른 Playable 캐릭터 실루엣 생성
-    private Player InstantiateCopyPlayer(OverlayTile tile) // tile위치에 order가 스폰할 캐릭터 실루엣 생성
+    public Player InstantiateCopyPlayer(OverlayTile tile) // tile위치에 order가 스폰할 캐릭터 실루엣 생성
     {
         if (PlayerState.IsSpawnEnd()) return null;
 
@@ -103,7 +101,7 @@ public class SpawnController : InitBase
     }
 
     // Order의 다른 Playable 캐릭터 실루엣 생성
-    private Player InstantiateCopyPlayer(OverlayTile tile, Player original) // tile위치에 order가 스폰할 캐릭터 실루엣 생성
+    public Player InstantiateCopyPlayer(OverlayTile tile, Player original) // tile위치에 order가 스폰할 캐릭터 실루엣 생성
     {
         Player player = Managers.Object.Spawn<Player>(tile.transform.position, original.DataTemplateID);
         player.currentStandingTile = tile;

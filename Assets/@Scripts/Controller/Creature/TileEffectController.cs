@@ -54,6 +54,8 @@ public class TileEffectController : InitBase
     #region GameEvent를 통해 실행되는 함수
     public void HideAllRangeTiles() // 이동 범위 내 타일 가리기
     {
+        ClearArrows();
+
         foreach (var tile in PlayerState.creature.MovementRangeTiles)
         {
             tile.HideTile();
@@ -74,9 +76,13 @@ public class TileEffectController : InitBase
             skillTile.HideTile();
         }
     }
-
-
-
+    public void HideMovementRangeTiles()
+    {
+        foreach (var moveTile in PlayerState.creature.MovementRangeTiles)
+        {
+            moveTile.HideTile();
+        }
+    }
 
     // Order 캐릭터 주변 스폰 가능한 타일 하이라이트
     public void HighlightSpawnTile() // Order는 처음 이동 타일을 임시적으로 소환타일로 씀
@@ -95,7 +101,7 @@ public class TileEffectController : InitBase
 
     }
 
-    public void ShowRangeTiles() // 이동 범위 내 타일 중 진짜 이동 가능한 타일 보여주는 함수
+    public void ShowMovementRangeTiles() // 이동 범위 내 타일 중 진짜 이동 가능한 타일 보여주는 함수
     {
         foreach (var item in PlayerState.creature.MovementRangeTiles)
         {

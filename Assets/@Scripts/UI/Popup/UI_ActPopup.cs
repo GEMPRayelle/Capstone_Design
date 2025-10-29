@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Playables;
 
 public class UI_ActPopup : UI_Popup
 {
@@ -36,14 +37,17 @@ public class UI_ActPopup : UI_Popup
     void OnClickCloseArea(PointerEventData evt)
     {
         evt.Use();
+        Managers.Controller.mouseController.PlayerControlState = Define.EPlayerControlState.None;
         Managers.UI.ClosePopupUI(this);
     }
 
     void OnClickMoveButton(PointerEventData evt)
     {
         evt.Use();
-        Managers.Controller.mouseController.PressMoveBtn();
-        Debug.Log("OnClickMovementButton");
+        Managers.Controller.spawnController.SwitchCopy(Managers.Controller.PlayerState.creature.currentStandingTile.gameObject); // 일단 조종하는 크리쳐 위에 생성
+        Managers.Controller.PlayerState.creature.GetMovementRangeTiles();
+        Managers.Controller.tileEffectController.ShowMovementRangeTiles();
+        Managers.Controller.mouseController.PlayerControlState = Define.EPlayerControlState.Move; // Move모드로 변경
         Managers.UI.ClosePopupUI(this);
 
     }
@@ -52,10 +56,12 @@ public class UI_ActPopup : UI_Popup
     {
         evt.Use();
         Debug.Log("OnClickAttactButton");
+        Managers.Controller.mouseController.PlayerControlState = Define.EPlayerControlState.Skill;
         Player player = Managers.Controller.PlayerState.creature; 
-        player.Skills.CurrentSkill = player.Skills.DefaultSkill; // 공격 스킬 NormalAttack으로 변경
-        player.Skills.CurrentSkill.SkillData.SkillRange = 5; //player.Skills.DefaultSkill.SkillData.SkillRange;       // 스킬 RANGE 변경 당장은 하드 코딩
-        Managers.Controller.mouseController.ShowSkillRange();
+        player.SkillRange = 5; //player.Skills.DefaultSkill.SkillData.SkillRange;       // 스킬 RANGE 변경 당장은 하드 코딩
+        //Managers.Controller.mouseController.ShowSkillRange();
+        Managers.Controller.PlayerState.creature.GetSkillRangeTilesPlayer();
+        Managers.Controller.tileEffectController.ShowSkillRangeTile();
         Managers.UI.ClosePopupUI(this);
 
     }
@@ -64,6 +70,7 @@ public class UI_ActPopup : UI_Popup
     {
         evt.Use();
         Debug.Log("OnClickSkillButton");
+        Managers.Controller.mouseController.PlayerControlState = Define.EPlayerControlState.Skill;
         Managers.UI.ClosePopupUI(this);
 
     }

@@ -101,12 +101,12 @@ public static class Define
     }
     public enum EPlayerControlState
     {
-        None,
-        ControllingOffensive,
-        ControllingOrderForMove,
-        ControllingOrderForSpawn,
-        ControlledFinish,
-        ControlledUI
+        None, // 조종 X 상태
+        Move, // 이동 명령 대기 중 상태(이동 중 아님)
+        Spawn, // 스폰 중일때
+        Skill, // Skill만 쓸 수 있을 때
+        UI, // UI 소환됬을 때
+
     }
 
     public enum EPlayerType

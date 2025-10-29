@@ -31,7 +31,7 @@ public class ControllerManager
     // Player 관련 Controller들이 공통으로 들고 있는 상태 정보들 저장
     public class SharedPlayerState
     {
-        public Player creature; //현재 생성된 캐릭터 정보
+        public Player creature; //현재 생성된 캐릭터 정보, 절때 MouseController 외부에서 변경해선 안됨
         public bool isMoving; // 이동 중인지
         public PathFinder _pathFinder; //경로 탐색기
         public List<OverlayTile> path;//타일의 이동 경로 정보 리스트
