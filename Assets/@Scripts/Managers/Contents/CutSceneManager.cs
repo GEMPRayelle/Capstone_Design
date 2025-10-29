@@ -13,7 +13,6 @@ using UnityEngine;
 public class CutSceneManager : MonoBehaviour
 {
     // ==================== 👥 캐릭터 관리 ====================
-
     [Header("Character Settings")]
     [Tooltip("컷씬에서 사용할 캐릭터 프리팹 배열")]
     [SerializeField]
@@ -25,7 +24,6 @@ public class CutSceneManager : MonoBehaviour
     CutSceneCharacter[] characters;
 
     // ==================== 🎨 소품(Props) 관리 ====================
-
     [Header("Properties Settings")]
     [Tooltip("컷씬에서 사용할 소품 프리팹 배열")]
     [SerializeField]

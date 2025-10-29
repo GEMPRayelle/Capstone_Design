@@ -16,4 +16,3 @@ public class TransformSetting
     [Tooltip("The scale of the object in the scene (X, Y, Z dimensions).")]
     public Vector3 scale;
 }
-
