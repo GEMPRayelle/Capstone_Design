@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class UI_ActPopup : UI_Popup
+public class UI_SkillListPopUp : UI_Popup
 {
-    enum GameObjects 
+    enum GameObjects
     {
         CloseArea,
     }
@@ -42,7 +42,6 @@ public class UI_ActPopup : UI_Popup
     void OnClickMoveButton(PointerEventData evt)
     {
         evt.Use();
-        Managers.Controller.mouseController.PressMoveBtn();
         Debug.Log("OnClickMovementButton");
         Managers.UI.ClosePopupUI(this);
 
@@ -52,10 +51,6 @@ public class UI_ActPopup : UI_Popup
     {
         evt.Use();
         Debug.Log("OnClickAttactButton");
-        Player player = Managers.Controller.PlayerState.creature; 
-        player.Skills.CurrentSkill = player.Skills.DefaultSkill; // 공격 스킬 NormalAttack으로 변경
-        player.Skills.CurrentSkill.SkillData.SkillRange = 5; //player.Skills.DefaultSkill.SkillData.SkillRange;       // 스킬 RANGE 변경 당장은 하드 코딩
-        Managers.Controller.mouseController.ShowSkillRange();
         Managers.UI.ClosePopupUI(this);
 
     }

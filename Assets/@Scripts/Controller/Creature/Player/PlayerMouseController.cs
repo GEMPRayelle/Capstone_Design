@@ -3,6 +3,7 @@ using System.Diagnostics.SymbolStore;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Playables;
 using static ControllerManager;
 using static Define;
 
@@ -223,10 +224,10 @@ public class PlayerMouseController : InitBase
     {
         switch (PlayerControlState)
         {
-            case EPlayerControlState.ControlledUI:
+            case EPlayerControlState.ControlledUI: // UI 조종중일 때
                 break;
             case EPlayerControlState.ControlledFinish:
-                HandlePreviewMovedCreature(tile); // 이미 이동 완료한 creature을 조종할 때
+                //HandlePreviewMovedCreature(); // 이미 이동 완료한 creature을 조종할 때
                 break;
             case EPlayerControlState.ControllingOffensive:
             case EPlayerControlState.ControllingOrderForMove:
@@ -242,16 +243,7 @@ public class PlayerMouseController : InitBase
         }
     }
 
-    private void HandlePreviewMovedCreature(OverlayTile tile)
-    {
-        TEC.ClearArrows();
-        TEC.HideSkillRangeTiles();
-        PlayerState.creature.GetSkillRangeTilesPlayer();
-
-        // 계산된 타일들을 시각적으로 표시
-        TEC.ShowSkillRangeTile();
-
-    }
+    
 
     private void HandleMovementPreview(OverlayTile tile)
     {
@@ -329,16 +321,22 @@ public class PlayerMouseController : InitBase
         if (Input.GetMouseButtonDown(0) == false)
             return;
 
-        if (PlayerControlState == EPlayerControlState.ControlledUI) // UI 조종중일땐 클릭 안먹게
-            return;
-
-        bool changePlayer = false; // 조종할 플레이어가 변경될 때 바꼈는지 판별하는 bool
 
         // 플레이어 hit됬는지 검사
+        bool changePlayer = false; // 조종할 플레이어가 변경될 때 바꼈는지 판별하는 bool
+
         if (hit.HasPlayer)
         {
             changePlayer = HandlePlayerClick(hit); // order인지 offensive인지 안에서 검사
         }
+
+        else if (EPlayerControlState.ControlledUI == PlayerControlState && !hit.HasPlayer) // UI 조종중에는 클릭 감지 X
+        {
+            HandleUIClick(hit);
+            return;
+        }
+
+
         // Order을 클릭해놓고 빈 타일을 누른 경우(스폰할 경우)
         else if (PlayerState.creature != null && PlayerState.creature.PlayerType == EPlayerType.Order && isClickedOrder == true)
         {
@@ -355,8 +353,7 @@ public class PlayerMouseController : InitBase
         // 감지된 캐릭터가 없다면 && 조종할 플레이어를 변경한 경우가 아니면 == 이동할 경우
         if (changePlayer == false && PlayerState.creature != null && CanMove())
         {
-            MovementPopUp = Managers.UI.ShowPopupUI<UI_MovementPopup>();
-            MovementPopUp.transform.position = hit.tile.transform.position;
+            ShowMovementPopUp(hit.tile);
             //StartMovement();
         }
     }
@@ -410,6 +407,11 @@ public class PlayerMouseController : InitBase
         }
     }
 
+    private void HandleUIClick(RaycastResult hit)
+    {
+
+    }
+
     private void SwitchToPlayer(Player newPlayer, OverlayTile tile)
     {
         // 바꾸기 전 플레이어가 있다면
@@ -421,11 +423,9 @@ public class PlayerMouseController : InitBase
         PlayerState.creature = newPlayer;
         PlayerState.creature.CreatureState = ECreatureState.Idle;
         
-        if (PlayerState.creature.IsMoved == false) // 이미 이동한 크리쳐가 아니라면
+        if (PlayerState.creature.IsMoved == false) // 이동안한 크리쳐면 copy 바꿔줘야하므로
         {
-            SwitchCopy.Raise(tile.gameObject);
-            PlayerState.creature.GetMovementRangeTiles(); // 이동 가능한 타일 계산
-            ShowRangeTiles.Raise(); // 및 표시
+            SwitchCopy.Raise(tile.gameObject); // copy변경
         }
         ShowActPopUp(); // ActPopUp 생성 및 위치 설정
         SetCameraTarget.Raise(PlayerState.creature.gameObject);
@@ -460,9 +460,28 @@ public class PlayerMouseController : InitBase
 
     private void ShowActPopUp()
     {
-        actPopUp = Managers.UI.ShowPopupUI<UI_ActPopup>();
-        actPopUp.transform.position = PlayerState.creature.transform.position + new Vector3(50, 1, 0);
+        if (actPopUp == null)
+        {
+            actPopUp = Managers.UI.ShowPopupUI<UI_ActPopup>();
+            GameObject PopUp = Util.FindChild(actPopUp.gameObject, "Popup");
+            PopUp.GetComponent<RectTransform>().anchoredPosition = new Vector3(800, 800, 1);
+            // actPopUp.GetComponent<RectTransform>().position = Camera.main.WorldToScreenPoint(PlayerState.creature.transform.position) + new Vector3(100, 10, 0);
+        }
+        
     }
+
+    private void ShowMovementPopUp(OverlayTile tile)
+    {
+        if (MovementPopUp == null)
+        {
+            MovementPopUp = Managers.UI.ShowPopupUI<UI_MovementPopup>();
+            GameObject PopUp = Util.FindChild(MovementPopUp.gameObject, "Popup");
+            PopUp.GetComponent<RectTransform>().position = Camera.main.WorldToScreenPoint(tile.transform.position);
+        }
+       
+    }
+
+    
     #endregion
 
     #region Helper Methods
@@ -536,6 +555,36 @@ public class PlayerMouseController : InitBase
 
     public void CancelMovement()
     {
+
+    }
+
+    public void PressMoveBtn() // Move버튼 눌리면
+    {
+        //if (PlayerState.creature.IsMoved == true) // 만약 이미 움직면
+        //{
+        //    HandlePreviewMovedCreature();
+        //    // 팝업창에 Moved 블러처리
+            
+        //}
+
+        if (PlayerState.creature.IsMoved == false)
+        {
+            PlayerState.creature.GetMovementRangeTiles(); // 이동 가능한 타일 계산
+            ShowRangeTiles.Raise(); // 및 표시
+        }
+
+
+    }
+
+    public void ShowSkillRange() //HandlePreviewMovedCreature 였음
+    {
+        TEC.ClearArrows();
+        TEC.HideSkillRangeTiles();
+        PlayerState.creature.GetSkillRangeTilesPlayer();
+
+        // 계산된 타일들을 시각적으로 표시
+        TEC.ShowSkillRangeTile();
+
     }
 
     // 스킬 토글 알람오면
