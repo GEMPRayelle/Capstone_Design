@@ -8,7 +8,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "npc_camp_base.sprite",
       "SkeletonDataID": "camp_SkeletonData",
-      "TalkingDataID": 0,
+      "VLDataId": 0,
       "Loyalty": 0
     },
     {
@@ -19,7 +19,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "portal_a_effect_1.sprite",
       "SkeletonDataID": "npc_portal_2_SkeletonData",
-      "TalkingDataID": 0,
+      "VLDataId": 0,
       "Loyalty": 0
     },
     {
@@ -30,7 +30,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "potal_body.sprite",
       "SkeletonDataID": "npc_portal_1_SkeletonData",
-      "TalkingDataID": 0,
+      "VLDataId": 0,
       "Loyalty": 0
     },
     {
@@ -41,7 +41,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "smith_body.sprite",
       "SkeletonDataID": "npc_smith_SkeletonData",
-      "TalkingDataID": 0,
+      "VLDataId": 0,
       "Loyalty": 0
     },
     {
@@ -52,7 +52,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "npc_training_head.sprite",
       "SkeletonDataID": "npc_training_SkeletonData",
-      "TalkingDataID": 0,
+      "VLDataId": 0,
       "Loyalty": 0
     },
     {
@@ -63,7 +63,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "treasure_temp.sprite",
       "SkeletonDataID": "npc_training_SkeletonData",
-      "TalkingDataID": 0,
+      "VLDataId": 0,
       "Loyalty": 0
     },
     {
@@ -74,7 +74,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "dungeon_temp.sprite",
       "SkeletonDataID": "npc_training_SkeletonData",
-      "TalkingDataID": 8,
+      "VLDataId": 8,
       "Loyalty": 0
     },
     {
@@ -85,7 +85,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "npc_chloe.sprite",
       "SkeletonDataID": "002_SkeletonData",
-      "TalkingDataID": 1,
+      "VLDataId": 1,
       "Loyalty": 0
     },
     {
@@ -96,7 +96,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "coin_storage_temp.sprite",
       "SkeletonDataID": "npc_storages_coin_SkeletonData",
-      "TalkingDataID": 0,
+      "VLDataId": 0,
       "Loyalty": 0
     },
     {
@@ -107,7 +107,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "wood_storage_temp.sprite",
       "SkeletonDataID": "storages_wood_SkeletonData",
-      "TalkingDataID": 0,
+      "VLDataId": 0,
       "Loyalty": 0
     },
     {
@@ -118,7 +118,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "mine_temp.sprite",
       "SkeletonDataID": "npc_storages_mine_SkeletonData",
-      "TalkingDataID": 0,
+      "VLDataId": 0,
       "Loyalty": 0
     },
     {
@@ -129,7 +129,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "npc_camp_base.sprite",
       "SkeletonDataID": "npc_camp_SkeletonData",
-      "TalkingDataID": 0,
+      "VLDataId": 0,
       "Loyalty": 0
     },
     {
@@ -140,7 +140,7 @@
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "npc_rune_stone.sprite",
       "SkeletonDataID": "npc_run_stone_SkeletonData",
-      "TalkingDataID": 0,
+      "VLDataId": 0,
       "Loyalty": 0
     }
   ]

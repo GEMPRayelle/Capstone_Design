@@ -255,6 +255,7 @@ public class PlayerMouseController : InitBase
                     _tileEffectController.HideAllRangeTiles(); // 소환 범위 타일 숨기기
                     PlayerState.creature.ResetMovementRangeTiles(); // 소환 범위 타일 초기화
                     PlayerState.creature = null; // 조종 풀기
+                    Managers.Turn.Init();
                     AllPlayerSpawn.Raise();
                 }
             }
@@ -344,6 +345,12 @@ public class PlayerMouseController : InitBase
         {
             PlayerState.creature = null; // 조종하는 플레이어 조종 풀기
         }
+
+        if (actPopUp != null)
+            Managers.UI.ClosePopupUI(actPopUp);
+
+        if (MovementPopUp != null)
+            Managers.UI.ClosePopupUI(MovementPopUp);
     }
     #endregion
 

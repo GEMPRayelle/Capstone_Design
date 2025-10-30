@@ -143,7 +143,7 @@ public class TurnManager
     //턴 종료 후 다음 Creature의 턴 시작
     public void EndTurn()
     {
-        //if (turnOrderPreview.Count > 0)
+        if (turnOrderPreview.Count > 0)
         {
             FinalEndCharacterTurn();
             SortingTurn();

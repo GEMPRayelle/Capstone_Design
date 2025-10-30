@@ -49,7 +49,8 @@ public class SkillComponent : InitBase
     {
         _owner = owner;
 
-        AddSkill(creatureData.DefaultSkillId, ESkillSlot.Default);
+        AddSkill(creatureData.SkillAId, ESkillSlot.A);
+        AddSkill(creatureData.SkillBId, ESkillSlot.B);
 
         //Debugging
         Debug.Log($"{_owner.name} DefaultSkill: {(DefaultSkill != null ? DefaultSkill.name : "null")}, ActiveSkillCount: {ActiveSkills.Count}");
