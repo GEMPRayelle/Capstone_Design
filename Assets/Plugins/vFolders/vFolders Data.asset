@@ -124,5 +124,5 @@ MonoBehaviour:
       iconNameOrGuid: 
     - colorIndex: 0
       iconNameOrGuid: cs Script Icon
-    - colorIndex: 0
+    - colorIndex: 2
       iconNameOrGuid: TerrainData Icon

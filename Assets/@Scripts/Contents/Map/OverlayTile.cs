@@ -16,6 +16,7 @@ public class OverlayTile : InitBase
 
     //방향 화살표 스프라이트 리스트 (ArrowDirection enum 순서대로 저장)
     public List<Sprite> arrows;
+    public TileData tileData; //타일의 지형 데이터
 
     public int remainingMovement;//남은 이동력 계산
 
@@ -68,4 +69,5 @@ public class OverlayTile : InitBase
         }
     }
 
+    public int GetMoveCost() => tileData != null ? tileData.MoveCost : 1;
 }

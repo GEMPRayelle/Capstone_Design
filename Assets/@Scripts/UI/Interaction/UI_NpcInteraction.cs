@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static Define;
 
 public class UI_NpcInteraction : UI_Base    
 {
@@ -34,6 +35,9 @@ public class UI_NpcInteraction : UI_Base
     {
         //npc쪽에 전달해서 이벤트 실행
         _owner?.OnClickEvent();
+        
+        //대화씬으로 이동
+        Managers.Scene.LoadScene(EScene.TalkingScene);
 
         Debug.Log("OnClickInteractionButton");
     }
