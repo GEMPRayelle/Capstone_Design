@@ -56,6 +56,8 @@ public class DevScene : BaseScene
         Managers.Controller.InitController();
         Managers.Listener.InitGameScene();
         Managers.Listener.InstantiateListener();
+
+        Managers.Controller.mouseController.StartSpawnMode();
         #endregion
 
         return true;

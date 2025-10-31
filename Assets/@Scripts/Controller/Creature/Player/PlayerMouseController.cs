@@ -1,5 +1,4 @@
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using static ControllerManager;
 using static Define;
@@ -7,30 +6,21 @@ using static Define;
 public class PlayerMouseController : InitBase
 {
     private GameObject cursor; // 커서
-    private bool isClickedOrder; // Order 캐릭터가 다른 캐릭터 스폰시킬때 클릭된지에 대한 여부
     private SharedPlayerState PlayerState; // Controller들이 공유하는 데이터
- 
-    //GameEvent
-    GameEvent AllPlayerSpawn; // 모든 플레이어 스폰 될 때 Raise, MouseController -> TurnManager
-
-    // MouseController -> SpawnController
-    GameEvent despawnCopy; // copy 지울때 날릴 이벤트
-    GameEventGameObject SwitchToOrderForSpawn; // 스폰모드일 때 Copy 세팅을 위해 날리는 이벤트
-    GameEventGameObject InstantiatePlayerByOrder; // 스폰모드일 때 실제 Spawn 함수를 실행하기위해 날리는 이벤트
-    GameEventGameObject SwitchCopy;
-
-    // MouseController -> TileEffectController
-    GameEvent HighlightSpawnTile; // 스폰 타일 보여줄 때 날릴 이벤트
-    GameEvent ShowRangeTiles; // 계산된 범위 타일 중 실제 이동 가능 길 보여줄 때 날릴 이벤트
-    GameEvent HideAllRangeTiles; // 계산된 범위 타일 가릴 때 날릴 이벤트
-
-    GameEventGameObject SetCameraTarget;
 
     // 직접 호출을 위해 들고 있는 컨트롤러
-    SpawnController SC;
-    TileEffectController TEC;
-    PlayerMovementController PMC;
+    SpawnController _spawnController;
+    TileEffectController _tileEffectController;
+    PlayerMovementController _playerMovementController;
 
+    // GameEvent
+    GameEvent AllPlayerSpawn; // MouseController에서 스폰 끝나면 버튼 활성화. MouseController -> UI_GameScene
+
+    // MouseController을 통해 소환되는 팝업창들
+    UI_ActPopup actPopUp;
+    UI_MovementPopup MovementPopUp;
+
+    public EPlayerControlState PlayerControlState = EPlayerControlState.None;
 
 
     public override bool Init()
@@ -40,80 +30,27 @@ public class PlayerMouseController : InitBase
 
         PlayerState = Managers.Controller.PlayerState;
         cursor = Managers.Resource.Instantiate("Cursor");
-        isClickedOrder = false;
 
         AllPlayerSpawn = Managers.Resource.Load<GameEvent>("AllPlayerSpawn");
-        despawnCopy = Managers.Resource.Load<GameEvent>("DespawnCopy");
-        SwitchToOrderForSpawn = Managers.Resource.Load<GameEventGameObject>("switchToOrderForSpawn");
-        InstantiatePlayerByOrder = Managers.Resource.Load<GameEventGameObject>("InstantiatePlayerByOrder");
-        SwitchCopy = Managers.Resource.Load<GameEventGameObject>("SwitchCopy");
 
-
-        HighlightSpawnTile = Managers.Resource.Load<GameEvent>("HighlightSpawnTile");
-        ShowRangeTiles = Managers.Resource.Load<GameEvent>("ShowRangeTiles");
-        HideAllRangeTiles = Managers.Resource.Load<GameEvent>("HideAllRangeTiles");
-        SetCameraTarget = Managers.Resource.Load<GameEventGameObject>("SetCameraTarget");
         return true;
+    }
+
+    public void StartSpawnMode() // 스폰 모드로 시작하는 함수
+    {
+        PlayerControlState = EPlayerControlState.Spawn;
+        PlayerState.creature = Managers.Turn.activePlayerList.First<Creature>().GetComponent<Player>();
+        _tileEffectController.HighlightSpawnTile();
+        _spawnController.SwitchToOrderForSpawn(PlayerState.creature.currentStandingTile.gameObject);
+        Managers.Controller.cameraController.SetCameraTarget(PlayerState.creature.gameObject);
     }
 
     public void SetOtherController()
     {
-        SC = Managers.Controller.spawnController;
-        TEC = Managers.Controller.tileEffectController;
-        PMC = Managers.Controller.playerMovementController;
+        _spawnController = Managers.Controller.spawnController;
+        _tileEffectController = Managers.Controller.tileEffectController;
+        _playerMovementController = Managers.Controller.playerMovementController;
     }
-
-    void LateUpdate()
-    {
-        RaycastResult hit = GetFocusedObjects(); // 마우스가 가리키는 타일 감지
-        //타일이 감지 됐다면, 이동중이 아닐때만 감지
-        if (hit.HasTile && !PlayerState.isMoving)
-        {
-            UpdateCursor(hit.tile);
-            HandleMouseHover(hit);
-            HandleMouseClick(hit);
-        }
-
-        
-    }
-
-    #region 현재 마우스 컨트롤 상태
-    EPlayerControlState _playerControlState = EPlayerControlState.None;
-    public EPlayerControlState PlayerControlState
-    {
-        get
-        {
-            _playerControlState = GetCurrentControlState();
-            return _playerControlState;
-        }
-        private set
-        {
-            _playerControlState = value;
-        }
-    }
-
-    // 현재 마우스 클릭 상태를 가져오는 함수
-    private EPlayerControlState GetCurrentControlState()
-    {
-        if (PlayerState.creature == null) // 조종중인 크리쳐가 없다면 NONE
-            return EPlayerControlState.None;
-
-        if (PlayerState.creature.IsMoved == true) // 이미 조종한 크리쳐를 조종하려 한다면 
-            return EPlayerControlState.ControlledFinish;
-
-        if (PlayerState.creature.PlayerType == EPlayerType.Offensive) // 아직 행동하지않은 공격형 크리쳐를 조종한다면
-            return EPlayerControlState.ControllingOffensive;
-
-        if (PlayerState.creature.PlayerType == EPlayerType.Order) // 아직 행동하지않은 오더를 조종한다면
-        {
-            return isClickedOrder ? // 오더가 스폰을 시작했다면
-                EPlayerControlState.ControllingOrderForSpawn : // True : 스폰 모드
-                EPlayerControlState.ControllingOrderForMove; // False : 이동 모드
-        }
-
-        return EPlayerControlState.None;
-    }
-    #endregion
 
     #region 마우스 RayCast 검사
     // Ray 쏴서 결과값 받을 구조체
@@ -176,9 +113,24 @@ public class PlayerMouseController : InitBase
         }
         return result;
     }
+
+
+
+    void LateUpdate()
+    {
+        RaycastResult hit = GetFocusedObjects(); // 마우스가 가리키는 타일 감지
+        //타일이 감지 됐다면, 이동중이 아닐때만 감지
+        if (hit.HasTile && !PlayerState.isMoving)
+        {
+            UpdateCursor(hit.tile);
+            UpdateHover(hit);
+            UpdateClick(hit);
+        }
+
+
+    }
     #endregion
 
-    #region MouseHover
     private void UpdateCursor(OverlayTile tile)
     {
         //매 프레임마다 마우스 위치 확인 및 처리하는 작업
@@ -189,349 +141,217 @@ public class PlayerMouseController : InitBase
             tile.GetComponent<SpriteRenderer>().sortingOrder + 1; //커서의 렌더링 순서 조절
     }
 
-    private void HandleMouseHover(RaycastResult hit)
+    private void UpdateHover(RaycastResult hit)
     {
-        OverlayTile tile = hit.tile; //타일의 정보를 가져옴
-
-        if (tile == null)
-            return;
-
-        if (PlayerState.creature == null)
-            return;
-
-        // Hover 경우 체크
-        HandleHoverOnTile(tile);
-
-        // 현재 가리키는 타일이 플레이어 캐릭터가 있다면
-        //else
-        //{
-        //    HandleHoverOnBlockedTile();
-        //}
-    }
-
-    private void HandleHoverOnTile(OverlayTile tile)
-    {
-        switch (PlayerControlState)
+        switch(PlayerControlState)
         {
-            case EPlayerControlState.ControlledFinish:
-                HandlePreviewMovedCreature(tile); // 이미 이동 완료한 creature을 조종할 때
-                break;
-            case EPlayerControlState.ControllingOffensive:
-            case EPlayerControlState.ControllingOrderForMove:
-                HandleMovementPreview(tile); // 공격형 이동할때 or 오더가 스폰을 끝내고 움직일때 로직
-                break;
-
-            case EPlayerControlState.ControllingOrderForSpawn:
-                HandleSpawnPreview(tile); // 오더가 스폰중일때 소환시킬 Playable 캐릭터 실루엣 생성
-                break;
-
             case EPlayerControlState.None:
                 break;
+            case EPlayerControlState.Move:
+                // Move Preview, Skill Preview(Copy위치 따라)
+                MovePreview(hit);
+                SkillPreview(hit);
+                break;
+            case EPlayerControlState.Spawn:
+                // Spawn Preview
+                SpawnPreview(hit);
+                break;
+            case EPlayerControlState.Skill:
+                // Skill Preview
+                SkillPreview(hit);
+                break;
+            case EPlayerControlState.UI:
+                break;
         }
     }
 
-    private void HandlePreviewMovedCreature(OverlayTile tile)
+    private void MovePreview(RaycastResult hit) // 이동상태일 때 이동에 관한 표시
     {
-        TEC.ClearArrows();
-        TEC.HideSkillRangeTiles();
-        PlayerState.creature.GetSkillRangeTilesPlayer();
-
-        // 계산된 타일들을 시각적으로 표시
-        TEC.ShowSkillRangeTile();
-
-    }
-
-    private void HandleMovementPreview(OverlayTile tile)
-    {
-        // 기존 화살표 제거
-        TEC.ClearArrows();
-
-        if (PlayerState.creature.MovementRangeTiles.Contains(tile) && tile.isBlocked == false) // 범위 안 tile hover, Blocking 되지않은 타일 일 때
+        if (PlayerState.creature.MovementRangeTiles.Contains(hit.tile)) // 이동 범위거나 isBlocked가 false인 타일들 위에 마우스가 있다면
         {
-            // 현재 위치에서 마우스가 위치한 타일까지 경로 계산
-            TEC.ShowPathToTile(tile);
-
-            PlayerState.creature.GetMovementRangeTiles();
-            TEC.ShowRangeTiles();
-
-            // Skill Range 하이라이트 전 타일 원래대로 되돌리기
-            TEC.HideSkillRangeTiles();
-
-            //copy가 있다면 위치와 init할거 하기
-            SC.UpdateCopyPosition(tile);
-
-            // Skill Range 구하기
-            PlayerState.creature.GetSkillRangeTilesCopy();
-
-            // 계산된 타일들을 시각적으로 표시
-            TEC.ShowSkillRangeTile();
+            _tileEffectController.ShowMovementRangeTiles();
+            _spawnController.UpdateCopyPosition(hit.tile);
         }
-        else // 범위 밖 tile hover하면
+
+        else
         {
-            //// 범위 밖 클릭 시 가장 가까운 범위 내 타일까지만 경로 표시
-            //OverlayTile closestTile = GetClosestTileInRange(tile);
-            //if (closestTile != null)
-            //{
-            //    // 가장 가까운 범위 내 타일까지의 경로 계산
-            //    ShowPathToTile(closestTile);
-            //}
-            //// Skill Range Highlights
-            //GetSkillRangeTiles(closestTile);
-            //path = _pathFinder.FindPath(_creature.currentStandingTile, tile, rangeFinderTiles); // 길 찾기 실패하도록 path에 빈 리스트 리턴받도록 하기
-            HandleHoverOnBlockedTile();  // 마치 blocking된 tile 마우스 hover했는것처럼 기능
+            //_tileEffectController.HideMovementRangeTiles();
+            _spawnController.HideCopy();
         }
+                
     }
 
-    private void HandleSpawnPreview(OverlayTile tile) // 소환할때 마우스 tile에 hover상태일때 실행
+    private void SkillPreview(RaycastResult hit)
     {
-        // 마우스가 이동 범위 내 타일에 있다면
-        if (PlayerState.creature.MovementRangeTiles.Contains(tile) && tile.isBlocked == false)
+        switch(PlayerControlState)
         {
-            // copy가 있다면 위치와 init할거 하기
-             SC.HandleSpawnPreviewCopy(tile);
-        }
+            case EPlayerControlState.Move:
+                {
+                    // 공통으로 수행되는 부분, 이전에 그려졌던것들 초기화
+                    _tileEffectController.ClearArrows(); // 화살표 이동 전 표시 끄기
+                    _tileEffectController.HideSkillRangeTiles(); // 스킬 범위 이동 전 표시 끄기
+                    if (PlayerState.creature.MovementRangeTiles.Contains(hit.tile)) // 이동 범위 내 타일에 마우스가 있다면
+                    {
+                        PlayerState.creature.GetSkillRangeTilesCopy(); // Copy위치 기준 스킬 범위 구해서
+                        _tileEffectController.ShowSkillRangeTile(); // 표시
+                        _tileEffectController.ShowPathToTile(hit.tile); // 화살표로 방향 표시
+                    }
 
-        else if (PlayerState.creature.MovementRangeTiles.Contains(tile) == false || tile.isBlocked == true) // 범위 밖 
-        {
-           SC.HideCopy();
+                    else // 이동 범위 밖이면
+                    {
+                        _tileEffectController.ShowMovementRangeTiles(); // 스킬 범위와 이동 범위가 겹치는 부위는 지워졌으니 다시 그리기
+                    }
+                }
+                break;
+            case EPlayerControlState.Skill:
+                {
+                    
+                }
+                break;
         }
+        
+        
     }
 
-    private void HandleHoverOnBlockedTile()
+    private void SpawnPreview(RaycastResult hit) // 스폰 모드일 경우 미리보기
     {
-        // 화살표 제거 (길찾기 방향 표시 X)
-        TEC.ClearArrows();
-        // 실루엣 안보이게 처리
-        SC.HideCopy();
-        // 스킬 범위 타일 원래대로 되돌리기
-        TEC.HideSkillRangeTiles();
-        // 이동 범위 타일 다시 그려주기
-        TEC.ShowRangeTiles();
-    }
-    #endregion
+        if (PlayerState.creature.MovementRangeTiles.Contains(hit.tile) && hit.tile.isBlocked == false) // 소환 범위 내라면
+            _spawnController.HandleSpawnPreviewCopy(hit.tile); // Copy 위치 업데이트
 
-    #region MouseClick
-    private void HandleMouseClick(RaycastResult hit)
+        else
+            _spawnController.HideCopy(); // 소환 범위 밖이면 Copy 숨기기
+    }
+
+
+    private void UpdateClick(RaycastResult hit)
     {
-        //마우스 클릭 아니면 무시
-        if (Input.GetMouseButtonDown(0) == false)
+        if (!Input.GetMouseButtonDown(0)) // 마우스 클릭이 없는 경우 무시
+        {
+            return; 
+        }
+
+        // State 변경 및 변경에 따른 실행
+        if (hit.HasPlayer && PlayerControlState != EPlayerControlState.Spawn && PlayerControlState != EPlayerControlState.UI) // 플레이어 변경의 경우(스폰, UI 사용 중일 때는 클릭감지 X)
+        {
+            // Change Player?
+            CleanUpPlayer(PlayerState.creature); // 변경 전 플레이어 정보 초기화
+            PlayerState.creature = hit.player;   // 새로운 플레이어로 변경
+            Managers.Controller.cameraController.SetCameraTarget(PlayerState.creature.gameObject);
+            ShowActPopUp();                      // 팝업 켜지기
+
+        }
+        
+        else if (!hit.HasPlayer && hit.HasTile) // 이동, 스폰의 경우
+        {
+            // 스폰
+            if (PlayerControlState == EPlayerControlState.Spawn) // 스폰모드 경우
+            {
+                if (PlayerState.creature.MovementRangeTiles.Contains(hit.tile) && hit.tile.isBlocked == false) // 소환 범위 내 타일 클릭 시
+                    _spawnController.InstantiatePlayerByOrder(hit.tile.gameObject); // 실제 스폰
+
+                if (PlayerState.IsSpawnEnd()) // 스폰 끝나면
+                {
+                    PlayerControlState = EPlayerControlState.None; // None 모드로 변경(아무 동작 X)
+                    _tileEffectController.HideAllRangeTiles(); // 소환 범위 타일 숨기기
+                    PlayerState.creature.ResetMovementRangeTiles(); // 소환 범위 타일 초기화
+                    PlayerState.creature = null; // 조종 풀기
+                    Managers.Turn.Init();
+                    AllPlayerSpawn.Raise();
+                }
+            }
+
+            // 이동
+            else if(PlayerControlState == EPlayerControlState.Move)
+            {
+                if (PlayerState.creature.MovementRangeTiles.Contains(hit.tile)) // 이동 범위 안을 클릭했다면
+                    ShowMovementPopUp(hit.tile); // 이동 팝업 뜨기
+                else // 클릭한 타일이 이동 범위 밖이라면 
+                {
+                    CancelMovement();
+                }
+
+
+            }
+        }
+    }
+    #region Helper Function
+    private void ShowActPopUp()
+    {
+        if (actPopUp != null)
             return;
 
-        bool changePlayer = false; // 조종할 플레이어가 변경될 때 바꼈는지 판별하는 bool
-
-        // 플레이어 hit됬는지 검사
-        if (hit.HasPlayer)
-        {
-            changePlayer = HandlePlayerClick(hit); // order인지 offensive인지 안에서 검사
-        }
-        // Order을 클릭해놓고 빈 타일을 누른 경우(스폰할 경우)
-        else if (PlayerState.creature != null && PlayerState.creature.PlayerType == EPlayerType.Order && isClickedOrder == true)
-        {
-            HandleSpawnClick(hit.tile);
-        }
-
-        // 범위 밖 타일을 클릭했다면
-        else if (PlayerState.creature != null && PlayerState.creature.MovementRangeTiles.Contains(hit.tile) == false)
-        {
-            CleanupPlayer(); // 조종 풀기 전 플레이어(지금 조종하고 있는 플레이어) 근처 타일 비활성화
-            PlayerState.creature = null; // 조종하는 플레이어 조종 풀기
-        }
-
-        // 감지된 캐릭터가 없다면 && 조종할 플레이어를 변경한 경우가 아니면 == 이동할 경우
-        if (changePlayer == false && PlayerState.creature != null && CanMove())
-        {
-            //UI_MovementPopup MovementPopUp = Managers.UI.ShowPopupUI<UI_MovementPopup>();
-            //MovementPopUp.transform.position = hit.tile.transform.position;
-            StartMovement();
-        }
-    }
-
-    private bool HandlePlayerClick(RaycastResult hit) // 플레이어를 클릭한 경우 실행
-    {
-        Player clickedPlayer = hit.player;
-
-        if (clickedPlayer.PlayerType == EPlayerType.Offensive) // 클릭 된 캐릭터가 Offensive일 경우
-        {
-            return HandleOffensivePlayerClick(clickedPlayer, hit.tile);
-        }
-        else if (clickedPlayer.PlayerType == EPlayerType.Order) // 클릭된 캐릭터가 Order일 경우
-        {
-            return HandleOrderPlayerClick(clickedPlayer, hit.tile);
-        }
-
-        return false;
-    }
-
-    private bool HandleOffensivePlayerClick(Player player, OverlayTile tile)
-    {
-        if (isClickedOrder == true) // order 클릭중일땐 클릭해도 효과 X
-            return false;
-
-        SwitchToPlayer(player, tile); // 조종하는 캐릭터 변경
-        return true;
-    }
-
-    private bool HandleOrderPlayerClick(Player player, OverlayTile tile)
-    {
-        if (isClickedOrder == true)  // 이미 order조종중이라면 효과 X
-            return false;
-
-        if (PlayerState.IsSpawnEnd()) // 소환다하고 order를 클릭한다면 
-        {
-            SwitchToPlayer(player, tile); // 조종하는 캐릭터 변경
-
-            return true;
-        }
-        else // 스폰할 캐릭터가 남았고 order를 클릭했다면
-        {
-            // 스폰 모드로 전환
-            PlayerState.creature = player;
-            SwitchToOrderForSpawn.Raise(tile.gameObject);
-            PlayerState.creature.CreatureState = ECreatureState.Idle;
-            HighlightSpawnTile.Raise();
-            isClickedOrder = true;
-            SetCameraTarget.Raise(PlayerState.creature.gameObject);
-            return false; // 플레이어는 바뀌었지만 이동하지 않음
-        }
-    }
-
-    private void SwitchToPlayer(Player newPlayer, OverlayTile tile)
-    {
-        // 바꾸기 전 플레이어가 있다면
-        if (PlayerState.creature != null)
-        {
-            CleanupPlayer();
-        }
-
-        PlayerState.creature = newPlayer;
-        PlayerState.creature.CreatureState = ECreatureState.Idle;
+        PlayerControlState = EPlayerControlState.UI;
+        actPopUp = Managers.UI.ShowPopupUI<UI_ActPopup>();
+        GameObject PopUp = Util.FindChild(actPopUp.gameObject, "Popup");
+        //PopUp.GetComponent<RectTransform>().anchoredPosition = new Vector3(800, 800, 1); 위치 조정 필요
         
-        if (PlayerState.creature.IsMoved == false) // 이미 이동한 크리쳐가 아니라면
+        if (PlayerState.creature.IsMoved == true) // 이미 이동한 크리쳐라면
         {
-            SwitchCopy.Raise(tile.gameObject);
-            PlayerState.creature.GetMovementRangeTiles(); // 이동 가능한 타일 계산
-            ShowRangeTiles.Raise(); // 및 표시
-        }
-        SetCameraTarget.Raise(PlayerState.creature.gameObject);
-        Debug.Log($"Current Playable Character : {PlayerState.creature.name}");
-    }
-
-
-
-    private void HandleSpawnClick(OverlayTile tile) // Spawn을 위해 실행되는 함수
-    {
-        if (!PlayerState.creature.MovementRangeTiles.Contains(tile) || tile.isBlocked || PlayerState.IsSpawnable() == false) // 범위 밖 타일에서 생성, blocking tile에서 생성은 X
-            return; // 생성할 spawnablePlayer가 없다면 생성 X
-
-        InstantiatePlayerByOrder.Raise(tile.gameObject); // 캐릭터 생성
-
-        if (PlayerState.IsSpawnEnd()) // 이제 다 소환했을 때 처리
-        {
-            FinishSpawning();
+            // Move 버튼 블러 처리
+            GameObject MoveBtn = Util.FindChild(PopUp, "Button_Move", true);
+            MoveBtn.GetComponent<UnityEngine.UI.Image>().raycastTarget = false;
+            MoveBtn.GetComponent<UnityEngine.UI.Image>().color = Color.red;
         }
     }
 
-    private void FinishSpawning() // 소환 끝나고 실행되는 함수
+    private void CleanUpPlayer(Creature player) // 해당 플레이어 초기화
     {
-        isClickedOrder = false; // 소환시 클릭은 해제
-        HideAllRangeTiles.Raise(); // 소환 하이라이트 타일 숨기기
-        PlayerState.creature = null; // 조종하던 order 풀기
+        if (player == null)
+            return;
 
-        //despawnCopy.Raise();
-
-        Managers.Turn.Init();
-        // 턴 매니저에 턴 시작 알리기 + 턴 종료 버튼 활성화
-        AllPlayerSpawn.Raise();
+        _spawnController.DespawnCopy(); // 플레이어 Copy 삭제
+        _tileEffectController.HideAllRangeTiles(); // 플레이어 근처 타일 안보이게 하기
+        player.ResetMovementRangeTiles(); // 플레이어 이동 가능 타일들 Reset
+        player.ResetSkillRangeTiles(); // 플레이어 스킬 범위 타일들 Reset
     }
 
-    
+    private void ShowMovementPopUp(OverlayTile tile)
+    {
+        if (MovementPopUp != null)
+            return;
+
+        PlayerControlState = EPlayerControlState.UI;
+        MovementPopUp = Managers.UI.ShowPopupUI<UI_MovementPopup>();
+        GameObject PopUp = Util.FindChild(MovementPopUp.gameObject, "Popup");
+        PopUp.GetComponent<RectTransform>().position = Camera.main.WorldToScreenPoint(tile.transform.position);
+
+
+    }
     #endregion
 
-    #region Helper Methods
-    private bool CanMove() // 이동할 수 있는 상태인지 State기반 체크
+    #region Event
+    public void StartMovement() // MovementPopUp에서 Move누르면 실행되는 함수
     {
-        return PlayerControlState == EPlayerControlState.ControllingOffensive ||
-               PlayerControlState == EPlayerControlState.ControllingOrderForMove;
+        PlayerControlState = EPlayerControlState.None;
+        _tileEffectController.HideAllRangeTiles(); // 이동하기전 범위 안보이게 처리
+        _spawnController.DespawnCopy(); // copy 삭제(이제 보일 필요가 없기 때문)
+        PlayerState.isMoving = true;
+        PlayerState.creature.CreatureState = ECreatureState.Move;
     }
 
-    private void CleanupPlayer() // 조종하던 크리쳐 Clean 함수
+    public void CancelMovement()
     {
-        // 바꾸기 전 플레이어가 있다면
-        if (PlayerState.creature != null)
-        { 
-            // Copy 비활성화
-            despawnCopy.Raise();
-
-            // 바꾸기 전 플레이어 근처 타일 비활성화
-            HideAllRangeTiles.Raise();
-
-            PlayerState.creature.ResetMovementRangeTiles(); // 이동 범위 타일 초기화
-            PlayerState.creature.ResetSkillRangeTiles();   // 스킬 범위 타일 초기화
-        }
+        PlayerControlState = EPlayerControlState.None;
+        CleanUpPlayer(PlayerState.creature); // 이동,스킬 범위같은것 초기화
+        PlayerState.creature = null; // 조종 풀기
     }
 
-    ////범위 밖 타일에서 가장 가까운 범위 내 타일을 찾는 함수
-    //private OverlayTile GetClosestTileInRange(OverlayTile targetTile)
-    //{
-    //    if (PlayerState.rangeFinderTiles == null || PlayerState.rangeFinderTiles.Count == 0)
-    //        return null;
-
-    //    OverlayTile closestTile = null;
-    //    float minDistance = float.MaxValue;
-
-    //    foreach (var rangeTile in PlayerState.rangeFinderTiles)
-    //    {
-    //        float distance = Vector2.Distance(targetTile.transform.position, rangeTile.transform.position);
-    //        if (distance < minDistance)
-    //        {
-    //            minDistance = distance;
-    //            closestTile = rangeTile;
-    //        }
-    //    }
-
-    //    return closestTile;
-    //}
-
-    #endregion
-
-    #region GameEvent오면 실행 함수
     public void EndPlayerEvent() // 턴 종료 버튼 눌릴 때 실행되는 함수(GameEvent로 동작)
     {
+        PlayerControlState = EPlayerControlState.None;
         PlayerState.CleanupAllPlayer();
 
         if (PlayerState.creature != null)
         {
             PlayerState.creature = null; // 조종하는 플레이어 조종 풀기
         }
-    }
 
-    public void StartMovement()
-    {
-        if (PlayerControlState == EPlayerControlState.ControlledFinish) // 이미 이동한 크리쳐라면
-            return; // 무시
-        Debug.Log("Move Pressed");
-        PlayerState.isMoving = true; // 이동 시작
-        HideAllRangeTiles.Raise(); // 이동 시작하기 직전 이동 범위 표시 지우기
+        if (actPopUp != null)
+            Managers.UI.ClosePopupUI(actPopUp);
 
-        despawnCopy.Raise();
-        PlayerState.creature.CreatureState = ECreatureState.Move;
+        if (MovementPopUp != null)
+            Managers.UI.ClosePopupUI(MovementPopUp);
     }
-    // 스킬 토글 알람오면
-    /*
-     * Creatute -> SkillRange set
-		       TEC -> isMoved 따라 Copy or Creature에 스킬 범위 표시
-			SC -> isMoved 따라 Copy Set
-			PMC -> SkillRangeTiles Set
-    즉 HandleHoverOnTile함수에 각 State마다 처리 중
-     case EPlayerControlState.ControlledFinish:  
-                HandleMovementPreviewMovedCreature(tile); // 이미 이동 완료한 creature을 조종할 때
-                break;
-            case EPlayerControlState.ControllingOffensive:
-            case EPlayerControlState.ControllingOrderForMove:
-                HandleMovementPreview(tile); // 공격형 이동할때 or 오더가 스폰을 끝내고 움직일때 로직
-                break;
-    이 경우들 처리
-     */
     #endregion
 
 

@@ -212,7 +212,8 @@ public class TurnManager
                 // AI 행동 로직 시작 함수
                 Debug.Log($"{activeCharacter.gameObject.name} : Turn Start");
                 Managers.Controller.movementController.activeCharacter = activeCharacter; // movementController에 현재 조종ㅂ할려는 캐릭터 넣기
-                SetCameraTarget.Raise(activeCharacter.gameObject);
+                
+                Managers.Controller.cameraController.SetCameraTarget(activeCharacter.gameObject);
                 activeCharacter.StartTurn();
 
             }
@@ -364,7 +365,7 @@ public class TurnManager
 
         if (IsAllPlayerMoved() == true) // 모두 이동했을 때
         {
-            AllmoveFinishEvent.Raise(); // Raise = Inovke, Turn Manager -> 턴 종료 UI
+            // AllmoveFinishEvent.Raise(); 
         }
     }
 }

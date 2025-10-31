@@ -14,8 +14,8 @@ public class SkillComponent : InitBase
     public List<SkillBase> ActiveSkills { get; set; } = new List<SkillBase>();
 
     public SkillBase DefaultSkill { get; private set; }
-    //TODO : 추가적인 스킬들이 더 추가되야함
 
+    private SkillBase _currentSkill;
     //현재 사용할 스킬
     public SkillBase CurrentSkill
     {
@@ -25,9 +25,12 @@ public class SkillComponent : InitBase
             if (ActiveSkills.Count == 0)
                 return DefaultSkill; //평타
             
-            //[TEMP -> 일단 사용 가능한 스킬중 아무 스킬이나 리턴]
-            int randomIndex = Random.Range(0, ActiveSkills.Count);
-            return ActiveSkills[randomIndex];
+            return _currentSkill;
+        }
+
+        set
+        {
+            _currentSkill = value;
         }
     }
 
@@ -47,6 +50,8 @@ public class SkillComponent : InitBase
         _owner = owner;
 
         AddSkill(creatureData.DefaultSkillId, ESkillSlot.Default);
+        AddSkill(creatureData.SkillAId, ESkillSlot.A);
+        AddSkill(creatureData.SkillBId, ESkillSlot.B);
 
         //Debugging
         Debug.Log($"{_owner.name} DefaultSkill: {(DefaultSkill != null ? DefaultSkill.name : "null")}, ActiveSkillCount: {ActiveSkills.Count}");

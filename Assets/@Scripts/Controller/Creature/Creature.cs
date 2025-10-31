@@ -830,6 +830,8 @@ public class Creature : BaseObject
             MovementRangeTiles = Managers.Map.GetTilesInRange(
             new Vector2Int(currentStandingTile.gridLocation.x, currentStandingTile.gridLocation.y),
             MovementRange);
+
+            MovementRangeTiles.Remove(currentStandingTile); // 자기가 서있던 타일은 무조껀 포함이지만 이동에선 IsBlocked이라 제거해야됨
         }
 
         else
@@ -843,7 +845,7 @@ public class Creature : BaseObject
     {
         SkillRangeTiles = Managers.Map.GetTilesInRange(
             currentStandingTile,
-            NormalAttackRange, true, true); // TODO 현재 활성화 된 스킬의 AttackRange, 즉 스킬 ui  누르면 SkillRange도 그 스킬에 정보로 변경되게
+            SkillRange, true, true); // TODO 현재 활성화 된 스킬의 AttackRange, 즉 스킬 ui  누르면 SkillRange도 그 스킬에 정보로 변경되게
     }
 
     public void GetSkillRangeTilesCopy()

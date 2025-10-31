@@ -99,6 +99,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb94da0964742d745b0dfe325837ba48
+    m_Address: CancelMovement_Listener
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ce3a75c01db689e46be87731741d67bf
     m_Address: MoveAlongPath
     m_ReadOnly: 0

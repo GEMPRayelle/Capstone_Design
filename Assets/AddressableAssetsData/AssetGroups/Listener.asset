@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Listener
   m_GUID: 1ceaaa2ef64adda44ad04d70a9cc227c
   m_SerializeEntries:
+  - m_GUID: 07f42a8f4b1499448a8f8cdb036cdcf3
+    m_Address: CancelMovement
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 16bfd3e9792579b4387ae316e3caa308
     m_Address: StartMovementPlayer_Listener
     m_ReadOnly: 0
