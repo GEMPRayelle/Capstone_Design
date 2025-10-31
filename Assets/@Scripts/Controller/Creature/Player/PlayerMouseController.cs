@@ -283,7 +283,7 @@ public class PlayerMouseController : InitBase
         PlayerControlState = EPlayerControlState.UI;
         actPopUp = Managers.UI.ShowPopupUI<UI_ActPopup>();
         GameObject PopUp = Util.FindChild(actPopUp.gameObject, "Popup");
-        PopUp.GetComponent<RectTransform>().anchoredPosition = new Vector3(800, 800, 1);
+        //PopUp.GetComponent<RectTransform>().anchoredPosition = new Vector3(800, 800, 1); 위치 조정 필요
         
         if (PlayerState.creature.IsMoved == true) // 이미 이동한 크리쳐라면
         {
