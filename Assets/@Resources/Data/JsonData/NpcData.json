@@ -81,7 +81,7 @@
       "DataId": 500008,
       "Name": "Chloe",
       "DescriptionTextID": null,
-      "NpcType": 9,
+      "NpcType": 15,
       "PrefabLabel": "NpcPrefab",
       "SpriteName": "npc_chloe.sprite",
       "SkeletonDataID": "002_SkeletonData",

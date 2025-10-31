@@ -192,6 +192,7 @@ public class BaseObject : InitBase
         protected set
         {
             _cellPos = value;
+            LerpCellPosCompleted = false;
         }
     }
 
@@ -206,6 +207,21 @@ public class BaseObject : InitBase
             //바로 그 위치로 이동함
             transform.position = grid.GetCellCenterWorld(CellPos);
             //보간처리를 무시하고 바로 이동하게함
+            LerpCellPosCompleted = true;
+        }
+    }
+
+    public void SetCellPos(Vector3Int cellPos, bool forceMove = false)
+    {
+        CellPos = cellPos;
+        LerpCellPosCompleted = false;
+
+        //true일경우 cell위치와 transform위치랑 완벽하게 일치해야함
+        if (forceMove)
+        {
+            //바로 그 위치로 이동함
+            transform.position = Managers.Map.Cell2World(cellPos);
+            //보간처리를 무시하고 바로 이동하게 함
             LerpCellPosCompleted = true;
         }
     }

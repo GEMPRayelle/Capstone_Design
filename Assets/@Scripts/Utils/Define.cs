@@ -224,19 +224,26 @@ public static class Define
         EnemyTurn, //적 턴 진행
     }
 
+    public enum TileTypes
+    {       
+        Traversable, //일반적인 이동 가능 타일
+        NonTraversable, //벽, 장애물 등 이동 불가
+        Effect //특정 효과가 있는 타일
+    }
 
     public static class SortingLayers
     {
         public const int UI_GAMESCENE = 1;
-        public const int UI_JOYSTICK = 500;
-        public const int UI_HpBar = 400;
         public const int SPELL_INDICATOR = 200;
-        public const int CREATURE = 350;
-        public const int PROJECTILE = 310;
-        public const int SKILL_EFFECT = 310;
+        public const int DAMAGE_FONT = 210;
         public const int PLAYER = 300;
         public const int MONSTER = 300;
         public const int NPC = 300;
+        public const int PROJECTILE = 310;
+        public const int SKILL_EFFECT = 310;
+        public const int CREATURE = 350;
+        public const int UI_HpBar = 400;
+        public const int UI_JOYSTICK = 500;
     }
 
     public static class AnimName

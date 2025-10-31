@@ -119,10 +119,10 @@ MonoBehaviour:
     - colorIndex: 0
       iconNameOrGuid: Font Icon
     - colorIndex: 0
-      iconNameOrGuid: AudioClip Icon
+      iconNameOrGuid: AudioSource Icon
     - colorIndex: 10
       iconNameOrGuid: 
     - colorIndex: 0
       iconNameOrGuid: cs Script Icon
-    - colorIndex: 0
+    - colorIndex: 2
       iconNameOrGuid: TerrainData Icon

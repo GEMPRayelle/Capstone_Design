@@ -1,11 +1,7 @@
-using Data;
-using Newtonsoft.Json.Serialization;
-using Spine.Unity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering;
 using static Define;
 
 public class Player : Creature

@@ -18,6 +18,9 @@ public class MapManager
     public Vector3Int World2Cell(Vector3 worldPos) { return CellGrid.WorldToCell(worldPos); }
     public Vector3 Cell2World(Vector3 cellPos) { return CellGrid.WorldToCell(cellPos); }
 
+    public TileDataRuntimeSet tileTypeList; //타일의 정보를 런타임에서 관리
+    public Dictionary<TileBase, TileData> dataFromTiles = new Dictionary<TileBase, TileData>();
+
     public Dictionary<Vector2Int, OverlayTile> mapDict; //타일 위치와 OverlayTile을 매핑해서 저장
 
     ECellCollisionType[,] _collision; //충돌 정보를 구분하여 처리할 2차원 배열
@@ -249,6 +252,168 @@ public class MapManager
         //조건을 만족하는 인접 타일 리스트 반환
         return surroundingTiles;
     }
+
+    #region Movement Helper Func
+    /// <summary>
+    /// obj를 cellPos로 이동시킬 수 있는지 검사하는 함수
+    /// </summary>
+    /// <returns></returns>
+    public bool MoveTo(Creature obj, Vector3Int cellPos, bool forceMove = false)
+    {
+        //ExtraCell이 있는 것 까지 인지해서 해당 위치에 아무도 없는지 체크
+        if (CanGo(obj, cellPos) == false)
+            //갈수 없으면 실패처리
+            return false;
+
+        //기존 좌표에 있던 오브젝트를 밀어준다
+        //(단, 처음 신청했으면 해당 CellPos의 오브젝트가 본인이 아닐 수도 있음)
+        RemoveObject(obj);
+
+        AddObject(obj, cellPos);
+
+        //셀 좌표 이동
+        obj.SetCellPos(cellPos, forceMove);
+
+        return true;
+    }
+
+    //Cell위치에 오브젝트를 이동하도록 추가
+    void AddObject(BaseObject obj, Vector3Int cellPos)
+    {
+        int extraCells = 0;
+        if (obj != null)
+            extraCells = obj.ExtraCells;
+
+        for (int dx = -extraCells; dx <= extraCells; dx++)
+        {
+            for (int dy = -extraCells; dy <= extraCells; dy++)
+            {
+                //그 칸의 위치를 가져옴
+                Vector3Int newCellPos = new Vector3Int(cellPos.x + dx, cellPos.y + dy);
+                //그 위치에 오브젝트가 있는지 확인
+                BaseObject prev = GetObject(newCellPos);
+
+                if (prev != null && prev != obj)
+                    Debug.LogWarning($"AddObject 수상함");
+
+                //새로운 위치에 obj를 기록
+                _cells[newCellPos] = obj;
+            }
+        }
+    }
+
+    //기존 위치에 오브젝트를 삭제
+    void RemoveObject(BaseObject obj)
+    {
+        //기존에 좌표 제거
+        int extraCells = 0;
+        if (obj != null)
+            extraCells = obj.ExtraCells;
+
+        Vector3Int cellPos = obj.CellPos;//현재 위치
+
+        //모든 칸을 순회해서 위치를 가져옴
+        for (int dx = -extraCells; dx <= extraCells; dx++)
+        {
+            for (int dy = -extraCells; dy <= extraCells; dy++)
+            {
+                //그 칸의 위치를 가져옴
+                Vector3Int newCellPos = new Vector3Int(cellPos.x + dx, cellPos.y + dy);
+                //그 위치에 오브젝트가 있는지 확인
+                BaseObject prev = GetObject(newCellPos);
+
+                //그 위치에 자기 자신이 있으면 null로 밀어줌
+                if (prev == obj)
+                    _cells[newCellPos] = null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 해당 위치에 있는 오브젝트를 가져오는 함수
+    /// </summary>
+    public BaseObject GetObject(Vector3Int cellPos)
+    {
+        //없으면 null
+        _cells.TryGetValue(cellPos, out BaseObject value);
+        return value;
+    }
+
+    /// <summary>
+    /// 해당 위치에 있는 오브젝트를 가져오는 함수
+    /// </summary>
+    public BaseObject GetObject(Vector3 worldPos)
+    {
+        Vector3Int cellPos = World2Cell(worldPos);
+        return GetObject(cellPos);
+    }
+
+    /// <summary>
+    /// WordPos에 갈 수 있는지 판단하는 함수
+    /// </summary>
+    /// <param name="worldPos">월드 좌표</param>
+    /// <param name="ignoreObjects">물체를 무시할지</param>
+    /// <param name="ignoreSemiWall">카메라만 갈 수 있는 영역인지</param>
+    /// <returns></returns>
+    public bool CanGo(BaseObject self, Vector3 worldPos, bool ignoreObjects = false, bool ignoreSemiWall = false)
+    {
+        return CanGo(self, World2Cell(worldPos), ignoreObjects, ignoreSemiWall);
+    }
+
+    public bool CanGo(BaseObject self, Vector3Int cellPos, bool ignoreObjects = false, bool ignoreSemiWall = false)
+    {
+        //ExtraCells이 있는지 먼저 판별함
+        int extraCells = 0;
+        if (self != null)
+            extraCells = self.ExtraCells;
+
+        //추가적인 extraCell만큼 상하좌우 대각선을 다 검사함
+        //extraCell이 0이라면 1번만 실행됨 -> 기존과 다를게 없음
+        for (int dx = -extraCells; dx <= extraCells; dx++)
+        {
+            for (int dy = -extraCells; dy <= extraCells; dy++)
+            {
+                Vector3Int checkPos = new Vector3Int(cellPos.x + dx, cellPos.y + dy);
+
+                if (CanGo_Internal(self, checkPos, ignoreObjects, ignoreSemiWall) == false)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    //Object가 CellPos를 1칸만 이동하는걸 판별함
+    bool CanGo_Internal(BaseObject self, Vector3Int cellPos, bool ignoreObjects = false, bool ignoreSemiWall = false)
+    {
+        //영역이 말이 되는 곳인지 (min,max값을 초과하지 않았는지)
+        if (cellPos.x < _MinX || cellPos.x > _MaxX)
+            return false;
+        if (cellPos.y < _MinY || cellPos.y > _MaxY)
+            return false;
+
+        //물체를 무시하지 않는다면
+        if (ignoreObjects == false)
+        {
+            //물체가 있는지 체크
+            BaseObject obj = GetObject(cellPos);
+            if (obj != null && obj != self) //오브젝트가 자신일 경우엔 스킵
+                return false;
+        }
+
+        int x = cellPos.x - _MinX;
+        int y = _MaxY - cellPos.y;
+        //해당 좌표의 타입을 가져옴
+        ECellCollisionType type = _collision[x, y];
+        if (type == ECellCollisionType.None)
+            //갈 수 있는 곳
+            return true;
+        if (ignoreSemiWall && type == ECellCollisionType.SemiWall)
+            return true;
+
+        //그게 아니면 못감
+        return false;
+    }
+    #endregion
 
     #region Helper Func
     //BFS 방식으로 타일을 확장하면서 지정된 이동 거리 만큼 주변 타일을 수집하는 함수

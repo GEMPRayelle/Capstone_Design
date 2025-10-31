@@ -11,7 +11,7 @@ public class TalkInteraction : INpcInteraction
 
     public bool CanInteract()
     {
-        throw new System.NotImplementedException();
+        return true;
     }
 
     public void HandleOnClickEvent()

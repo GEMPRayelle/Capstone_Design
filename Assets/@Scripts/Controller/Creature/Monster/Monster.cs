@@ -1,10 +1,5 @@
 using Data;
-using Spine.Unity;
-using System.Collections.Generic;
-using System.Net.Http.Headers;
 using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.Rendering;
 using static Define;
 
 public class Monster : Creature

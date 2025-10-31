@@ -6,7 +6,7 @@
 500005,챕터1훈련소,,Training,NpcPrefab,npc_training_head.sprite,npc_training_SkeletonData,,,
 500006,보물상자,,TreasureBox,NpcPrefab,treasure_temp.sprite,npc_training_SkeletonData,,,
 500007,던전,,Quest,NpcPrefab,dungeon_temp.sprite,npc_training_SkeletonData,8,,
-500008,Chloe,,Quest,NpcPrefab,npc_chloe.sprite,002_SkeletonData,1,,
+500008,Chloe,,Talking,NpcPrefab,npc_chloe.sprite,002_SkeletonData,1,,
 500009,저금통,,GoldStorage,NpcPrefab,coin_storage_temp.sprite,npc_storages_coin_SkeletonData,,,
 500010,벌목소,,WoodStorage,NpcPrefab,wood_storage_temp.sprite,storages_wood_SkeletonData,,,
 500011,광산,,MineralStorage,NpcPrefab,mine_temp.sprite,npc_storages_mine_SkeletonData,,,

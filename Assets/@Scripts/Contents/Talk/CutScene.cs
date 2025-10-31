@@ -20,7 +20,7 @@ public class CutScene : MonoBehaviour
     /// 각 컷씬에서 캐릭터가 어떻게 등장하고 움직일지 정의
     /// </summary>
     [Serializable]
-    public class CharacterData 
+    public class CharacterData
     {
         [Tooltip("캐릭터의 이름.")]
         public string name;
@@ -58,7 +58,7 @@ public class CutScene : MonoBehaviour
     /// Inspector에서 이벤트를 설정할 수 있도록 함
     /// </summary>
     [Serializable]
-    public class CSUnityEvent : UnityEvent 
+    public class CSUnityEvent : UnityEvent
     {
         //TODO
         //-> 사운드 출력등 여러 이벤트 실행되어야함
