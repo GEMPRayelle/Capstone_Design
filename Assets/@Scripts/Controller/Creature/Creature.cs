@@ -775,6 +775,7 @@ public class Creature : BaseObject
         if (Skills.CurrentSkill == null)
         {
             Debug.LogWarning($"{name}의 CurrentSkill이 null입니다.");
+            Debug.LogWarning($"{name}의 CurrentSkill이 null입니다.");
         }
 
         //현재 사용할 수 있는 스킬을 사용

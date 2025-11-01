@@ -29,7 +29,7 @@ public class UI_TitleScene : UI_Scene
         GetObject((int)GameObjects.StartImage).BindEvent((evt) =>
         {
             Debug.Log("Change Scene");
-            Managers.Scene.LoadScene(EScene.DormitoryScene);
+            Managers.Scene.LoadScene(EScene.DevScene);
         });
 
         //로딩이 되기전엔 비활성화 처리

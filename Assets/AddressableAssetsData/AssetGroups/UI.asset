@@ -45,10 +45,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - PreLoad
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: eca082a747ece4e4c9238a0816ca2cb8
-    m_Address: UI_ActPopup
   - m_GUID: d41341d97bef15e4e8ef0454f411ad6f
     m_Address: UI_TalkingScene
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eca082a747ece4e4c9238a0816ca2cb8
+    m_Address: UI_ActPopup
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad

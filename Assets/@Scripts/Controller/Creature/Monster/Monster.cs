@@ -103,7 +103,7 @@ public class Monster : Creature
 
         //    itemHolder.SetInfo(dropItemId, rewardData.ItemTemplateId, dropPos);
         //}
-
+        Managers.Turn.activeMonsterList.Remove(this);
         Managers.Object.Despawn(this);
     }
     #endregion

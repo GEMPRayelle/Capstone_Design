@@ -25,7 +25,7 @@ public class SkillComponent : InitBase
             if (ActiveSkills.Count == 0)
                 return DefaultSkill; //평타
             
-            return _currentSkill;
+            return DefaultSkill;
         }
 
         set
@@ -50,6 +50,7 @@ public class SkillComponent : InitBase
         _owner = owner;
 
         AddSkill(creatureData.DefaultSkillId, ESkillSlot.Default);
+
         AddSkill(creatureData.SkillAId, ESkillSlot.A);
         AddSkill(creatureData.SkillBId, ESkillSlot.B);
 

@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static ControllerManager;
 using static Define;
 
@@ -7,7 +8,7 @@ public class PlayerMouseController : InitBase
 {
     private GameObject cursor; // 커서
     private SharedPlayerState PlayerState; // Controller들이 공유하는 데이터
-
+    private float playerClickRadius = 0.2f; // 클릭 판정 개선
     // 직접 호출을 위해 들고 있는 컨트롤러
     SpawnController _spawnController;
     TileEffectController _tileEffectController;
@@ -65,7 +66,7 @@ public class PlayerMouseController : InitBase
     }
 
     //마우스가 가리키는 타일을 감지하는 함수
-    private static RaycastResult GetFocusedObjects()
+    private RaycastResult GetFocusedObjects()
     {
         RaycastResult result = new RaycastResult();
         //마우스 위치를 월드 좌표로 변환
@@ -111,9 +112,37 @@ public class PlayerMouseController : InitBase
                     break;
             }
         }
+
+        if (!result.HasPlayer)
+        {
+            result.player = FindNearestPlayer(mousePos2D, playerClickRadius);
+        }
+
         return result;
     }
 
+    private static Player FindNearestPlayer(Vector2 clickPos, float radius)
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(clickPos, radius);
+        Player nearestPlayer = null;
+        float nearestDistance = float.MaxValue;
+
+        foreach (var collider in colliders)
+        {
+            Player player = collider.GetComponent<Player>();
+            if (player != null)
+            {
+                float distance = Vector2.Distance(clickPos, collider.transform.position);
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    nearestPlayer = player;
+                }
+            }
+        }
+
+        return nearestPlayer;
+    }
 
 
     void LateUpdate()
@@ -229,6 +258,9 @@ public class PlayerMouseController : InitBase
         {
             return; 
         }
+
+        //if (EventSystem.current.IsPointerOverGameObject()) // UI 클릭 무시
+        //    return;
 
         // State 변경 및 변경에 따른 실행
         if (hit.HasPlayer && PlayerControlState != EPlayerControlState.Spawn && PlayerControlState != EPlayerControlState.UI) // 플레이어 변경의 경우(스폰, UI 사용 중일 때는 클릭감지 X)
