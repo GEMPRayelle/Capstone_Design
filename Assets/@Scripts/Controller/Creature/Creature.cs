@@ -812,6 +812,12 @@ public class Creature : BaseObject
 
         if (CreatureState == ECreatureState.Skill) // 스킬 모션 한번만 실행되게
             CreatureState = ECreatureState.Idle;
+
+        // Player인 경우 TurnManager에 공격 완료 알림
+        if (ObjectType == EObjectType.Player)
+        {
+            Managers.Turn.OnPlayerAttackComplete();
+        }
     }
 
     protected void CancleWait()

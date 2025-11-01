@@ -72,7 +72,10 @@ public class TurnManager
 
     //현재 턴을 진행중인 Creature
     public Creature activeCharacter;
-    
+
+    // 공격 완료를 추적하기 위한 변수들
+    private int _attackingPlayerCount = 0;
+    private int _completedAttackCount = 0;
     public void Init()
     {
         turnOrderPreview = new List<TurnOrderPreviewObject>();
@@ -171,6 +174,10 @@ public class TurnManager
 
         CurrentPhase = TurnPhase.PlayerAction;
 
+        // 공격할 플레이어 수 카운트 초기화
+        _attackingPlayerCount = 0;
+        _completedAttackCount = 0;
+
         foreach (var playerCreature in activePlayerList)
         {
             if (playerCreature.IsAlive)
@@ -179,17 +186,33 @@ public class TurnManager
                 player.PlayerAttack(); // 플레이어 공격함수
 
                 if (player.Target != null)
+                {
+                    _attackingPlayerCount++; // 공격하는 플레이어 수 증가
                     player.CreatureState = ECreatureState.Skill;
+                }
 
                 player.IsMoved = true;
             }
         }
 
-        // Need delay?
-        StartEnemyTurn();
+        // 공격하는 플레이어가 없으면 바로 적 턴 시작
+        if (_attackingPlayerCount == 0)
+        {
+            StartEnemyTurn();
+        }
     }
 
-   
+    public void OnPlayerAttackComplete()
+    {
+        _completedAttackCount++;
+
+        // 모든 플레이어의 공격이 끝났는지 확인
+        if (_completedAttackCount >= _attackingPlayerCount)
+        {
+            StartEnemyTurn();
+        }
+    }
+
 
     //아직 행동하지 않은 Monster(한 마리) 턴 시작
     public void StartEnemyTurn()
